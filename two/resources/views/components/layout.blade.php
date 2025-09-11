@@ -26,3 +26,8 @@
     </main>
 </body>
 </html>
+    <!-- <nav class="bg-gray-800/50 px-4 py-2 flex space-x-4">
+        <x-nav-link href="/" :active="request()->is('/')">Home</x-nav-link>
+        <x-nav-link href="/about" :active="request()->is('about')">About</x-nav-link>
+        <x-nav-link href="/contact" :active="request()->is('contact')">Contact</x-nav-link>
+    </nav> -->
