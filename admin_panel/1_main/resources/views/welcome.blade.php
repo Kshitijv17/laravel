@@ -41,6 +41,7 @@
         <div class="d-flex justify-content-center gap-3">
             <a href="{{ route('user.login') }}" class="btn btn-primary">Customer Login</a>
             <a href="{{ route('admin.login') }}" class="btn btn-dark">Admin Login</a>
+            <a href="{{ route('guest.login') }}" class="btn btn-outline-secondary">Just Looking</a>
         </div>
     </div>
 </body>

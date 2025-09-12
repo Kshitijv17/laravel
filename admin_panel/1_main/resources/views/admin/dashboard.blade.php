@@ -1,22 +1,26 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-    <div class="container py-5">
-        <div class="text-center">
-            <h2>Welcome, {{ Auth::guard('admin')->user()->name }}</h2>
-            <p class="lead">You are logged in as an <strong>Admin</strong>.</p>
+@extends('admin.layout')
 
-            <form action="{{ route('admin.logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-danger mt-3">Logout</button>
-            </form>
+@section('content')
+<div class="container py-4">
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card card-hover">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fas fa-box-open me-2"></i> Products</h5>
+          <p class="card-text">Manage all products listed in your store.</p>
+          <a href="{{ route('admin.products.index') }}" class="btn btn-primary">View Products</a>
         </div>
+      </div>
     </div>
-</body>
-</html>
+    <div class="col-md-6">
+      <div class="card card-hover">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fas fa-tags me-2"></i> Categories</h5>
+          <p class="card-text">Organize products into categories for better browsing.</p>
+          <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">View Categories</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+@endsection

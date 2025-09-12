@@ -51,3 +51,19 @@ php artisan migrate:refresh
     php artisan make:controller LoginController 
     php artisan make:view login 
 
+
+    "Laravel Folder Structure`n" | Out-File structure.txt
+"--- APP ---`n" | Out-File structure.txt -Append
+tree .\app /F | Out-File structure.txt -Append
+"`n--- DATABASE ---`n" | Out-File structure.txt -Append
+tree .\database /F | Out-File structure.txt -Append
+"`n--- RESOURCES ---`n" | Out-File structure.txt -Append
+tree .\resources /F | Out-File structure.txt -Append
+"`n--- ROUTES ---`n" | Out-File structure.txt -Append
+tree .\routes /F | Out-File structure.txt -Append
+
+
+php artisan make:seeder UserSeeder
+php artisan make:seeder AdminSeeder
+php artisan make:seeder CategorySeeder
+php artisan make:seeder ProductSeeder

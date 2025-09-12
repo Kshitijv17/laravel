@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -21,6 +20,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_guest',
+        'expires_at',
     ];
 
     /**
@@ -42,6 +43,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'expires_at' => 'datetime',
+            'is_guest' => 'boolean',
             'password' => 'hashed',
         ];
     }
