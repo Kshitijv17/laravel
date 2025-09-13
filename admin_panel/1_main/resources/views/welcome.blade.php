@@ -31,7 +31,7 @@
                 "Believe you can and you're halfway there.",
                 "The only way to do great work is to love what you do.",
                 "Don't watch the clock; do what it does. Keep going.",
-                "Your time is limited, so don’t waste it living someone else’s life."
+                "Your time is limited, so don't waste it living someone else's life."
             ];
             $quote = $quotes[array_rand($quotes)];
         @endphp
