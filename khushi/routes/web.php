@@ -75,6 +75,9 @@ Route::prefix('orders')->name('orders.')->middleware('auth')->group(function () 
     Route::post('/{order}/cancel', [OrderController::class, 'cancel'])->name('cancel');
 });
 
+// Order success route (accessible without auth for guest orders)
+Route::get('/order/{orderId}/success', [OrderController::class, 'success'])->name('order.success');
+
 // User Dashboard Routes
 Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');

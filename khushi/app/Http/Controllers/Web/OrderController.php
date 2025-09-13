@@ -198,7 +198,6 @@ class OrderController extends Controller
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $cartItem->product_id,
-                    'variant_id' => $cartItem->variant_id,
                     'quantity' => $cartItem->quantity,
                     'price' => $cartItem->product->price,
                     'total' => $cartItem->product->price * $cartItem->quantity
@@ -251,16 +250,42 @@ class OrderController extends Controller
 
                 DB::commit();
 
+                if (request()->ajax()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Order placed successfully!',
+                        'redirect_url' => route('order.success', $order->id)
+                    ]);
+                }
+                
                 return redirect()->route('order.success', $order->id)
                     ->with('success', 'Order placed successfully!');
             } else {
                 DB::rollBack();
+                
+                if (request()->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Payment failed: ' . $paymentStatus['message']
+                    ], 400);
+                }
+                
                 return redirect()->back()
                     ->with('error', 'Payment failed: ' . $paymentStatus['message']);
             }
 
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Order processing failed: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Order processing failed: ' . $e->getMessage()
+                ], 500);
+            }
+            
             return redirect()->back()
                 ->with('error', 'Order processing failed. Please try again.');
         }
@@ -272,7 +297,7 @@ class OrderController extends Controller
     public function success($orderId)
     {
         $order = Order::where('user_id', Auth::id())
-            ->with(['items.product', 'payment', 'addresses'])
+            ->with(['items.product', 'payments'])
             ->findOrFail($orderId);
 
         return view('web.checkout.success', compact('order'));
@@ -337,16 +362,19 @@ class OrderController extends Controller
         $paymentData = [
             'order_id' => $order->id,
             'amount' => $order->total_amount,
-            'method' => $paymentMethod,
-            'status' => 'completed',
-            'transaction_id' => 'TXN-' . strtoupper(uniqid()),
-            'gateway_response' => json_encode(['status' => 'success'])
+            'payment_method' => $paymentMethod,
+            'status' => 'pending',
+            'payment_id' => 'TXN-' . strtoupper(uniqid())
         ];
 
         // Handle different payment methods
         switch ($paymentMethod) {
             case 'cod':
                 $paymentData['status'] = 'pending';
+                break;
+            case 'card':
+            case 'paypal':
+                $paymentData['status'] = 'paid';
                 break;
             case 'wallet':
                 $user = Auth::user();
@@ -357,6 +385,7 @@ class OrderController extends Controller
                     ];
                 }
                 $user->decrement('wallet_balance', $order->total_amount);
+                $paymentData['status'] = 'paid';
                 break;
         }
 

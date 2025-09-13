@@ -10,18 +10,17 @@ class Payment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
         'order_id',
         'amount',
-        'method',
+        'payment_method',
+        'payment_id',
         'status',
-        'transaction_id',
-        'gateway_response'
+        'paid_at'
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
-        'gateway_response' => 'array',
+        'paid_at' => 'datetime',
     ];
 
     // Relationships
@@ -38,7 +37,7 @@ class Payment extends Model
     // Scopes
     public function scopeSuccessful($query)
     {
-        return $query->where('status', 'completed');
+        return $query->where('status', 'paid');
     }
 
     public function scopePending($query)
@@ -54,7 +53,7 @@ class Payment extends Model
     // Accessors
     public function getIsSuccessfulAttribute()
     {
-        return $this->status === 'completed';
+        return $this->status === 'paid';
     }
 
     public function getIsPendingAttribute()

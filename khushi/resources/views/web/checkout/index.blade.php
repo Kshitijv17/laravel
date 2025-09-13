@@ -401,14 +401,20 @@ $(document).ready(function() {
             method: 'POST',
             data: $(this).serialize(),
             success: function(data) {
+                console.log('Success response:', data);
                 if (data.success) {
                     window.location.href = data.redirect_url;
                 } else {
-                    showAlert('danger', data.message);
+                    showAlert('danger', data.message || 'Unknown error occurred');
                     button.prop('disabled', false).html('<i class="fas fa-lock me-2"></i>Place Order');
                 }
             },
             error: function(xhr) {
+                console.log('Error response:', xhr);
+                console.log('Status:', xhr.status);
+                console.log('Response text:', xhr.responseText);
+                console.log('Response JSON:', xhr.responseJSON);
+                
                 let message = 'Error processing order. Please try again.';
                 
                 if (xhr.responseJSON) {
@@ -423,6 +429,8 @@ $(document).ready(function() {
                     message = 'Session expired. Please refresh the page and try again.';
                 } else if (xhr.status === 500) {
                     message = 'Server error. Please try again later.';
+                } else if (xhr.status === 0) {
+                    message = 'Network error. Please check your connection.';
                 }
                 
                 showAlert('danger', message);

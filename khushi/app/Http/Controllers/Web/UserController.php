@@ -158,7 +158,7 @@ class UserController extends Controller
     public function orders(Request $request)
     {
         $query = Order::where('user_id', Auth::id())
-            ->with(['items.product', 'payment', 'addresses']);
+            ->with(['items.product', 'payment']);
 
         // Filter by status
         if ($request->has('status') && $request->status != 'all') {

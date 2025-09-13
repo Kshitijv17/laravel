@@ -34,14 +34,19 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    public function addresses()
+    public function orderAddresses()
     {
-        return $this->hasMany(Address::class);
+        return $this->hasMany(OrderAddress::class);
     }
 
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
     }
 
     public function transactions()
