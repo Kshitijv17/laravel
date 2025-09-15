@@ -32,7 +32,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h5 class="card-title">Total Banners</h5>
-                        <h3 class="mb-0">{{ $banners->count() ?? 0 }}</h3>
+                        <h3 class="mb-0">{{ $totalBanners ?? 0 }}</h3>
                     </div>
                     <div class="align-self-center">
                         <i class="fas fa-image fa-2x"></i>
@@ -47,7 +47,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h5 class="card-title">Active Banners</h5>
-                        <h3 class="mb-0">{{ $banners->where('status', true)->count() ?? 0 }}</h3>
+                        <h3 class="mb-0">{{ $activeBanners ?? 0 }}</h3>
                     </div>
                     <div class="align-self-center">
                         <i class="fas fa-check-circle fa-2x"></i>
@@ -62,7 +62,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h5 class="card-title">Homepage Banners</h5>
-                        <h3 class="mb-0">{{ $banners->where('position', 'homepage')->count() ?? 0 }}</h3>
+                        <h3 class="mb-0">{{ $homepageBanners ?? 0 }}</h3>
                     </div>
                     <div class="align-self-center">
                         <i class="fas fa-home fa-2x"></i>
@@ -76,11 +76,11 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <h5 class="card-title">Total Clicks</h5>
-                        <h3 class="mb-0">{{ $banners->sum('click_count') ?? 0 }}</h3>
+                        <h5 class="card-title">Inactive Banners</h5>
+                        <h3 class="mb-0">{{ $inactiveBanners ?? 0 }}</h3>
                     </div>
                     <div class="align-self-center">
-                        <i class="fas fa-mouse-pointer fa-2x"></i>
+                        <i class="fas fa-times-circle fa-2x"></i>
                     </div>
                 </div>
             </div>
@@ -160,157 +160,76 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Sample data since $banners might not be properly passed -->
+                    @forelse($banners as $banner)
                     <tr>
                         <td>
-                            <img src="https://via.placeholder.com/80x50/007bff/ffffff?text=Banner+1" 
-                                 class="img-thumbnail" style="width: 80px; height: 50px; object-fit: cover;" alt="Banner">
+                            <img src="{{ $banner->image_url }}" 
+                                 class="img-thumbnail" style="width: 80px; height: 50px; object-fit: cover;" alt="{{ $banner->title }}">
                         </td>
                         <td>
                             <div>
-                                <div class="fw-bold">Summer Sale 2024</div>
-                                <small class="text-muted">Up to 50% off on all summer items</small>
+                                <div class="fw-bold">{{ $banner->title }}</div>
+                                @if($banner->description)
+                                <small class="text-muted">{{ Str::limit($banner->description, 50) }}</small>
+                                @endif
                             </div>
                         </td>
                         <td>
-                            <span class="badge bg-primary">Homepage</span>
+                            <span class="badge bg-primary">{{ ucfirst($banner->position) }}</span>
                         </td>
                         <td>
-                            <span class="badge bg-info">Carousel</span>
+                            <span class="badge bg-info">Banner</span>
                         </td>
                         <td>
-                            <span class="badge bg-warning">1</span>
+                            <span class="badge bg-warning">{{ $loop->iteration }}</span>
                         </td>
                         <td>
                             <div class="text-center">
-                                <div class="fw-bold text-success">1,234</div>
+                                <div class="fw-bold text-success">0</div>
                                 <small class="text-muted">clicks</small>
                             </div>
                         </td>
                         <td>
-                            <span class="badge bg-success">Active</span>
+                            @if($banner->is_active)
+                                <span class="badge bg-success">Active</span>
+                            @else
+                                <span class="badge bg-secondary">Inactive</span>
+                            @endif
                         </td>
                         <td>
-                            <div>Jan 15, 2024</div>
-                            <small class="text-muted">2 weeks ago</small>
+                            <div>{{ $banner->created_at->format('M d, Y') }}</div>
+                            <small class="text-muted">{{ $banner->created_at->diffForHumans() }}</small>
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{{ route('admin.banners.show', 1) }}" class="btn btn-sm btn-outline-primary">
+                                <a href="{{ route('admin.banners.show', $banner->id) }}" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('admin.banners.edit', 1) }}" class="btn btn-sm btn-outline-info">
+                                <a href="{{ route('admin.banners.edit', $banner->id) }}" class="btn btn-sm btn-outline-info">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <button class="btn btn-sm btn-outline-warning" onclick="toggleStatus(1)">
-                                    <i class="fas fa-toggle-on"></i>
+                                <button class="btn btn-sm btn-outline-warning" onclick="toggleStatus({{ $banner->id }})">
+                                    <i class="fas fa-toggle-{{ $banner->is_active ? 'on' : 'off' }}"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteBanner(1)">
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteBanner({{ $banner->id }})">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
+                    @empty
                     <tr>
-                        <td>
-                            <img src="https://via.placeholder.com/80x50/28a745/ffffff?text=Banner+2" 
-                                 class="img-thumbnail" style="width: 80px; height: 50px; object-fit: cover;" alt="Banner">
-                        </td>
-                        <td>
-                            <div>
-                                <div class="fw-bold">New Arrivals</div>
-                                <small class="text-muted">Check out our latest collection</small>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge bg-secondary">Category</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-success">Image</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-warning">2</span>
-                        </td>
-                        <td>
-                            <div class="text-center">
-                                <div class="fw-bold text-success">856</div>
-                                <small class="text-muted">clicks</small>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge bg-success">Active</span>
-                        </td>
-                        <td>
-                            <div>Jan 10, 2024</div>
-                            <small class="text-muted">3 weeks ago</small>
-                        </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <a href="{{ route('admin.banners.show', 2) }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-eye"></i>
+                        <td colspan="9" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="fas fa-image fa-3x mb-3"></i>
+                                <p>No banners found</p>
+                                <a href="{{ route('admin.banners.create') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Create First Banner
                                 </a>
-                                <a href="{{ route('admin.banners.edit', 2) }}" class="btn btn-sm btn-outline-info">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button class="btn btn-sm btn-outline-warning" onclick="toggleStatus(2)">
-                                    <i class="fas fa-toggle-on"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteBanner(2)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            <img src="https://via.placeholder.com/80x50/dc3545/ffffff?text=Banner+3" 
-                                 class="img-thumbnail" style="width: 80px; height: 50px; object-fit: cover;" alt="Banner">
-                        </td>
-                        <td>
-                            <div>
-                                <div class="fw-bold">Flash Sale</div>
-                                <small class="text-muted">Limited time offer - 24 hours only</small>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge bg-danger">Popup</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-danger">Popup</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-warning">3</span>
-                        </td>
-                        <td>
-                            <div class="text-center">
-                                <div class="fw-bold text-success">2,156</div>
-                                <small class="text-muted">clicks</small>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge bg-secondary">Inactive</span>
-                        </td>
-                        <td>
-                            <div>Dec 25, 2023</div>
-                            <small class="text-muted">1 month ago</small>
-                        </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <a href="{{ route('admin.banners.show', 3) }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ route('admin.banners.edit', 3) }}" class="btn btn-sm btn-outline-info">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button class="btn btn-sm btn-outline-warning" onclick="toggleStatus(3)">
-                                    <i class="fas fa-toggle-off"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteBanner(3)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -368,16 +287,25 @@
 
 @push('scripts')
 <script>
+// Force remove any modal backdrops immediately
+function clearModalBackdrops() {
+    $('.modal-backdrop').remove();
+    $('body').removeClass('modal-open').css('padding-right', '').css('overflow', '');
+}
+
+// Run immediately when script loads
+clearModalBackdrops();
+
+// Run when DOM is ready
 $(document).ready(function() {
-    // Check if DataTable already exists and destroy it
-    if ($.fn.DataTable.isDataTable('#bannersTable')) {
-        $('#bannersTable').DataTable().destroy();
-    }
+    clearModalBackdrops();
     
-    // Initialize DataTable
+    // Set up periodic cleanup every 500ms for the first 3 seconds
+    let cleanupInterval = setInterval(clearModalBackdrops, 500);
+    setTimeout(() => clearInterval(cleanupInterval), 3000);
+    
     $('#bannersTable').DataTable({
         responsive: true,
-        autoWidth: false,
         pageLength: 25,
         order: [[7, 'desc']], // Sort by created date
         columnDefs: [
@@ -416,6 +344,10 @@ $('#confirmStatusUpdate').click(function() {
                 _token: '{{ csrf_token() }}'
             },
             success: function(response) {
+                $('#statusModal').modal('hide');
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css('padding-right', '');
+                
                 if (response.success) {
                     location.reload();
                 } else {
@@ -423,11 +355,17 @@ $('#confirmStatusUpdate').click(function() {
                 }
             },
             error: function() {
+                $('#statusModal').modal('hide');
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css('padding-right', '');
                 alert('Error updating banner status');
             }
         });
+    } else {
+        $('#statusModal').modal('hide');
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open').css('padding-right', '');
     }
-    $('#statusModal').modal('hide');
 });
 
 // Handle delete confirmation
@@ -440,18 +378,33 @@ $('#confirmDelete').click(function() {
                 _token: '{{ csrf_token() }}'
             },
             success: function(response) {
+                $('#deleteModal').modal('hide');
                 if (response.success) {
+                    // Remove modal backdrops
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open').css('padding-right', '');
+                    
+                    // Show success message and reload
+                    alert('Banner deleted successfully!');
                     location.reload();
                 } else {
                     alert('Error deleting banner');
                 }
             },
-            error: function() {
-                alert('Error deleting banner');
+            error: function(xhr) {
+                $('#deleteModal').modal('hide');
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css('padding-right', '');
+                
+                console.error('Delete error:', xhr);
+                alert('Error deleting banner. Please try again.');
             }
         });
+    } else {
+        $('#deleteModal').modal('hide');
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open').css('padding-right', '');
     }
-    $('#deleteModal').modal('hide');
 });
 </script>
 @endpush

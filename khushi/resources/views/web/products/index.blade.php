@@ -118,7 +118,7 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="card product-card h-100">
                         <div class="position-relative">
-                            <img src="{{ $product->images->first()->url ?? 'https://via.placeholder.com/300x250/f8f9fa/6c757d?text=Product' }}" 
+                            <img src="{{ $product->image_url }}" 
                                  class="card-img-top" alt="{{ $product->name }}">
                             
                             @if($product->discount_percentage > 0)

@@ -36,7 +36,7 @@
                 <h5 class="card-title mb-0">Product Information</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+                <form id="productEditForm" action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     
@@ -171,13 +171,13 @@
             </div>
             <div class="card-body text-center">
                 <img id="currentImage" 
-                     src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/300x300/e5e7eb/9ca3af?text=No+Image' }}" 
+                     src="{{ $product->image_url }}" 
                      class="img-fluid rounded mb-3" style="max-height: 200px;" alt="{{ $product->name }}">
                 
                 <div class="mb-3">
                     <label class="form-label">Upload New Image</label>
                     <input type="file" class="form-control @error('image') is-invalid @enderror" 
-                           name="image" accept="image/*" onchange="previewImage(this)" form="updateForm">
+                           name="image" accept="image/*" onchange="previewImage(this)" form="productEditForm">
                     @error('image')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -198,13 +198,13 @@
                 <div class="mb-3">
                     <label class="form-label">Meta Title</label>
                     <input type="text" class="form-control" name="meta_title" 
-                           value="{{ old('meta_title', $product->meta_title ?? '') }}" form="updateForm">
+                           value="{{ old('meta_title', $product->meta_title ?? '') }}" form="productEditForm">
                     <small class="form-text text-muted">Leave empty to use product name</small>
                 </div>
                 
                 <div class="mb-3">
                     <label class="form-label">Meta Description</label>
-                    <textarea class="form-control" name="meta_description" rows="3" form="updateForm">{{ old('meta_description', $product->meta_description ?? '') }}</textarea>
+                    <textarea class="form-control" name="meta_description" rows="3" form="productEditForm">{{ old('meta_description', $product->meta_description ?? '') }}</textarea>
                     <small class="form-text text-muted">Recommended: 150-160 characters</small>
                 </div>
             </div>
@@ -241,11 +241,7 @@
     </div>
 </div>
 
-<!-- Hidden form for file upload and SEO fields -->
-<form id="updateForm" action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" style="display: none;">
-    @csrf
-    @method('PUT')
-</form>
+<!-- Removed hidden form; using main form (productEditForm) for all inputs -->
 @endsection
 
 @push('scripts')
@@ -261,27 +257,7 @@ function previewImage(input) {
     }
 }
 
-// Sync forms when main form is submitted
-$('form:not(#updateForm)').on('submit', function(e) {
-    e.preventDefault();
-    
-    // Copy image and SEO fields to main form
-    const imageInput = $('input[name="image"]');
-    const metaTitle = $('input[name="meta_title"]');
-    const metaDescription = $('textarea[name="meta_description"]');
-    
-    if (imageInput.val()) {
-        $(this).append(imageInput.clone());
-    }
-    if (metaTitle.val()) {
-        $(this).append($('<input>').attr({type: 'hidden', name: 'meta_title', value: metaTitle.val()}));
-    }
-    if (metaDescription.val()) {
-        $(this).append($('<input>').attr({type: 'hidden', name: 'meta_description', value: metaDescription.val()}));
-    }
-    
-    this.submit();
-});
+// Using associated form attributes, no need to clone inputs between forms
 
 // Auto-generate slug from name
 $('input[name="name"]').on('input', function() {

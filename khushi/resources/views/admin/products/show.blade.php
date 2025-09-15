@@ -184,7 +184,7 @@
                 <h5 class="card-title mb-0">Product Image</h5>
             </div>
             <div class="card-body text-center">
-                <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/300x300/e5e7eb/9ca3af?text=No+Image' }}" 
+                <img src="{{ $product->image_url }}" 
                      class="img-fluid rounded" style="max-height: 300px;" alt="{{ $product->name }}">
             </div>
         </div>

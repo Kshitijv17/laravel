@@ -212,7 +212,7 @@
                 <h5 class="card-title mb-0">Category Image</h5>
             </div>
             <div class="card-body text-center">
-                <img src="{{ $category->image ? asset('storage/' . $category->image) : 'https://via.placeholder.com/300x200/e5e7eb/9ca3af?text=No+Image' }}" 
+                <img src="{{ $category->image_url }}" 
                      class="img-fluid rounded" style="max-height: 200px;" alt="{{ $category->name }}">
             </div>
         </div>

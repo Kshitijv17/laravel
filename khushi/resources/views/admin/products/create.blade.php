@@ -32,7 +32,7 @@
                 <h5 class="card-title mb-0">Product Information</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+                <form id="productCreateForm" action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     
                     <div class="row">
@@ -167,7 +167,7 @@
                 <div class="mb-3">
                     <label class="form-label">Upload Image</label>
                     <input type="file" class="form-control @error('image') is-invalid @enderror" 
-                           name="image" accept="image/*" onchange="previewImage(this)">
+                           name="image" accept="image/*" onchange="previewImage(this)" form="productCreateForm">
                     @error('image')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -188,13 +188,13 @@
             <div class="card-body">
                 <div class="mb-3">
                     <label class="form-label">Meta Title</label>
-                    <input type="text" class="form-control" name="meta_title" value="{{ old('meta_title') }}">
+                    <input type="text" class="form-control" name="meta_title" value="{{ old('meta_title') }}" form="productCreateForm">
                     <small class="form-text text-muted">Leave empty to use product name</small>
                 </div>
                 
                 <div class="mb-3">
                     <label class="form-label">Meta Description</label>
-                    <textarea class="form-control" name="meta_description" rows="3">{{ old('meta_description') }}</textarea>
+                    <textarea class="form-control" name="meta_description" rows="3" form="productCreateForm">{{ old('meta_description') }}</textarea>
                     <small class="form-text text-muted">Recommended: 150-160 characters</small>
                 </div>
             </div>

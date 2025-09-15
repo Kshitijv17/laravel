@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -74,7 +76,7 @@ class Product extends Model
     // Virtual images relationship - returns collection with main image or default
     public function getImagesAttribute()
     {
-        $imageUrl = $this->image ?: 'https://via.placeholder.com/500x500/e5e7eb/9ca3af?text=No+Image';
+        $imageUrl = $this->image_url;
         
         return collect([
             (object) [
@@ -89,7 +91,7 @@ class Product extends Model
     // Primary image accessor with fallback
     public function getPrimaryImageAttribute()
     {
-        return $this->image ?: 'https://via.placeholder.com/500x500/e5e7eb/9ca3af?text=No+Image';
+        return $this->image_url;
     }
 
     // Scopes
@@ -114,6 +116,20 @@ class Product extends Model
     }
 
     // Accessors
+    public function getImageUrlAttribute()
+    {
+        if (!$this->image) {
+            return 'https://via.placeholder.com/500x500/e5e7eb/9ca3af?text=No+Image';
+        }
+
+        // If it's already an absolute URL, return as-is
+        if (Str::startsWith($this->image, ['http://', 'https://'])) {
+            return $this->image;
+        }
+
+        // For local storage paths, use asset() with storage/ prefix
+        return asset('storage/' . $this->image);
+    }
     public function getFinalPriceAttribute()
     {
         return $this->discount_price ?? $this->price;

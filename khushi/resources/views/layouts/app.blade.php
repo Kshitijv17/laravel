@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <title>@yield('title', 'E-Commerce Store')</title>
+    <title>@yield('title', 'srcreationworld')</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -20,14 +20,19 @@
     <!-- Custom CSS -->
     <style>
         :root {
-            --primary-color: #3b82f6;
-            --secondary-color: #64748b;
+            /* Fashion brand palette */
+            --primary-color: #ff3f6c; /* brand pink */
+            --secondary-color: #6b7280; /* muted gray */
             --success-color: #10b981;
             --danger-color: #ef4444;
             --warning-color: #f59e0b;
             --info-color: #06b6d4;
             --light-color: #f8fafc;
-            --dark-color: #1e293b;
+            --dark-color: #111827;
+            --brand-grad-start: #ff3f6c;
+            --brand-grad-end: #ff905a;
+            --chip-bg: #ffffff;
+            --chip-border: #e5e7eb;
         }
         
         body {
@@ -36,10 +41,14 @@
         }
         
         .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
+            font-weight: 800;
+            font-size: 1.25rem;
             color: var(--primary-color) !important;
+            letter-spacing: .3px;
+            display:flex; align-items:center;
         }
+        .brand-logo { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; background: transparent; }
+        .brand-text { text-transform: lowercase; font-weight: 800; letter-spacing: .5px; }
         
         .btn-primary {
             background-color: var(--primary-color);
@@ -47,8 +56,8 @@
         }
         
         .btn-primary:hover {
-            background-color: #2563eb;
-            border-color: #2563eb;
+            background-color: #e7335c; /* darker brand pink */
+            border-color: #e7335c;
         }
         
         .card {
@@ -77,7 +86,7 @@
         }
         
         .hero-section {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #1e40af 100%);
+            background: linear-gradient(135deg, var(--brand-grad-start) 0%, var(--brand-grad-end) 100%);
             color: white;
             padding: 100px 0;
         }
@@ -142,100 +151,166 @@
         }
         
         @media (max-width: 768px) {
-            .hero-section {
-                padding: 60px 0;
-            }
-            
-            .hero-section h1 {
-                font-size: 2rem;
-            }
+            .hero-section { padding: 60px 0; }
+            .hero-section h1 { font-size: 2rem; }
         }
+
+        /* Mega header */
+        .offer-bar { background: #fff; border-bottom: 1px solid #f1f5f9; font-weight: 600; }
+        .offer-bar .container { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.4rem 0; }
+        .offer-pill { display:inline-flex; align-items:center; gap:.5rem; padding:.25rem .6rem; border-radius:999px; border:1px dashed #ffd1dc; background:#fff5f8; color:#7f1d1d; font-size:.85rem; }
+
+        .header-main { background:#fff; }
+        .header-main .container { display:flex; align-items:center; gap:1rem; padding:.75rem 0; }
+        .header-search { flex: 1 1 560px; }
+        .header-search .input-group { border:1px solid #e5e7eb; border-radius:999px; overflow:hidden; }
+        .header-search .form-control { border:0; padding:.6rem 1rem; }
+        .header-search .btn { border:0; background: var(--primary-color); color:#fff; padding: .6rem 1rem; }
+        .header-actions { display:flex; align-items:center; gap:.75rem; }
+        .header-actions .icon-btn { position:relative; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color: var(--dark-color); border:1px solid #e5e7eb; background:#fff; }
+        .header-actions .icon-btn:hover { color: var(--primary-color); border-color:#ffd1dc; box-shadow:0 4px 14px rgba(255,63,108,.15); }
+
+        /* Category rail */
+        .category-bar { background:#fff; border-top:1px solid #f1f5f9; border-bottom:1px solid #f1f5f9; }
+        .category-bar .nav { gap:.5rem; }
+        .category-bar .nav-link { font-weight:600; color:#374151; padding:.75rem .75rem; border-radius:8px; }
+        .category-bar .nav-link:hover { color: var(--primary-color); background:#fff5f8; }
+
+        /* Mega menu (simple grid) */
+        .mega-dropdown .dropdown-menu { width: min(900px, 90vw); padding:1rem; border-radius:12px; border:none; box-shadow: 0 12px 30px rgba(0,0,0,.12); }
+        .mega-col h6 { font-weight:700; font-size:.9rem; color:#111827; }
+        .mega-col a { display:block; color:#4b5563; text-decoration:none; padding:.25rem 0; }
+        .mega-col a:hover { color: var(--primary-color); }
     </style>
     
     @stack('styles')
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <!-- Mega Header -->
+    <div class="offer-bar sticky-top">
+        <div class="container">
+            <span class="offer-pill"><i class="fas fa-bolt"></i> Sale is Live: Up to 50% Off</span>
+            <span class="text-muted small">Free Shipping on $50+ • Easy Returns • Secure Payments</span>
+        </div>
+    </div>
+
+    <header class="header-main shadow-sm sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">
-                <i class="fas fa-store me-2"></i>E-Store
+                <img src="{{ asset('images/logo.png') }}" alt="srcreationworld logo" class="brand-logo me-2">
+                <span class="brand-text">srcreationworld</span>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('products.index') }}">Products</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('categories.index') }}">Categories</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('about') }}">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('contact') }}">Contact</a>
-                    </li>
-                </ul>
-                
-                <!-- Search Form -->
-                <form class="d-flex me-3" action="{{ route('search') }}" method="GET">
-                    <div class="input-group">
-                        <input class="form-control" type="search" name="q" placeholder="Search products..." value="{{ request('q') }}">
-                        <button class="btn btn-outline-primary" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </form>
-                
-                <ul class="navbar-nav">
-                    <!-- Cart -->
-                    <li class="nav-item">
-                        <a class="nav-link position-relative" href="{{ route('cart.index') }}">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span class="cart-badge" id="cart-count">0</span>
-                        </a>
-                    </li>
-                    
-                    @auth
-                        <!-- User Menu -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-1"></i>{{ Auth::user()->name }}
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('user.dashboard') }}">Dashboard</a></li>
-                                <li><a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a></li>
-                                <li><a class="dropdown-item" href="{{ route('user.orders') }}">Orders</a></li>
-                                <li><a class="dropdown-item" href="{{ route('user.wishlist') }}">Wishlist</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">Logout</button>
-                                    </form>
-                                </li>
-                            </ul>
+            <!-- Prominent Search -->
+            <form class="header-search" action="{{ route('search') }}" method="GET">
+                <div class="input-group">
+                    <input class="form-control" type="search" name="q" placeholder="Search for brands, products and more" value="{{ request('q') }}">
+                    <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+
+            <!-- Actions -->
+            <div class="header-actions">
+                <a class="icon-btn" href="{{ route('cart.index') }}" title="Cart">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-badge" id="cart-count">0</span>
+                </a>
+                @auth
+                <div class="dropdown">
+                    <button class="icon-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Account">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end p-2">
+                        <li><a class="dropdown-item" href="{{ route('user.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                        <li><a class="dropdown-item" href="{{ route('user.orders') }}"><i class="fas fa-bag-shopping me-2"></i>Orders</a></li>
+                        <li><a class="dropdown-item" href="{{ route('user.wishlist') }}"><i class="fas fa-heart me-2"></i>Wishlist</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                            </form>
                         </li>
-                    @else
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-primary btn-sm ms-2" href="{{ route('register') }}">Register</a>
-                        </li>
-                    @endauth
+                    </ul>
+                </div>
+                @else
+                <a class="icon-btn" href="{{ route('login') }}" title="Login"><i class="fas fa-user"></i></a>
+                <a class="btn btn-primary btn-sm" href="{{ route('register') }}">Sign Up</a>
+                @endauth
+            </div>
+        </div>
+        
+        <!-- Category Rail -->
+        <div class="category-bar">
+            <div class="container">
+                <ul class="nav">
+                    <li class="nav-item dropdown mega-dropdown position-static">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Men</a>
+                        <div class="dropdown-menu w-100 shadow">
+                            <div class="row gx-4 gy-3">
+                                <div class="col-6 col-md-3 mega-col">
+                                    <h6>Topwear</h6>
+                                    <a href="{{ route('products.index', ['search' => 'T-Shirts']) }}">T-Shirts</a>
+                                    <a href="{{ route('products.index', ['search' => 'Shirts']) }}">Shirts</a>
+                                    <a href="{{ route('products.index', ['search' => 'Sweatshirts']) }}">Sweatshirts</a>
+                                </div>
+                                <div class="col-6 col-md-3 mega-col">
+                                    <h6>Bottomwear</h6>
+                                    <a href="{{ route('products.index', ['search' => 'Jeans']) }}">Jeans</a>
+                                    <a href="{{ route('products.index', ['search' => 'Trousers']) }}">Trousers</a>
+                                    <a href="{{ route('products.index', ['search' => 'Shorts']) }}">Shorts</a>
+                                </div>
+                                <div class="col-6 col-md-3 mega-col">
+                                    <h6>Footwear</h6>
+                                    <a href="{{ route('products.index', ['search' => 'Sneakers']) }}">Sneakers</a>
+                                    <a href="{{ route('products.index', ['search' => 'Formal Shoes']) }}">Formal Shoes</a>
+                                </div>
+                                <div class="col-6 col-md-3 mega-col">
+                                    <h6>Accessories</h6>
+                                    <a href="{{ route('products.index', ['search' => 'Belts']) }}">Belts</a>
+                                    <a href="{{ route('products.index', ['search' => 'Wallets']) }}">Wallets</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown mega-dropdown position-static">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Women</a>
+                        <div class="dropdown-menu w-100 shadow">
+                            <div class="row gx-4 gy-3">
+                                <div class="col-6 col-md-3 mega-col">
+                                    <h6>Western Wear</h6>
+                                    <a href="{{ route('products.index', ['search' => 'Dresses']) }}">Dresses</a>
+                                    <a href="{{ route('products.index', ['search' => 'Tops']) }}">Tops</a>
+                                    <a href="{{ route('products.index', ['search' => 'Jeans']) }}">Jeans</a>
+                                </div>
+                                <div class="col-6 col-md-3 mega-col">
+                                    <h6>Ethnic</h6>
+                                    <a href="{{ route('products.index', ['search' => 'Saree']) }}">Sarees</a>
+                                    <a href="{{ route('products.index', ['search' => 'Kurtas']) }}">Kurtas</a>
+                                </div>
+                                <div class="col-6 col-md-3 mega-col">
+                                    <h6>Footwear</h6>
+                                    <a href="{{ route('products.index', ['search' => 'Heels']) }}">Heels</a>
+                                    <a href="{{ route('products.index', ['search' => 'Flats']) }}">Flats</a>
+                                </div>
+                                <div class="col-6 col-md-3 mega-col">
+                                    <h6>Accessories</h6>
+                                    <a href="{{ route('products.index', ['search' => 'Bags']) }}">Bags</a>
+                                    <a href="{{ route('products.index', ['search' => 'Jewellery']) }}">Jewellery</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('products.index', ['search' => 'Kids']) }}">Kids</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('products.index', ['search' => 'Footwear']) }}">Footwear</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('products.index', ['search' => 'Accessories']) }}">Accessories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('products.index', ['search' => 'Beauty']) }}">Beauty</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('products.index', ['search' => 'Home']) }}">Home & Living</a></li>
+                    <li class="nav-item"><a class="nav-link text-danger" href="{{ route('products.index', ['search' => 'Sale']) }}">Offers</a></li>
                 </ul>
             </div>
         </div>
-    </nav>
+    </header>
 
     <!-- Alert Messages -->
     @if(session('success'))
@@ -262,7 +337,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="text-white mb-3">E-Store</h5>
+                    <h5 class="text-white mb-3">srcreationworld</h5>
                     <p class="text-light">Your trusted online shopping destination for quality products at great prices.</p>
                     <div class="social-links">
                         <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
@@ -302,7 +377,7 @@
             <hr class="my-4 text-light">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <p class="text-light mb-0">&copy; {{ date('Y') }} E-Store. All rights reserved.</p>
+                    <p class="text-light mb-0">&copy; {{ date('Y') }} srcreationworld. All rights reserved.</p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <img src="https://via.placeholder.com/40x25/007bff/ffffff?text=VISA" alt="Visa" class="me-2">

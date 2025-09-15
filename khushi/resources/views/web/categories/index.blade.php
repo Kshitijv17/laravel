@@ -26,7 +26,7 @@
             <div class="card category-card h-100 border-0 shadow-sm">
                 <div class="position-relative overflow-hidden">
                     @if($category->image)
-                    <img src="{{ $category->image }}" class="card-img-top" alt="{{ $category->name }}" 
+                    <img src="{{ $category->image_url }}" class="card-img-top" alt="{{ $category->name }}" 
                          style="height: 200px; object-fit: cover;">
                     @else
                     <div class="card-img-top d-flex align-items-center justify-content-center bg-light" 
@@ -84,7 +84,7 @@
                 <div class="row g-0">
                     <div class="col-md-4">
                         @if($category->image)
-                        <img src="{{ $category->image }}" class="img-fluid rounded-start h-100" 
+                        <img src="{{ $category->image_url }}" class="img-fluid rounded-start h-100" 
                              alt="{{ $category->name }}" style="object-fit: cover;">
                         @else
                         <div class="d-flex align-items-center justify-content-center bg-light rounded-start h-100">

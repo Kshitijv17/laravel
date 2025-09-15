@@ -77,7 +77,7 @@
                                 <label class="form-label">Discount Type *</label>
                                 <select class="form-select @error('type') is-invalid @enderror" name="type" required onchange="updateValueLabel()">
                                     <option value="">Select Type</option>
-                                    <option value="percentage" {{ old('type') == 'percentage' ? 'selected' : '' }}>Percentage</option>
+                                    <option value="percent" {{ old('type') == 'percent' ? 'selected' : '' }}>Percentage</option>
                                     <option value="fixed" {{ old('type') == 'fixed' ? 'selected' : '' }}>Fixed Amount</option>
                                 </select>
                                 @error('type')
@@ -257,7 +257,7 @@ function updateValueLabel() {
     const label = document.getElementById('valueLabel');
     const help = document.getElementById('valueHelp');
     
-    if (type === 'percentage') {
+    if (type === 'percent') {
         label.textContent = 'Percentage (%) *';
         help.textContent = 'Enter percentage value (1-100)';
     } else if (type === 'fixed') {
@@ -291,7 +291,7 @@ function previewCoupon() {
     document.getElementById('previewDescription').textContent = description;
     
     let discountText = '';
-    if (type === 'percentage') {
+    if (type === 'percent') {
         discountText = `${value}% OFF`;
     } else if (type === 'fixed') {
         discountText = `$${value} OFF`;

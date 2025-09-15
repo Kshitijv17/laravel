@@ -66,8 +66,8 @@
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Campaigns Sent</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['campaigns_sent'] ?? 0 }}</div>
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Inactive Subscribers</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['inactive_subscribers'] ?? 0 }}</div>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-envelope fa-2x text-gray-300"></i>
@@ -82,8 +82,8 @@
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Open Rate</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['open_rate'] ?? '0' }}%</div>
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">New This Month</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['new_this_month'] ?? 0 }}</div>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-chart-line fa-2x text-gray-300"></i>
@@ -97,37 +97,39 @@
 <!-- Filters -->
 <div class="card mb-4">
     <div class="card-body">
-        <div class="row align-items-center">
+        <form method="GET" class="row align-items-center">
             <div class="col-md-3">
                 <label class="form-label">Status</label>
-                <select class="form-select" id="statusFilter">
+                <select class="form-select" name="status">
                     <option value="">All Statuses</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Date Range</label>
-                <select class="form-select" id="dateFilter">
-                    <option value="">All Time</option>
-                    <option value="today">Today</option>
-                    <option value="week">This Week</option>
-                    <option value="month">This Month</option>
+                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Search</label>
-                <input type="text" class="form-control" id="searchInput" placeholder="Search by email...">
+                <input type="text" class="form-control" name="search" value="{{ request('search') }}" placeholder="Search by email or name...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter me-1"></i>Filter
+                    </button>
+                    <a href="{{ route('admin.newsletter.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i>Clear
+                    </a>
+                </div>
             </div>
             <div class="col-md-2">
                 <label class="form-label">&nbsp;</label>
                 <div>
-                    <button class="btn btn-primary w-100" onclick="applyFilters()">
-                        <i class="fas fa-filter me-2"></i>Filter
+                    <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#addSubscriberModal">
+                        <i class="fas fa-plus me-1"></i>Add Subscriber
                     </button>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -153,73 +155,53 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Sample data since $subscribers is not passed from controller -->
+                    @forelse($subscribers as $subscriber)
                     <tr>
                         <td>
-                            <input type="checkbox" class="subscriber-checkbox" value="1">
+                            <input type="checkbox" class="subscriber-checkbox" value="{{ $subscriber->id }}">
                         </td>
-                        <td>john@example.com</td>
-                        <td>John Doe</td>
+                        <td>{{ $subscriber->email }}</td>
+                        <td>{{ $subscriber->name ?? 'N/A' }}</td>
                         <td>
-                            <span class="badge bg-success">Active</span>
+                            <span class="badge {{ $subscriber->status === 'active' ? 'bg-success' : 'bg-danger' }}">
+                                {{ ucfirst($subscriber->status) }}
+                            </span>
                         </td>
-                        <td>Jan 15, 2024</td>
+                        <td>{{ $subscriber->subscribed_at ? $subscriber->subscribed_at->format('M d, Y') : $subscriber->created_at->format('M d, Y') }}</td>
                         <td>Website</td>
                         <td>
                             <div class="btn-group" role="group">
-                                <button class="btn btn-sm btn-outline-warning" onclick="toggleStatus(1, 'inactive')">
+                                <button class="btn btn-sm btn-outline-primary" onclick="editSubscriber({{ $subscriber->id }})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                @if($subscriber->status === 'active')
+                                <button class="btn btn-sm btn-outline-warning" onclick="toggleStatus({{ $subscriber->id }}, 'inactive')">
                                     <i class="fas fa-pause"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteSubscriber(1)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="checkbox" class="subscriber-checkbox" value="2">
-                        </td>
-                        <td>jane@example.com</td>
-                        <td>Jane Smith</td>
-                        <td>
-                            <span class="badge bg-success">Active</span>
-                        </td>
-                        <td>Jan 10, 2024</td>
-                        <td>Social Media</td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <button class="btn btn-sm btn-outline-warning" onclick="toggleStatus(2, 'inactive')">
-                                    <i class="fas fa-pause"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteSubscriber(2)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="checkbox" class="subscriber-checkbox" value="3">
-                        </td>
-                        <td>mike@example.com</td>
-                        <td>Mike Johnson</td>
-                        <td>
-                            <span class="badge bg-danger">Inactive</span>
-                        </td>
-                        <td>Jan 05, 2024</td>
-                        <td>Newsletter</td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <button class="btn btn-sm btn-outline-success" onclick="toggleStatus(3, 'active')">
+                                @else
+                                <button class="btn btn-sm btn-outline-success" onclick="toggleStatus({{ $subscriber->id }}, 'active')">
                                     <i class="fas fa-play"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteSubscriber(3)">
+                                @endif
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteSubscriber({{ $subscriber->id }})">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="fas fa-inbox fa-3x mb-3"></i>
+                                <p>No newsletter subscribers found</p>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSubscriberModal">
+                                    <i class="fas fa-plus me-2"></i>Add First Subscriber
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -249,9 +231,8 @@
                     <div class="mb-3">
                         <label class="form-label">Recipients</label>
                         <select class="form-select" name="recipients" required>
-                            <option value="all">All Active Subscribers</option>
-                            <option value="selected">Selected Subscribers</option>
-                            <option value="segment">Specific Segment</option>
+                            <option value="active_only">Active Subscribers Only</option>
+                            <option value="all">All Subscribers</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -289,6 +270,81 @@
         </div>
     </div>
 </div>
+
+<!-- Add Subscriber Modal -->
+<div class="modal fade" id="addSubscriberModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Newsletter Subscriber</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addSubscriberForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="name" placeholder="Optional">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status *</label>
+                        <select class="form-select" name="status" required>
+                            <option value="active" selected>Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Subscriber
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Subscriber Modal -->
+<div class="modal fade" id="editSubscriberModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Newsletter Subscriber</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editSubscriberForm">
+                <div class="modal-body">
+                    <input type="hidden" id="editSubscriberId" name="subscriber_id">
+                    <div class="mb-3">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" id="editName" name="name" placeholder="Optional">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status *</label>
+                        <select class="form-select" id="editStatus" name="status" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Update Subscriber
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -315,6 +371,57 @@ $('#selectAll').on('change', function() {
     $('.subscriber-checkbox').prop('checked', $(this).prop('checked'));
 });
 
+// Add subscriber form
+$('#addSubscriberForm').on('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = $(this).serialize();
+    
+    $.ajax({
+        url: '{{ route("admin.newsletter.store") }}',
+        method: 'POST',
+        data: formData + '&_token=' + $('meta[name="csrf-token"]').attr('content'),
+        success: function(response) {
+            if (response.success) {
+                $('#addSubscriberModal').modal('hide');
+                forceRemoveBackdrop();
+                location.reload();
+            } else {
+                alert('Error adding subscriber: ' + response.message);
+            }
+        },
+        error: function() {
+            alert('Error adding subscriber');
+        }
+    });
+});
+
+// Edit subscriber form
+$('#editSubscriberForm').on('submit', function(e) {
+    e.preventDefault();
+    
+    const subscriberId = $('#editSubscriberId').val();
+    const formData = $(this).serialize();
+    
+    $.ajax({
+        url: '/admin/newsletter/' + subscriberId,
+        method: 'PUT',
+        data: formData + '&_token=' + $('meta[name="csrf-token"]').attr('content'),
+        success: function(response) {
+            if (response.success) {
+                $('#editSubscriberModal').modal('hide');
+                forceRemoveBackdrop();
+                location.reload();
+            } else {
+                alert('Error updating subscriber: ' + response.message);
+            }
+        },
+        error: function() {
+            alert('Error updating subscriber');
+        }
+    });
+});
+
 // Send newsletter form
 $('#sendNewsletterForm').on('submit', function(e) {
     e.preventDefault();
@@ -322,12 +429,13 @@ $('#sendNewsletterForm').on('submit', function(e) {
     const formData = $(this).serialize();
     
     $.ajax({
-        url: '/admin/newsletter/send',
+        url: '{{ route("admin.newsletter.send") }}',
         method: 'POST',
         data: formData + '&_token=' + $('meta[name="csrf-token"]').attr('content'),
         success: function(response) {
             if (response.success) {
                 $('#sendNewsletterModal').modal('hide');
+                forceRemoveBackdrop();
                 alert('Newsletter sent successfully!');
                 location.reload();
             } else {
@@ -349,10 +457,25 @@ $('#sendImmediately').on('change', function() {
     }
 });
 
+function editSubscriber(id) {
+    // Get subscriber data via AJAX or from the table
+    const row = $('input[value="' + id + '"]').closest('tr');
+    const email = row.find('td:nth-child(2)').text();
+    const name = row.find('td:nth-child(3)').text();
+    const status = row.find('.badge').text().toLowerCase();
+    
+    $('#editSubscriberId').val(id);
+    $('#editEmail').val(email);
+    $('#editName').val(name === 'N/A' ? '' : name);
+    $('#editStatus').val(status);
+    
+    $('#editSubscriberModal').modal('show');
+}
+
 function toggleStatus(id, status) {
     $.ajax({
-        url: '/admin/newsletter/' + id + '/toggle-status',
-        method: 'POST',
+        url: '/admin/newsletter/' + id,
+        method: 'PUT',
         data: {
             status: status,
             _token: $('meta[name="csrf-token"]').attr('content')
@@ -393,69 +516,7 @@ function deleteSubscriber(id) {
 }
 
 function exportSubscribers() {
-    const selectedIds = $('.subscriber-checkbox:checked').map(function() {
-        return $(this).val();
-    }).get();
-    
-    let url = '/admin/newsletter/export';
-    if (selectedIds.length > 0) {
-        url += '?ids=' + selectedIds.join(',');
-    }
-    
-    window.open(url, '_blank');
-}
-
-function applyFilters() {
-    const status = $('#statusFilter').val();
-    const dateRange = $('#dateFilter').val();
-    const search = $('#searchInput').val();
-    
-    let url = new URL(window.location.href);
-    
-    if (status) url.searchParams.set('status', status);
-    else url.searchParams.delete('status');
-    
-    if (dateRange) url.searchParams.set('date_range', dateRange);
-    else url.searchParams.delete('date_range');
-    
-    if (search) url.searchParams.set('search', search);
-    else url.searchParams.delete('search');
-    
-    window.location.href = url.toString();
-}
-
-// Bulk actions
-function bulkAction(action) {
-    const selectedIds = $('.subscriber-checkbox:checked').map(function() {
-        return $(this).val();
-    }).get();
-    
-    if (selectedIds.length === 0) {
-        alert('Please select at least one subscriber');
-        return;
-    }
-    
-    if (confirm('Are you sure you want to perform this action on ' + selectedIds.length + ' subscribers?')) {
-        $.ajax({
-            url: '/admin/newsletter/bulk-action',
-            method: 'POST',
-            data: {
-                action: action,
-                ids: selectedIds,
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                if (response.success) {
-                    location.reload();
-                } else {
-                    alert('Error performing bulk action: ' + response.message);
-                }
-            },
-            error: function() {
-                alert('Error performing bulk action');
-            }
-        });
-    }
+    window.open('{{ route("admin.newsletter.export") }}', '_blank');
 }
 </script>
 @endpush

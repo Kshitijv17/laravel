@@ -94,51 +94,42 @@
 <!-- Filters -->
 <div class="card mb-4">
     <div class="card-body">
-        <div class="row align-items-center">
+        <form method="GET" class="row align-items-center">
             <div class="col-md-2">
                 <label class="form-label">Status</label>
-                <select class="form-select" id="statusFilter">
+                <select class="form-select" name="status">
                     <option value="">All Statuses</option>
-                    <option value="open">Open</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="resolved">Resolved</option>
-                    <option value="closed">Closed</option>
+                    <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Open</option>
+                    <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                    <option value="resolved" {{ request('status') == 'resolved' ? 'selected' : '' }}>Resolved</option>
+                    <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
                 </select>
             </div>
             <div class="col-md-2">
                 <label class="form-label">Priority</label>
-                <select class="form-select" id="priorityFilter">
+                <select class="form-select" name="priority">
                     <option value="">All Priorities</option>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                    <option value="urgent">Urgent</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label class="form-label">Category</label>
-                <select class="form-select" id="categoryFilter">
-                    <option value="">All Categories</option>
-                    <option value="general">General</option>
-                    <option value="technical">Technical</option>
-                    <option value="billing">Billing</option>
-                    <option value="shipping">Shipping</option>
-                    <option value="returns">Returns</option>
+                    <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
+                    <option value="normal" {{ request('priority') == 'normal' ? 'selected' : '' }}>Normal</option>
+                    <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
                 </select>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Search</label>
-                <input type="text" class="form-control" id="searchInput" placeholder="Search tickets...">
+                <input type="text" class="form-control" name="search" value="{{ request('search') }}" placeholder="Search tickets...">
             </div>
             <div class="col-md-2">
                 <label class="form-label">&nbsp;</label>
-                <div>
-                    <button class="btn btn-primary w-100" onclick="applyFilters()">
-                        <i class="fas fa-filter me-2"></i>Filter
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter me-1"></i>Filter
                     </button>
+                    <a href="{{ route('admin.support.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i>Clear
+                    </a>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -164,13 +155,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Sample data since $tickets is not passed from controller -->
+                    @forelse($tickets as $ticket)
                     <tr>
                         <td>
-                            <a href="#" class="text-decoration-none">#001</a>
+                            <a href="{{ route('admin.support.show', $ticket) }}" class="text-decoration-none">
+                                #{{ str_pad($ticket->id, 3, '0', STR_PAD_LEFT) }}
+                            </a>
                         </td>
                         <td>
-                            <a href="#" class="text-decoration-none">Login Issue with Account</a>
+                            <a href="{{ route('admin.support.show', $ticket) }}" class="text-decoration-none">
+                                {{ $ticket->subject }}
+                            </a>
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
@@ -178,122 +173,51 @@
                                     <i class="fas fa-user text-muted"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-bold">John Doe</div>
-                                    <small class="text-muted">john@example.com</small>
+                                    <div class="fw-bold">{{ $ticket->user->name ?? 'Unknown User' }}</div>
+                                    <small class="text-muted">{{ $ticket->user->email ?? 'No email' }}</small>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <span class="badge bg-secondary">Technical</span>
+                            <span class="badge bg-secondary">General</span>
                         </td>
                         <td>
-                            <span class="badge bg-danger">High</span>
+                            <span class="badge {{ $ticket->priority === 'high' ? 'bg-danger' : ($ticket->priority === 'normal' ? 'bg-warning' : 'bg-success') }}">
+                                {{ ucfirst($ticket->priority) }}
+                            </span>
                         </td>
                         <td>
-                            <span class="badge bg-primary">Open</span>
+                            <span class="badge {{ $ticket->status === 'open' ? 'bg-primary' : ($ticket->status === 'in_progress' ? 'bg-warning' : ($ticket->status === 'resolved' ? 'bg-success' : 'bg-secondary')) }}">
+                                {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
+                            </span>
                         </td>
-                        <td>Jan 15, 2024</td>
-                        <td>2 hours ago</td>
+                        <td>{{ $ticket->created_at->format('M d, Y') }}</td>
+                        <td>{{ $ticket->updated_at->diffForHumans() }}</td>
                         <td>
                             <div class="btn-group" role="group">
-                                <button class="btn btn-sm btn-outline-primary">
+                                <a href="{{ route('admin.support.show', $ticket) }}" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-info" onclick="updateStatus(1)">
+                                </a>
+                                <button class="btn btn-sm btn-outline-info" onclick="updateStatus({{ $ticket->id }})">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteTicket(1)">
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteTicket({{ $ticket->id }})">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
+                    @empty
                     <tr>
-                        <td>
-                            <a href="#" class="text-decoration-none">#002</a>
-                        </td>
-                        <td>
-                            <a href="#" class="text-decoration-none">Payment Processing Error</a>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-sm bg-light rounded-circle me-2 d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-user text-muted"></i>
-                                </div>
-                                <div>
-                                    <div class="fw-bold">Jane Smith</div>
-                                    <small class="text-muted">jane@example.com</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge bg-secondary">Billing</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-warning">Medium</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-warning">In Progress</span>
-                        </td>
-                        <td>Jan 14, 2024</td>
-                        <td>1 day ago</td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <button class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-info" onclick="updateStatus(2)">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteTicket(2)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                        <td colspan="9" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="fas fa-ticket-alt fa-3x mb-3"></i>
+                                <h5>No support tickets found</h5>
+                                <p>No tickets match your current filters.</p>
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            <a href="#" class="text-decoration-none">#003</a>
-                        </td>
-                        <td>
-                            <a href="#" class="text-decoration-none">Product Return Request</a>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-sm bg-light rounded-circle me-2 d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-user text-muted"></i>
-                                </div>
-                                <div>
-                                    <div class="fw-bold">Mike Johnson</div>
-                                    <small class="text-muted">mike@example.com</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge bg-secondary">Returns</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-success">Low</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-success">Resolved</span>
-                        </td>
-                        <td>Jan 13, 2024</td>
-                        <td>2 days ago</td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <button class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-info" onclick="updateStatus(3)">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteTicket(3)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -316,19 +240,14 @@
             </div>
             <form id="createTicketForm">
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Customer Name</label>
-                                <input type="text" class="form-control" name="customer_name" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Customer Email</label>
-                                <input type="email" class="form-control" name="customer_email" required>
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Customer</label>
+                        <select class="form-select" name="user_id" required>
+                            <option value="">Select Customer</option>
+                            @foreach(\App\Models\User::all() as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="row">
                         <div class="col-md-4">
@@ -349,9 +268,8 @@
                                 <label class="form-label">Priority</label>
                                 <select class="form-select" name="priority" required>
                                     <option value="low">Low</option>
-                                    <option value="medium" selected>Medium</option>
+                                    <option value="normal" selected>Normal</option>
                                     <option value="high">High</option>
-                                    <option value="urgent">Urgent</option>
                                 </select>
                             </div>
                         </div>
@@ -372,8 +290,8 @@
                         <input type="text" class="form-control" name="subject" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" name="description" rows="6" required></textarea>
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" name="message" rows="6" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -425,18 +343,46 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Check if DataTable is already initialized
-    if ($.fn.DataTable.isDataTable('#ticketsTable')) {
-        $('#ticketsTable').DataTable().destroy();
+    // Force remove any modal backdrops and reset body state
+    function forceRemoveBackdrop() {
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open').css('overflow', '').css('padding-right', '');
+        $('html').removeClass('modal-open');
     }
     
-    $('#ticketsTable').DataTable({
-        pageLength: 25,
-        order: [[6, 'desc']],
-        columnDefs: [
-            { orderable: false, targets: [8] }
-        ]
-    });
+    // Initial cleanup
+    forceRemoveBackdrop();
+    
+    // Aggressive cleanup every 100ms for the first 2 seconds
+    let cleanupAttempts = 0;
+    const cleanupInterval = setInterval(function() {
+        forceRemoveBackdrop();
+        cleanupAttempts++;
+        if (cleanupAttempts > 20) {
+            clearInterval(cleanupInterval);
+        }
+    }, 100);
+    
+    // Initialize DataTable only if table exists and has data
+    const table = $('#supportTicketsTable');
+    if (table.length && table.find('tbody tr').length > 0) {
+        // Destroy existing DataTable if it exists
+        if ($.fn.DataTable.isDataTable('#supportTicketsTable')) {
+            table.DataTable().destroy();
+        }
+        
+        // Initialize new DataTable
+        table.DataTable({
+            "pageLength": 25,
+            "order": [[ 0, "desc" ]],
+            "columnDefs": [
+                { "orderable": false, "targets": [7] }
+            ],
+            "language": {
+                "emptyTable": "No support tickets found"
+            }
+        });
+    }
 });
 
 // Create ticket form
@@ -446,13 +392,13 @@ $('#createTicketForm').on('submit', function(e) {
     const formData = $(this).serialize();
     
     $.ajax({
-        url: '/admin/support',
+        url: '{{ route("admin.support.store") }}',
         method: 'POST',
         data: formData + '&_token=' + $('meta[name="csrf-token"]').attr('content'),
         success: function(response) {
             if (response.success) {
                 $('#createTicketModal').modal('hide');
-                alert('Ticket created successfully!');
+                forceRemoveBackdrop();
                 location.reload();
             } else {
                 alert('Error creating ticket: ' + response.message);
@@ -468,7 +414,7 @@ $('#createTicketForm').on('submit', function(e) {
 $('#updateStatusForm').on('submit', function(e) {
     e.preventDefault();
     
-    const ticketId = $('#ticketId').val();
+    const ticketId = $('#statusTicketId').val();
     const formData = $(this).serialize();
     
     $.ajax({
@@ -478,7 +424,7 @@ $('#updateStatusForm').on('submit', function(e) {
         success: function(response) {
             if (response.success) {
                 $('#updateStatusModal').modal('hide');
-                alert('Status updated successfully!');
+                forceRemoveBackdrop();
                 location.reload();
             } else {
                 alert('Error updating status: ' + response.message);
@@ -490,8 +436,30 @@ $('#updateStatusForm').on('submit', function(e) {
     });
 });
 
-function updateStatus(ticketId) {
-    $('#ticketId').val(ticketId);
+// Modal event handlers to prevent backdrop issues
+$('.modal').on('hidden.bs.modal', function () {
+    forceRemoveBackdrop();
+});
+
+$('.modal').on('show.bs.modal', function () {
+    forceRemoveBackdrop();
+});
+
+// Global click handler to remove backdrop if clicked
+$(document).on('click', '.modal-backdrop', function() {
+    forceRemoveBackdrop();
+});
+
+// Add a global function to force remove backdrop
+window.forceRemoveBackdrop = function() {
+    $('.modal-backdrop').remove();
+    $('body').removeClass('modal-open').css('overflow', '').css('padding-right', '');
+    $('html').removeClass('modal-open');
+};
+
+function updateTicketStatus(id, currentStatus) {
+    $('#statusTicketId').val(id);
+    $('#ticketStatus').val(currentStatus);
     $('#updateStatusModal').modal('show');
 }
 
@@ -516,33 +484,5 @@ function deleteTicket(id) {
         });
     }
 }
-
-function applyFilters() {
-    const status = $('#statusFilter').val();
-    const priority = $('#priorityFilter').val();
-    const category = $('#categoryFilter').val();
-    const search = $('#searchInput').val();
-    
-    let url = new URL(window.location.href);
-    
-    if (status) url.searchParams.set('status', status);
-    else url.searchParams.delete('status');
-    
-    if (priority) url.searchParams.set('priority', priority);
-    else url.searchParams.delete('priority');
-    
-    if (category) url.searchParams.set('category', category);
-    else url.searchParams.delete('category');
-    
-    if (search) url.searchParams.set('search', search);
-    else url.searchParams.delete('search');
-    
-    window.location.href = url.toString();
-}
-
-// Auto-refresh every 5 minutes for new tickets
-setInterval(function() {
-    location.reload();
-}, 300000);
 </script>
 @endpush

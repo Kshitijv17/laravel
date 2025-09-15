@@ -32,7 +32,7 @@
                 <h5 class="card-title mb-0">Category Information</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
+                <form id="categoryCreateForm" action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     
                     <div class="mb-3">
@@ -85,7 +85,7 @@
                 <div class="mb-3">
                     <label class="form-label">Upload Image</label>
                     <input type="file" class="form-control @error('image') is-invalid @enderror" 
-                           name="image" accept="image/*" onchange="previewImage(this)" form="categoryForm">
+                           name="image" accept="image/*" onchange="previewImage(this)" form="categoryCreateForm">
                     @error('image')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -107,13 +107,13 @@
                 <div class="mb-3">
                     <label class="form-label">Meta Title</label>
                     <input type="text" class="form-control" name="meta_title" 
-                           value="{{ old('meta_title') }}" form="categoryForm">
+                           value="{{ old('meta_title') }}" form="categoryCreateForm">
                     <small class="form-text text-muted">Leave empty to use category name</small>
                 </div>
                 
                 <div class="mb-3">
                     <label class="form-label">Meta Description</label>
-                    <textarea class="form-control" name="meta_description" rows="3" form="categoryForm">{{ old('meta_description') }}</textarea>
+                    <textarea class="form-control" name="meta_description" rows="3" form="categoryCreateForm">{{ old('meta_description') }}</textarea>
                     <small class="form-text text-muted">Recommended: 150-160 characters</small>
                 </div>
             </div>
@@ -147,10 +147,7 @@
     </div>
 </div>
 
-<!-- Hidden form for file upload and SEO fields -->
-<form id="categoryForm" action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data" style="display: none;">
-    @csrf
-</form>
+<!-- Removed hidden form; using main form (categoryCreateForm) for all inputs -->
 @endsection
 
 @push('scripts')
@@ -165,27 +162,7 @@ function previewImage(input) {
     }
 }
 
-// Sync forms when main form is submitted
-$('form:not(#categoryForm)').on('submit', function(e) {
-    e.preventDefault();
-    
-    // Copy image and SEO fields to main form
-    const imageInput = $('input[name="image"]');
-    const metaTitle = $('input[name="meta_title"]');
-    const metaDescription = $('textarea[name="meta_description"]');
-    
-    if (imageInput.val()) {
-        $(this).append(imageInput.clone());
-    }
-    if (metaTitle.val()) {
-        $(this).append($('<input>').attr({type: 'hidden', name: 'meta_title', value: metaTitle.val()}));
-    }
-    if (metaDescription.val()) {
-        $(this).append($('<input>').attr({type: 'hidden', name: 'meta_description', value: metaDescription.val()}));
-    }
-    
-    this.submit();
-});
+// Using associated form attributes, no need to clone inputs between forms
 
 // Auto-generate slug from name
 $('input[name="name"]').on('input', function() {

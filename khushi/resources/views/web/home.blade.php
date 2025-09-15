@@ -2,58 +2,299 @@
 
 @section('title', 'Home - E-Commerce Store')
 
+@push('styles')
+<style>
+    :root {
+        --fashion-primary: #ff3f6c;
+        --fashion-secondary: #ff905a;
+        --fashion-accent: #f2c210;
+        --fashion-dark: #111827;
+        --fashion-muted: #6b7280;
+        --fashion-bg: #fff7f9;
+    }
+
+    /* Promo strip */
+    .promo-strip {
+        background: #fff;
+        border: 1px solid #f1f5f9;
+        border-radius: 14px;
+        padding: 10px 16px;
+        margin-bottom: 18px;
+    }
+    .promo-strip .item { display:flex; align-items:center; gap:10px; color: var(--fashion-dark); font-weight: 600; }
+    .promo-strip .item small{ display:block; color: var(--fashion-muted); font-weight: 500; }
+
+    /* Hero */
+    .hero-section {
+        background: linear-gradient(120deg, var(--fashion-primary), var(--fashion-secondary));
+        color: #fff;
+        padding: 80px 0;
+        border-radius: 18px;
+        overflow: hidden;
+    }
+    .hero-section h1 { letter-spacing: .5px; }
+    .hero-cta .btn-light{ color: var(--fashion-primary); background: #fff; border: none; }
+    .hero-cta .btn-outline-light{ border-color: #fff; color:#fff; }
+    .hero-cta .btn-outline-light:hover{ background:#fff; color: var(--fashion-primary); }
+
+    /* Category chips */
+    .category-chips { margin: 28px 0 8px; }
+    .chips-row { display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; scroll-snap-type:x mandatory; }
+    .chips-row::-webkit-scrollbar{ height:6px; }
+    .chips-row::-webkit-scrollbar-thumb{ background:#e5e7eb; border-radius:8px; }
+    .chip { scroll-snap-align:start; display:inline-flex; align-items:center; gap:10px; padding:10px 14px; border-radius:999px; border:1px solid #e5e7eb; background:#fff; white-space:nowrap; transition: all .2s ease; }
+    .chip:hover { border-color: var(--fashion-primary); box-shadow: 0 4px 14px rgba(255,63,108,.15); transform: translateY(-1px); }
+    .chip .avatar { width:28px; height:28px; border-radius:50%; overflow:hidden; background:#f3f4f6; display:flex; align-items:center; justify-content:center; font-weight:700; color:#9ca3af; }
+    .chip img{ width:100%; height:100%; object-fit:cover; }
+
+    /* Trending scroller */
+    .trending-wrap{ position:relative; }
+    .trending-scroller{ display:flex; gap:16px; overflow-x:auto; padding-bottom:10px; scroll-snap-type:x mandatory; }
+    .trending-scroller .trend-card{ min-width:220px; max-width:220px; scroll-snap-align:start; }
+    .trend-nav{ position:absolute; top:-56px; right:0; display:flex; gap:8px; }
+    .trend-btn{ width:36px; height:36px; border-radius:50%; border:1px solid #e5e7eb; background:#fff; display:flex; align-items:center; justify-content:center; }
+
+    /* Product card tweaks */
+    .product-card .card-img-top{ height:260px; object-fit:cover; }
+    .product-card .wishlist-btn{ background:#fff; border:1px solid #e5e7eb; }
+    .badge-deal { background: var(--fashion-accent); color:#111827; font-weight:700; }
+
+    /* Section headers */
+    .section-title { font-weight:800; letter-spacing:.3px; }
+    .section-sub{ color: var(--fashion-muted); }
+
+    /* Navbar overrides (homepage only) */
+    .navbar-brand { color: var(--fashion-primary) !important; }
+    .navbar .nav-link:hover { color: var(--fashion-primary); }
+    .btn-primary { background-color: var(--fashion-primary); border-color: var(--fashion-primary); }
+    .btn-primary:hover { background-color: #e7335c; border-color: #e7335c; }
+
+    /* Collections grid */
+    .collections .collection-card{
+        position:relative; border-radius:14px; overflow:hidden; height: 220px; background:#f3f4f6;
+    }
+    .collections .collection-card img{ width:100%; height:100%; object-fit:cover; transition: transform .35s ease; }
+    .collections .collection-card:hover img{ transform: scale(1.06); }
+    .collections .collection-card .label{ position:absolute; left:14px; bottom:12px; background: rgba(17,24,39,.7); color:#fff; padding:8px 12px; border-radius:999px; font-weight:700; }
+
+    /* Myntra-like full-bleed hero slider */
+    .hero-slider .container-fluid { padding-left: 0; padding-right: 0; }
+    .hero-slider .carousel-item img { width: 100%; height: clamp(240px, 40vw, 520px); object-fit: cover; display: block; }
+    .hero-slider .carousel-indicators [data-bs-target] { width:8px; height:8px; border-radius:50%; background:#fff; opacity:.6; }
+    .hero-slider .carousel-indicators .active { opacity: 1; }
+
+    /* Brand strip */
+    .brands-strip { background:#fff; padding: 18px 0; border-top:1px solid #f1f5f9; border-bottom:1px solid #f1f5f9; }
+    .brands-strip .logos { display:flex; gap:22px; overflow-x:auto; }
+    .brands-strip .logo { flex:0 0 auto; width:110px; height:56px; border:1px solid #eee; border-radius:10px; display:flex; align-items:center; justify-content:center; background:#fff; font-weight:800; color:#374151; }
+
+    /* Category mosaic */
+    .category-tiles .tile { position: relative; border-radius:12px; overflow: hidden; }
+    .category-tiles .tile .ratio { width:100%; aspect-ratio: 1/1; background:#f3f4f6; }
+    .category-tiles .tile img { width:100%; height:100%; object-fit: cover; transition: transform .35s ease; display:block; }
+    .category-tiles .tile:hover img { transform: scale(1.06); }
+    .category-tiles .tile .label { position:absolute; left:10px; bottom:10px; background: rgba(17,24,39,.7); color:#fff; padding:6px 10px; border-radius:999px; font-weight:700; font-size:.9rem; }
+
+    /* Product rails */
+    .rail { position:relative; }
+    .rail .rail-scroller { display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:10px; }
+    .rail .rail-item { min-width:220px; max-width:220px; scroll-snap-align:start; }
+    .rail .nav { position:absolute; top:-56px; right:0; display:flex; gap:8px; }
+    .rail .nav-btn { width:36px; height:36px; border-radius:50%; border:1px solid #e5e7eb; background:#fff; display:flex; align-items:center; justify-content:center; }
+</style>
+@endpush
+
 @section('content')
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">Discover Amazing Products</h1>
-                <p class="lead mb-4">Shop the latest trends and find everything you need at unbeatable prices. Quality guaranteed with fast shipping.</p>
-                <div class="d-flex gap-3">
-                    <a href="{{ route('products.index') }}" class="btn btn-light btn-lg">Shop Now</a>
-                    <a href="{{ route('categories.index') }}" class="btn btn-outline-light btn-lg">Browse Categories</a>
+<!-- Hero Slider (full-bleed) -->
+<section class="hero-slider">
+    <div class="container-fluid px-0">
+        @if(isset($heroBanners) && $heroBanners->count() > 0)
+        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                @foreach($heroBanners as $index => $banner)
+                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                    <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}">
+                    @if(!empty($banner->title) || !empty($banner->description) || !empty($banner->link))
+                    <div class="carousel-caption text-start d-none d-md-block">
+                        @if(!empty($banner->title))
+                        <h2 class="fw-bold">{{ $banner->title }}</h2>
+                        @endif
+                        @if(!empty($banner->description))
+                        <p class="mb-2">{{ $banner->description }}</p>
+                        @endif
+                        @if(!empty($banner->link))
+                        <a href="{{ $banner->link }}" class="btn btn-primary btn-sm">Shop Now</a>
+                        @endif
+                    </div>
+                    @endif
                 </div>
+                @endforeach
             </div>
-            <div class="col-lg-6 text-center">
-                <img src="https://via.placeholder.com/500x400/ffffff/3b82f6?text=Hero+Image" alt="Hero" class="img-fluid rounded shadow">
+            @if($heroBanners->count() > 1)
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+            <div class="carousel-indicators">
+                @foreach($heroBanners as $i => $b)
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $i }}" class="{{ $i === 0 ? 'active' : '' }}" aria-label="Slide {{ $i + 1 }}"></button>
+                @endforeach
             </div>
+            @endif
+        </div>
+        @else
+        <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1600&auto=format&fit=crop" alt="Hero" class="w-100" style="height: clamp(240px, 40vw, 520px); object-fit: cover;">
+        @endif
+    </div>
+</section>
+
+<!-- Brand Strip -->
+<section class="brands-strip">
+    <div class="container">
+        <div class="logos">
+            <div class="logo">NIKE</div>
+            <div class="logo">ADIDAS</div>
+            <div class="logo">PUMA</div>
+            <div class="logo">LEVIS</div>
+            <div class="logo">H&amp;M</div>
+            <div class="logo">ZARA</div>
+            <div class="logo">ROADSTER</div>
+            <div class="logo">U.S. POLO</div>
         </div>
     </div>
 </section>
 
-<!-- Banners Section -->
-@if($banners->count() > 0)
-<section class="py-5 bg-light">
+<!-- Category Mosaic -->
+<section class="py-4 category-tiles">
     <div class="container">
-        <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                @foreach($banners as $index => $banner)
-                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <h3>{{ $banner->title }}</h3>
-                            <p>{{ $banner->description }}</p>
-                            @if($banner->button_text && $banner->button_url)
-                            <a href="{{ $banner->button_url }}" class="btn btn-primary">{{ $banner->button_text }}</a>
+        <div class="d-flex align-items-end justify-content-between mb-3">
+            <div>
+                <h2 class="section-title mb-1">Shop by Category</h2>
+                <p class="section-sub mb-0">Curated picks for you</p>
+            </div>
+            <a href="{{ route('categories.index') }}" class="btn btn-outline-secondary btn-sm">View All</a>
+        </div>
+        <div class="row g-3">
+            @foreach($categories as $category)
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{{ route('categories.show', $category->slug) }}" class="text-decoration-none">
+                    <div class="tile">
+                        <div class="ratio">
+                            @if(!empty($category->image))
+                                <img src="{{ asset('storage/'.$category->image) }}" alt="{{ $category->name }}">
+                            @else
+                                <img src="https://images.unsplash.com/photo-1520975922284-5f5733bbedc0?q=80&w=800&auto=format&fit=crop" alt="{{ $category->name }}">
                             @endif
                         </div>
-                        <div class="col-md-6">
-                            <img src="{{ $banner->image ?? 'https://via.placeholder.com/400x250/3b82f6/ffffff?text=Banner' }}" 
-                                 alt="{{ $banner->title }}" class="img-fluid rounded">
+                        <span class="label">{{ $category->name }}</span>
+                    </div>
+                </a>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+<!-- Deals of the Day -->
+<section class="py-4 rail" id="deals-rail">
+    <div class="container">
+        <div class="d-flex align-items-end justify-content-between mb-3">
+            <div>
+                <h2 class="section-title mb-1">Deals of the Day</h2>
+                <p class="section-sub mb-0">Ends in <span id="dealsCountdown">--:--:--</span></p>
+            </div>
+            <div class="nav">
+                <button class="nav-btn deals-btn" type="button" data-scroll="-1" aria-label="Scroll left"><i class="fas fa-chevron-left"></i></button>
+                <button class="nav-btn deals-btn" type="button" data-scroll="1" aria-label="Scroll right"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+        <div class="rail-scroller" id="dealsScroller">
+            @foreach($featuredProducts as $product)
+            <div class="card product-card rail-item h-100">
+                <div class="position-relative">
+                    <img src="{{ $product->image_url }}" class="card-img-top" alt="{{ $product->name }}">
+                    @if($product->discount_percentage > 0)
+                    <span class="badge badge-deal position-absolute top-0 start-0 m-2">-{{ $product->discount_percentage }}%</span>
+                    @endif
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title mb-1">{{ Str::limit($product->name, 48) }}</h6>
+                    <div class="price-section">
+                        @if($product->sale_price && $product->sale_price < $product->price)
+                        <span class="price">${{ number_format($product->sale_price, 2) }}</span>
+                        <span class="original-price ms-2">${{ number_format($product->price, 2) }}</span>
+                        @else
+                        <span class="price">${{ number_format($product->price, 2) }}</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ route('products.show', $product->slug) }}" class="btn btn-outline-secondary btn-sm w-100">View</a>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+<!-- Trending Now (horizontal) -->
+<section class="py-5">
+    <div class="container trending-wrap">
+        <div class="d-flex align-items-end justify-content-between mb-3">
+            <div>
+                <h2 class="section-title mb-1">Trending Now</h2>
+                <p class="section-sub mb-0">Most-loved styles this week</p>
+            </div>
+            <div class="trend-nav">
+                <button class="trend-btn" type="button" data-scroll="-1" aria-label="Scroll left"><i class="fas fa-chevron-left"></i></button>
+                <button class="trend-btn" type="button" data-scroll="1" aria-label="Scroll right"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+        <div class="trending-scroller" id="trendingScroller">
+            @foreach($featuredProducts as $product)
+                <div class="card product-card trend-card h-100">
+                    <div class="position-relative">
+                        <img src="{{ $product->image_url }}" class="card-img-top" alt="{{ $product->name }}">
+                        @if($product->discount_percentage > 0)
+                        <span class="badge badge-deal position-absolute top-0 start-0 m-2">-{{ $product->discount_percentage }}%</span>
+                        @endif
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <button class="btn btn-sm rounded-circle wishlist-btn" data-product-id="{{ $product->id }}">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">{{ Str::limit($product->name, 48) }}</h6>
+                        <div class="price-section">
+                            @if($product->sale_price && $product->sale_price < $product->price)
+                            <span class="price">${{ number_format($product->sale_price, 2) }}</span>
+                            <span class="original-price ms-2">${{ number_format($product->price, 2) }}</span>
+                            @else
+                            <span class="price">${{ number_format($product->price, 2) }}</span>
+                            @endif
                         </div>
                     </div>
                 </div>
-                @endforeach
+            @endforeach
+        </div>
+    </div>
+ </section>
+
+<!-- Mid-page Banners (dynamic) -->
+@if(isset($midBanners) && $midBanners->count() > 0)
+<section class="py-4">
+    <div class="container">
+        <div class="row g-3">
+            @foreach($midBanners as $banner)
+            <div class="col-12 col-md-6 col-lg-4">
+                <a href="{{ $banner->link ?? '#' }}" class="d-block text-decoration-none">
+                    <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" class="img-fluid rounded shadow-sm w-100" />
+                </a>
             </div>
-            @if($banners->count() > 1)
-            <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
-            </button>
-            @endif
+            @endforeach
         </div>
     </div>
 </section>
@@ -105,7 +346,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="card product-card h-100">
                     <div class="position-relative">
-                        <img src="{{ $product->images->first()->url ?? 'https://via.placeholder.com/300x250/f8f9fa/6c757d?text=Product' }}" 
+                        <img src="{{ $product->image_url }}" 
                              class="card-img-top" alt="{{ $product->name }}">
                         @if($product->discount_percentage > 0)
                         <span class="badge bg-danger position-absolute top-0 start-0 m-2">
@@ -177,7 +418,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="card product-card h-100">
                     <div class="position-relative">
-                        <img src="{{ $product->images->first()->url ?? 'https://via.placeholder.com/300x250/f8f9fa/6c757d?text=Product' }}" 
+                        <img src="{{ $product->image_url }}" 
                              class="card-img-top" alt="{{ $product->name }}">
                         <span class="badge bg-success position-absolute top-0 start-0 m-2">New</span>
                         <div class="position-absolute top-0 end-0 m-2">
@@ -259,6 +500,47 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
+    // Trending scroller nav
+    const scroller = document.getElementById('trendingScroller');
+    document.querySelectorAll('.trend-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (!scroller) return;
+            const dir = parseInt(btn.getAttribute('data-scroll') || '1', 10);
+            const amount = Math.max(220, Math.round(scroller.clientWidth * 0.8));
+            scroller.scrollBy({ left: amount * dir, behavior: 'smooth' });
+        });
+    });
+
+    // Deals scroller nav
+    const dealsScroller = document.getElementById('dealsScroller');
+    document.querySelectorAll('.deals-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (!dealsScroller) return;
+            const dir = parseInt(btn.getAttribute('data-scroll') || '1', 10);
+            const amount = Math.max(220, Math.round(dealsScroller.clientWidth * 0.8));
+            dealsScroller.scrollBy({ left: amount * dir, behavior: 'smooth' });
+        });
+    });
+
+    // Deals countdown to end of day (local time)
+    const countdownEl = document.getElementById('dealsCountdown');
+    function pad(n){ return n.toString().padStart(2,'0'); }
+    function updateCountdown(){
+        if (!countdownEl) return;
+        const now = new Date();
+        const end = new Date();
+        end.setHours(23,59,59,999);
+        let diff = Math.max(0, end - now);
+        const hrs = Math.floor(diff / 3600000);
+        diff -= hrs * 3600000;
+        const mins = Math.floor(diff / 60000);
+        diff -= mins * 60000;
+        const secs = Math.floor(diff / 1000);
+        countdownEl.textContent = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
     // Add to cart functionality
     $('.add-to-cart-btn').on('click', function() {
         const productId = $(this).data('product-id');

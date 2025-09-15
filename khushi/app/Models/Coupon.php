@@ -13,10 +13,8 @@ class Coupon extends Model
         'code',
         'type',
         'value',
-        'minimum_amount',
-        'maximum_discount',
+        'min_cart_value',
         'usage_limit',
-        'used_count',
         'start_date',
         'end_date',
         'is_active'
@@ -24,12 +22,10 @@ class Coupon extends Model
 
     protected $casts = [
         'value' => 'decimal:2',
-        'minimum_amount' => 'decimal:2',
-        'maximum_discount' => 'decimal:2',
+        'min_cart_value' => 'decimal:2',
         'usage_limit' => 'integer',
-        'used_count' => 'integer',
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
+        'start_date' => 'date',
+        'end_date' => 'date',
         'is_active' => 'boolean',
     ];
 
@@ -49,11 +45,7 @@ class Coupon extends Model
 
     public function scopeAvailable($query)
     {
-        return $query->active()
-                    ->where(function($q) {
-                        $q->whereNull('usage_limit')
-                          ->orWhereRaw('used_count < usage_limit');
-                    });
+        return $query->active();
     }
 
     // Accessors
@@ -61,15 +53,13 @@ class Coupon extends Model
     {
         return $this->is_active && 
                $this->start_date <= now() && 
-               $this->end_date >= now() &&
-               ($this->usage_limit === null || $this->used_count < $this->usage_limit);
+               $this->end_date >= now();
     }
 
     public function getDiscountAmountAttribute($orderAmount)
     {
-        if ($this->type === 'percentage') {
-            $discount = ($orderAmount * $this->value) / 100;
-            return $this->maximum_discount ? min($discount, $this->maximum_discount) : $discount;
+        if ($this->type === 'percent') {
+            return ($orderAmount * $this->value) / 100;
         }
         return $this->value;
     }

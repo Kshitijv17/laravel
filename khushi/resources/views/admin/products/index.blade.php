@@ -132,7 +132,7 @@
                             <div class="d-flex align-items-center">
                                 <div class="me-3">
                                     @if($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" 
+                                    <img src="{{ $product->image_url }}" 
                                          class="rounded" width="50" height="50" alt="{{ $product->name }}">
                                     @else
                                     <div class="bg-light rounded d-flex align-items-center justify-content-center" 
@@ -151,18 +151,21 @@
                             <span class="badge bg-secondary">{{ $product->category->name ?? 'Uncategorized' }}</span>
                         </td>
                         <td>
-                            <strong>${{ number_format($product->price, 2) }}</strong>
-                            @if($product->sale_price)
-                            <br><small class="text-muted"><s>${{ number_format($product->sale_price, 2) }}</s></small>
+                            @if($product->discount_price)
+                                <strong>${{ number_format($product->discount_price, 2) }}</strong>
+                                <br><small class="text-muted"><s>${{ number_format($product->price, 2) }}</s></small>
+                            @else
+                                <strong>${{ number_format($product->price, 2) }}</strong>
                             @endif
                         </td>
                         <td>
-                            @if($product->stock_quantity <= 5)
-                            <span class="badge bg-danger">{{ $product->stock_quantity }}</span>
-                            @elseif($product->stock_quantity <= 20)
-                            <span class="badge bg-warning">{{ $product->stock_quantity }}</span>
+                            @php($qty = (int)($product->stock ?? 0))
+                            @if($qty <= 5)
+                                <span class="badge bg-danger">{{ $qty }}</span>
+                            @elseif($qty <= 20)
+                                <span class="badge bg-warning">{{ $qty }}</span>
                             @else
-                            <span class="badge bg-success">{{ $product->stock_quantity }}</span>
+                                <span class="badge bg-success">{{ $qty }}</span>
                             @endif
                         </td>
                         <td>

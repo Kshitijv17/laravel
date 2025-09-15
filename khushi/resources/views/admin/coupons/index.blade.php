@@ -32,7 +32,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h5 class="card-title">Total Coupons</h5>
-                        <h3 class="mb-0">{{ $coupons->count() ?? 0 }}</h3>
+                        <h3 class="mb-0">{{ $totalCoupons ?? 0 }}</h3>
                     </div>
                     <div class="align-self-center">
                         <i class="fas fa-ticket-alt fa-2x"></i>
@@ -47,7 +47,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h5 class="card-title">Active Coupons</h5>
-                        <h3 class="mb-0">{{ $coupons->where('status', true)->count() ?? 0 }}</h3>
+                        <h3 class="mb-0">{{ $activeCoupons ?? 0 }}</h3>
                     </div>
                     <div class="align-self-center">
                         <i class="fas fa-check-circle fa-2x"></i>
@@ -62,7 +62,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h5 class="card-title">Expiring Soon</h5>
-                        <h3 class="mb-0">{{ $coupons->where('expires_at', '>', now())->where('expires_at', '<=', now()->addDays(7))->count() ?? 0 }}</h3>
+                        <h3 class="mb-0">{{ $expiringSoon ?? 0 }}</h3>
                     </div>
                     <div class="align-self-center">
                         <i class="fas fa-clock fa-2x"></i>
@@ -77,7 +77,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h5 class="card-title">Total Uses</h5>
-                        <h3 class="mb-0">{{ $coupons->sum('used_count') ?? 0 }}</h3>
+                        <h3 class="mb-0">{{ $totalUses ?? 0 }}</h3>
                     </div>
                     <div class="align-self-center">
                         <i class="fas fa-chart-line fa-2x"></i>
@@ -158,133 +158,103 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Sample data since $coupons might not be properly passed -->
+                    @forelse($coupons as $coupon)
                     <tr>
                         <td>
-                            <span class="fw-bold text-primary">WELCOME10</span>
+                            <span class="fw-bold text-primary">{{ $coupon->code }}</span>
                         </td>
-                        <td>Welcome discount for new customers</td>
+                        <td>{{ $coupon->description ?? 'No description' }}</td>
                         <td>
-                            <span class="badge bg-info">Percentage</span>
-                        </td>
-                        <td>
-                            <span class="fw-bold text-success">10%</span>
-                        </td>
-                        <td>$50.00</td>
-                        <td>
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-success" style="width: 60%"></div>
-                            </div>
-                            <small class="text-muted">60/100 used</small>
+                            <span class="badge {{ $coupon->type === 'percent' ? 'bg-info' : 'bg-warning' }}">
+                                {{ ucfirst($coupon->type === 'percent' ? 'Percentage' : $coupon->type) }}
+                            </span>
                         </td>
                         <td>
-                            <span class="text-success">Dec 31, 2024</span>
-                            <br><small class="text-muted">11 months left</small>
+                            <span class="fw-bold text-success">
+                                @if($coupon->type === 'percent')
+                                    {{ $coupon->value }}%
+                                @else
+                                    ${{ number_format($coupon->value, 2) }}
+                                @endif
+                            </span>
                         </td>
                         <td>
-                            <span class="badge bg-success">Active</span>
+                            @if($coupon->min_cart_value)
+                                ${{ number_format($coupon->min_cart_value, 2) }}
+                            @else
+                                <span class="text-muted">No minimum</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($coupon->usage_limit)
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-primary" style="width: 0%"></div>
+                                </div>
+                                <small class="text-muted">0/{{ $coupon->usage_limit }} used</small>
+                            @else
+                                <span class="text-muted">Unlimited</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($coupon->end_date)
+                                @php
+                                    $endDate = \Carbon\Carbon::parse($coupon->end_date);
+                                    $isExpired = $endDate->isPast();
+                                    $isExpiringSoon = !$isExpired && $endDate->diffInDays() <= 7;
+                                @endphp
+                                <span class="text-{{ $isExpired ? 'danger' : ($isExpiringSoon ? 'warning' : 'success') }}">
+                                    {{ $endDate->format('M d, Y') }}
+                                </span>
+                                <br>
+                                <small class="text-muted">
+                                    @if($isExpired)
+                                        Expired
+                                    @elseif($isExpiringSoon)
+                                        {{ $endDate->diffInDays() }} days left
+                                    @else
+                                        {{ $endDate->diffForHumans() }}
+                                    @endif
+                                </small>
+                            @else
+                                <span class="text-muted">No expiry</span>
+                            @endif
+                        </td>
+                        <td>
+                            <span class="badge {{ $coupon->is_active ? 'bg-success' : 'bg-secondary' }}">
+                                {{ $coupon->is_active ? 'Active' : 'Inactive' }}
+                            </span>
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{{ route('admin.coupons.show', 1) }}" class="btn btn-sm btn-outline-primary">
+                                <a href="{{ route('admin.coupons.show', $coupon) }}" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('admin.coupons.edit', 1) }}" class="btn btn-sm btn-outline-info">
+                                <a href="{{ route('admin.coupons.edit', $coupon) }}" class="btn btn-sm btn-outline-info">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <button class="btn btn-sm btn-outline-warning" onclick="toggleStatus(1)">
-                                    <i class="fas fa-toggle-on"></i>
+                                <button class="btn btn-sm btn-outline-warning" onclick="toggleStatus({{ $coupon->id }})">
+                                    <i class="fas fa-toggle-{{ $coupon->is_active ? 'on' : 'off' }}"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteCoupon(1)">
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteCoupon({{ $coupon->id }})">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
+                    @empty
                     <tr>
-                        <td>
-                            <span class="fw-bold text-primary">SAVE20</span>
-                        </td>
-                        <td>Save $20 on orders over $100</td>
-                        <td>
-                            <span class="badge bg-warning">Fixed</span>
-                        </td>
-                        <td>
-                            <span class="fw-bold text-success">$20.00</span>
-                        </td>
-                        <td>$100.00</td>
-                        <td>
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-warning" style="width: 30%"></div>
-                            </div>
-                            <small class="text-muted">15/50 used</small>
-                        </td>
-                        <td>
-                            <span class="text-warning">Feb 15, 2024</span>
-                            <br><small class="text-muted">1 month left</small>
-                        </td>
-                        <td>
-                            <span class="badge bg-success">Active</span>
-                        </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <a href="{{ route('admin.coupons.show', 2) }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-eye"></i>
+                        <td colspan="9" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="fas fa-ticket-alt fa-3x mb-3"></i>
+                                <h5>No coupons found</h5>
+                                <p>Create your first coupon to get started.</p>
+                                <a href="{{ route('admin.coupons.create') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Add New Coupon
                                 </a>
-                                <a href="{{ route('admin.coupons.edit', 2) }}" class="btn btn-sm btn-outline-info">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button class="btn btn-sm btn-outline-warning" onclick="toggleStatus(2)">
-                                    <i class="fas fa-toggle-on"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteCoupon(2)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            <span class="fw-bold text-muted">EXPIRED15</span>
-                        </td>
-                        <td>15% off for holiday season</td>
-                        <td>
-                            <span class="badge bg-info">Percentage</span>
-                        </td>
-                        <td>
-                            <span class="fw-bold text-success">15%</span>
-                        </td>
-                        <td>$75.00</td>
-                        <td>
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-danger" style="width: 100%"></div>
-                            </div>
-                            <small class="text-muted">200/200 used</small>
-                        </td>
-                        <td>
-                            <span class="text-danger">Jan 01, 2024</span>
-                            <br><small class="text-muted">Expired</small>
-                        </td>
-                        <td>
-                            <span class="badge bg-secondary">Inactive</span>
-                        </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <a href="{{ route('admin.coupons.show', 3) }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ route('admin.coupons.edit', 3) }}" class="btn btn-sm btn-outline-info">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button class="btn btn-sm btn-outline-warning" onclick="toggleStatus(3)">
-                                    <i class="fas fa-toggle-off"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteCoupon(3)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

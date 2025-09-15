@@ -159,34 +159,48 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/banners', [AdminController::class, 'banners'])->name('banners.index');
         Route::get('/banners/create', [AdminController::class, 'createBanner'])->name('banners.create');
         Route::post('/banners', [AdminController::class, 'storeBanner'])->name('banners.store');
-        Route::get('/banners/{id}', [AdminController::class, 'showBanner'])->name('banners.show');
-        Route::get('/banners/{id}/edit', [AdminController::class, 'editBanner'])->name('banners.edit');
-        Route::put('/banners/{id}', [AdminController::class, 'updateBanner'])->name('banners.update');
-        Route::delete('/banners/{id}', [AdminController::class, 'deleteBanner'])->name('banners.destroy');
+        Route::get('/banners/{banner}', [AdminController::class, 'showBanner'])->name('banners.show');
+        Route::get('/banners/{banner}/edit', [AdminController::class, 'editBanner'])->name('banners.edit');
+        Route::put('/banners/{banner}', [AdminController::class, 'updateBanner'])->name('banners.update');
+        Route::post('/banners/{banner}/toggle-status', [AdminController::class, 'toggleBannerStatus'])->name('banners.toggle-status');
+        Route::delete('/banners/{banner}', [AdminController::class, 'destroyBanner'])->name('banners.destroy');
         
         // Coupon Management
         Route::get('/coupons', [AdminController::class, 'coupons'])->name('coupons.index');
         Route::get('/coupons/create', [AdminController::class, 'createCoupon'])->name('coupons.create');
         Route::post('/coupons', [AdminController::class, 'storeCoupon'])->name('coupons.store');
-        Route::get('/coupons/{id}', [AdminController::class, 'showCoupon'])->name('coupons.show');
-        Route::get('/coupons/{id}/edit', [AdminController::class, 'editCoupon'])->name('coupons.edit');
-        Route::put('/coupons/{id}', [AdminController::class, 'updateCoupon'])->name('coupons.update');
-        Route::delete('/coupons/{id}', [AdminController::class, 'deleteCoupon'])->name('coupons.destroy');
+        Route::get('/coupons/{coupon}', [AdminController::class, 'showCoupon'])->name('coupons.show');
+        Route::get('/coupons/{coupon}/edit', [AdminController::class, 'editCoupon'])->name('coupons.edit');
+        Route::put('/coupons/{coupon}', [AdminController::class, 'updateCoupon'])->name('coupons.update');
+        Route::post('/coupons/{coupon}/toggle-status', [AdminController::class, 'toggleCouponStatus'])->name('coupons.toggle-status');
+        Route::delete('/coupons/{coupon}', [AdminController::class, 'deleteCoupon'])->name('coupons.destroy');
         
         // Support Management
         Route::get('/support', [AdminController::class, 'supportTickets'])->name('support.index');
-        Route::get('/support/{id}', [AdminController::class, 'showSupportTicket'])->name('support.show');
-        Route::put('/support/{id}', [AdminController::class, 'updateSupportTicket'])->name('support.update');
-        Route::delete('/support/{id}', [AdminController::class, 'deleteSupportTicket'])->name('support.destroy');
-        Route::post('/support/{ticket}/reply', [AdminController::class, 'replySupportTicket'])->name('support.reply');
+        Route::post('/support', [AdminController::class, 'createSupportTicket'])->name('support.store');
+        Route::get('/support/{ticket}', [AdminController::class, 'showSupportTicket'])->name('support.show');
+        Route::put('/support/{ticket}', [AdminController::class, 'updateSupportTicket'])->name('support.update');
+        Route::post('/support/{ticket}/status', [AdminController::class, 'updateSupportTicketStatus'])->name('support.status');
+        Route::delete('/support/{ticket}', [AdminController::class, 'deleteSupportTicket'])->name('support.destroy');
         
         // Newsletter Management
         Route::get('/newsletter', [AdminController::class, 'newsletterSubscribers'])->name('newsletter.index');
-        Route::get('/newsletter/{id}', [AdminController::class, 'showNewsletterSubscriber'])->name('newsletter.show');
-        Route::delete('/newsletter/{id}', [AdminController::class, 'deleteNewsletterSubscriber'])->name('newsletter.destroy');
+        Route::post('/newsletter/subscribers', [AdminController::class, 'storeNewsletterSubscriber'])->name('newsletter.store');
+        // Match JS paths and implicit model binding (parameter name must be 'subscriber')
+        Route::put('/newsletter/{subscriber}', [AdminController::class, 'updateNewsletterSubscriber'])->name('newsletter.update');
+        Route::delete('/newsletter/{subscriber}', [AdminController::class, 'deleteNewsletterSubscriber'])->name('newsletter.destroy');
+        // Optional toggle alias -> uses same update method
+        Route::patch('/newsletter/{subscriber}/status', [AdminController::class, 'updateNewsletterSubscriber'])->name('newsletter.toggle');
+        Route::post('/newsletter/send', [AdminController::class, 'sendNewsletter'])->name('newsletter.send');
+        Route::get('/newsletter/export', [AdminController::class, 'exportNewsletterSubscribers'])->name('newsletter.export');
         
-        // Analytics and Reports
+        // Analytics
         Route::get('/analytics', [AdminController::class, 'analytics'])->name('analytics');
+        
+        // Settings
         Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+        Route::post('/settings/{group}', [AdminController::class, 'saveSettings'])->name('settings.save');
+        Route::post('/cache/clear', [AdminController::class, 'clearCache'])->name('cache.clear');
+        Route::post('/database/optimize', [AdminController::class, 'optimizeDatabase'])->name('database.optimize');
     });
 });

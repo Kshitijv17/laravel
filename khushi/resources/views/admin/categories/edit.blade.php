@@ -36,7 +36,7 @@
                 <h5 class="card-title mb-0">Category Information</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('admin.categories.update', $category->id) }}" method="POST" enctype="multipart/form-data">
+                <form id="categoryEditForm" action="{{ route('admin.categories.update', $category->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     
@@ -88,13 +88,13 @@
             </div>
             <div class="card-body text-center">
                 <img id="currentImage" 
-                     src="{{ $category->image ? asset('storage/' . $category->image) : 'https://via.placeholder.com/300x200/e5e7eb/9ca3af?text=No+Image' }}" 
+                     src="{{ $category->image_url }}" 
                      class="img-fluid rounded mb-3" style="max-height: 200px;" alt="{{ $category->name }}">
                 
                 <div class="mb-3">
                     <label class="form-label">Upload New Image</label>
                     <input type="file" class="form-control @error('image') is-invalid @enderror" 
-                           name="image" accept="image/*" onchange="previewImage(this)" form="updateForm">
+                           name="image" accept="image/*" onchange="previewImage(this)" form="categoryEditForm">
                     @error('image')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -115,13 +115,13 @@
                 <div class="mb-3">
                     <label class="form-label">Meta Title</label>
                     <input type="text" class="form-control" name="meta_title" 
-                           value="{{ old('meta_title', $category->meta_title ?? '') }}" form="updateForm">
+                           value="{{ old('meta_title', $category->meta_title ?? '') }}" form="categoryEditForm">
                     <small class="form-text text-muted">Leave empty to use category name</small>
                 </div>
                 
                 <div class="mb-3">
                     <label class="form-label">Meta Description</label>
-                    <textarea class="form-control" name="meta_description" rows="3" form="updateForm">{{ old('meta_description', $category->meta_description ?? '') }}</textarea>
+                    <textarea class="form-control" name="meta_description" rows="3" form="categoryEditForm">{{ old('meta_description', $category->meta_description ?? '') }}</textarea>
                     <small class="form-text text-muted">Recommended: 150-160 characters</small>
                 </div>
             </div>

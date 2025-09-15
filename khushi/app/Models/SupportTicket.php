@@ -11,15 +11,10 @@ class SupportTicket extends Model
 
     protected $fillable = [
         'user_id',
-        'ticket_number',
         'subject',
-        'description',
+        'message',
         'priority',
-        'status',
-        'category',
-        'assigned_to',
-        'resolved_at',
-        'closed_at'
+        'status'
     ];
 
     protected $casts = [

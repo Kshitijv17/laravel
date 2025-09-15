@@ -33,8 +33,14 @@ class HomeController extends Controller
             ->limit(6)
             ->get();
 
-        $banners = Banner::active()
-            ->where('position', 'header')
+        // Dynamic banners
+        $heroBanners = Banner::active()
+            ->byPosition('top') // hero/top of page
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $midBanners = Banner::active()
+            ->byPosition('middle') // mid-page banners
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -42,7 +48,8 @@ class HomeController extends Controller
             'featuredProducts',
             'newProducts', 
             'categories',
-            'banners'
+            'heroBanners',
+            'midBanners'
         ));
     }
 

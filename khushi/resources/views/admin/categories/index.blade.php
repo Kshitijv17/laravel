@@ -109,7 +109,7 @@
                             <div class="d-flex align-items-center">
                                 <div class="me-3">
                                     @if($category->image)
-                                    <img src="{{ asset('storage/' . $category->image) }}" 
+                                    <img src="{{ $category->image_url }}" 
                                          class="rounded" width="40" height="40" alt="{{ $category->name }}">
                                     @else
                                     <div class="bg-light rounded d-flex align-items-center justify-content-center" 

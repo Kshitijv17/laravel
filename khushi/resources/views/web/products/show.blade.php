@@ -23,7 +23,7 @@
                 @if($product->images->count() > 0)
                 <!-- Main Image -->
                 <div class="main-image mb-3">
-                    <img id="mainImage" src="{{ $product->images->first()->url }}" 
+                    <img id="mainImage" src="{{ $product->image_url }}" 
                          alt="{{ $product->name }}" class="img-fluid rounded shadow">
                 </div>
                 
