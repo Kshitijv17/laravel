@@ -44,12 +44,21 @@
                                 <a class="nav-link" href="{{ route('home') }}">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('shop') }}">Shop</a>
+                                <a class="nav-link" href="{{ route('products.index') }}">Shop</a>
                             </li>
                         </ul>
 
                         <!-- Right Side Of Navbar -->
                         <ul class="navbar-nav ms-auto">
+                            <!-- Language Switcher -->
+                            <li class="nav-item me-2">
+                                @include('components.language-switcher')
+                            </li>
+                            
+                            <!-- Currency Switcher -->
+                            <li class="nav-item me-2">
+                                @include('components.currency-switcher')
+                            </li>
                             <!-- Authentication Links -->
                             @guest
                                 @if (Route::has('login'))
@@ -57,19 +66,12 @@
                                         <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                                     </li>
                                 @endif
-
                                 @if (Route::has('register'))
                                     <li class="nav-item">
                                         <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
                                     </li>
                                 @endif
                             @else
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('cart.index') }}">
-                                        <i class="fas fa-shopping-cart"></i>
-                                        <span class="badge bg-primary rounded-pill">{{ Cart::instance('default')->count() }}</span>
-                                    </a>
-                                </li>
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" 
                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -77,23 +79,16 @@
                                     </a>
 
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="{{ route('user.dashboard') }}">
-                                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
-                                        </a>
-                                        <a class="dropdown-item" href="{{ route('user.profile') }}">
-                                            <i class="fas fa-user me-2"></i> Profile
-                                        </a>
-                                        <a class="dropdown-item" href="{{ route('user.orders') }}">
-                                            <i class="fas fa-shopping-bag me-2"></i> My Orders
-                                        </a>
-                                        <a class="dropdown-item" href="{{ route('user.wishlist') }}">
-                                            <i class="fas fa-heart me-2"></i> Wishlist
-                                        </a>
+                                        <a class="dropdown-item" href="{{ route('user.dashboard') }}">Dashboard</a>
+                                        <a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a>
+                                        <a class="dropdown-item" href="{{ route('user.orders') }}">Orders</a>
+                                        <a class="dropdown-item" href="{{ route('user.wishlist') }}">Wishlist</a>
+                                        <a class="dropdown-item" href="{{ route('chat.index') }}">Support Chat</a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="{{ route('logout') }}"
                                            onclick="event.preventDefault();
-                                                         document.getElementById('logout-form').submit();">
-                                            <i class="fas fa-sign-out-alt me-2"></i> {{ __('Logout') }}
+                                                     document.getElementById('logout-form').submit();">
+                                            Logout
                                         </a>
 
                                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
@@ -124,10 +119,10 @@
                     <div class="col-md-4 mb-4 mb-md-0">
                         <h5>Quick Links</h5>
                         <ul class="list-unstyled">
-                            <li><a href="{{ route('about') }}" class="text-decoration-none text-muted">About Us</a></li>
-                            <li><a href="{{ route('contact') }}" class="text-decoration-none text-muted">Contact</a></li>
-                            <li><a href="{{ route('privacy') }}" class="text-decoration-none text-muted">Privacy Policy</a></li>
-                            <li><a href="{{ route('terms') }}" class="text-decoration-none text-muted">Terms & Conditions</a></li>
+                            <li><a href="/about" class="text-decoration-none text-muted">About Us</a></li>
+                            <li><a href="/contact" class="text-decoration-none text-muted">Contact</a></li>
+                            <li><a href="/privacy" class="text-decoration-none text-muted">Privacy Policy</a></li>
+                            <li><a href="/terms" class="text-decoration-none text-muted">Terms & Conditions</a></li>
                         </ul>
                     </div>
                     <div class="col-md-4">

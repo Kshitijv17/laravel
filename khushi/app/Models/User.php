@@ -33,6 +33,12 @@ class User extends Authenticatable
         'phone_verified_at',
         'last_login_at',
         'last_login_ip',
+        'locale',
+        'currency',
+        'google_id',
+        'google_avatar',
+        'facebook_id',
+        'facebook_avatar',
     ];
 
     /**
@@ -168,5 +174,16 @@ class User extends Authenticatable
     public function getIsVerifiedAttribute()
     {
         return !is_null($this->email_verified_at);
+    }
+
+    // Chat relationships
+    public function chatRooms()
+    {
+        return $this->hasMany(ChatRoom::class);
+    }
+
+    public function chatMessages()
+    {
+        return $this->hasMany(ChatMessage::class, 'sender_id')->where('sender_type', 'user');
     }
 }

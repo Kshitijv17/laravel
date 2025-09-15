@@ -12,8 +12,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            \App\Http\Middleware\LocaleMiddleware::class,
+            \App\Http\Middleware\LocalizationMiddleware::class,
+        ]);
+        
+        $middleware->api(append: [
+            \App\Http\Middleware\ApiRateLimitMiddleware::class,
+        ]);
+        
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'api.rate.limit' => \App\Http\Middleware\ApiRateLimitMiddleware::class,
+            'localization' => \App\Http\Middleware\LocalizationMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
