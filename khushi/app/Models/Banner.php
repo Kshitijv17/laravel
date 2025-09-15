@@ -11,17 +11,24 @@ class Banner extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'title', 'image', 'link',
-        'description', 'position', 'is_active'
+        'title', 'image', 'link_url', 'button_text',
+        'description', 'position', 'status', 'start_date', 'end_date'
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'status' => 'boolean',
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('status', true);
+    }
+
+    public function scopeInactive($query)
+    {
+        return $query->where('status', false);
     }
 
     public function scopeByPosition($query, $position)

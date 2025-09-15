@@ -20,9 +20,12 @@ class BannerFactory extends Factory
             'title' => fake()->sentence(4),
             'description' => fake()->sentence(8),
             'image' => fake()->imageUrl(800, 400, 'business'),
-            'link' => fake()->url(),
-            'position' => fake()->randomElement(['top', 'middle', 'bottom']),
-            'is_active' => fake()->boolean(80),
+            'link_url' => fake()->url(),
+            'button_text' => fake()->words(2, true),
+            'position' => fake()->randomElement(['hero', 'sidebar', 'footer', 'popup']),
+            'status' => fake()->boolean(80),
+            'start_date' => fake()->dateTimeBetween('now', '+1 month')->format('Y-m-d'),
+            'end_date' => fake()->dateTimeBetween('+1 month', '+6 months')->format('Y-m-d'),
         ];
     }
 }

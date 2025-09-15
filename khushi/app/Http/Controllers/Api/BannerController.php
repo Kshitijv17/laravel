@@ -54,12 +54,12 @@ class BannerController extends Controller
             'description' => 'nullable|string',
             'image' => 'required|string|max:255',
             'link_url' => 'nullable|url|max:255',
-            'position' => 'required|in:header,footer,sidebar,main,popup',
+            'position' => 'required|in:hero,sidebar,footer,popup',
             'type' => 'required|in:promotional,informational,advertisement',
             'sort_order' => 'nullable|integer|min:0',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after:start_date',
-            'is_active' => 'boolean'
+            'status' => 'boolean'
         ]);
 
         $banner = Banner::create($validated);
@@ -93,12 +93,12 @@ class BannerController extends Controller
             'description' => 'nullable|string',
             'image' => 'sometimes|string|max:255',
             'link_url' => 'nullable|url|max:255',
-            'position' => 'sometimes|in:header,footer,sidebar,main,popup',
+            'position' => 'sometimes|in:hero,sidebar,footer,popup',
             'type' => 'sometimes|in:promotional,informational,advertisement',
             'sort_order' => 'nullable|integer|min:0',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after:start_date',
-            'is_active' => 'boolean'
+            'status' => 'boolean'
         ]);
 
         $banner->update($validated);

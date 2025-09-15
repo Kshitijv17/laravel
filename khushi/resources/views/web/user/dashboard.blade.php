@@ -119,7 +119,7 @@
                                 @foreach($recentOrders as $order)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('user.orders.show', $order->id) }}" class="text-decoration-none">
+                                        <a href="{{ route('user.order-details', $order->id) }}" class="text-decoration-none">
                                             #{{ $order->order_number }}
                                         </a>
                                     </td>

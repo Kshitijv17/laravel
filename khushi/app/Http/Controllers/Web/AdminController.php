@@ -525,10 +525,10 @@ class AdminController extends Controller
         
         // Calculate statistics
         $totalBanners = Banner::count();
-        $activeBanners = Banner::where('is_active', true)->count();
-        // 'top' is used for hero/homepage banners in DB
-        $homepageBanners = Banner::where('position', 'top')->count();
-        $inactiveBanners = Banner::where('is_active', false)->count();
+        $activeBanners = Banner::where('status', true)->count();
+        // 'hero' is used for hero/homepage banners in DB
+        $homepageBanners = Banner::where('position', 'hero')->count();
+        $inactiveBanners = Banner::where('status', false)->count();
         
         return view('admin.banners.index', compact(
             'banners', 

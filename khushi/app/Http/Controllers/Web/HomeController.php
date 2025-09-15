@@ -35,12 +35,12 @@ class HomeController extends Controller
 
         // Dynamic banners
         $heroBanners = Banner::active()
-            ->byPosition('top') // hero/top of page
+            ->byPosition('hero') // hero/top of page
             ->orderBy('created_at', 'desc')
             ->get();
 
         $midBanners = Banner::active()
-            ->byPosition('middle') // mid-page banners
+            ->byPosition('sidebar') // sidebar banners
             ->orderBy('created_at', 'desc')
             ->get();
 
