@@ -202,10 +202,14 @@
             </a>
             
             <!-- Prominent Search -->
-            <form class="header-search" action="{{ route('search') }}" method="GET">
+            <form class="header-search position-relative" action="{{ route('search') }}" method="GET" autocomplete="off">
                 <div class="input-group">
-                    <input class="form-control" type="search" name="q" placeholder="Search for brands, products and more" value="{{ request('q') }}">
+                    <input class="form-control" type="search" name="q" id="globalSearchInput" placeholder="Search for brands, products and more" value="{{ request('q') }}">
                     <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                </div>
+                <div id="searchDropdown" class="position-absolute bg-white shadow rounded-3 mt-2 w-100" style="display:none; z-index: 1055; max-height: 60vh; overflow:auto;">
+                    <div id="searchSuggestions" class="p-2 border-bottom"></div>
+                    <div id="searchProducts" class="p-2"></div>
                 </div>
             </form>
 
@@ -477,6 +481,84 @@
                 $('.alert').alert('close');
             }, 5000);
         }
+        
+        // Live search (debounced)
+        (function(){
+            const input = document.getElementById('globalSearchInput');
+            const dropdown = document.getElementById('searchDropdown');
+            const suggestionsBox = document.getElementById('searchSuggestions');
+            const productsBox = document.getElementById('searchProducts');
+            if(!input || !dropdown) return;
+
+            let timer = null;
+            let lastQuery = '';
+            const debounce = (fn, delay=350) => { return (...args)=>{ clearTimeout(timer); timer=setTimeout(()=>fn(...args), delay); }; };
+
+            const render = (data) => {
+                if(!data || (!data.products || data.products.length===0) && (!data.suggestions || data.suggestions.length===0)){
+                    dropdown.style.display = 'none';
+                    return;
+                }
+                // Suggestions
+                suggestionsBox.innerHTML = '';
+                if(data.suggestions && data.suggestions.length){
+                    const chips = data.suggestions.map(s => `<button type="button" class="btn btn-sm btn-light me-2 mb-2 suggestion-chip" data-q="${s.replace(/"/g,'&quot;')}"><i class=\"fas fa-magnifying-glass me-1\"></i>${s}</button>`).join('');
+                    suggestionsBox.innerHTML = `<div class="small text-muted mb-1">Suggestions</div><div class="d-flex flex-wrap">${chips}</div>`;
+                }
+                // Products
+                productsBox.innerHTML = '';
+                if(data.products && data.products.length){
+                    const items = data.products.map(p => `
+                        <a href="/products/${p.slug}" class="text-decoration-none text-dark d-flex align-items-center p-2 rounded hover-bg">
+                            <img src="${p.image_url}" alt="${p.name}" class="rounded me-2" style="width:48px;height:48px;object-fit:cover;">
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold">${p.name}</div>
+                                <div class="small text-muted">₹${(p.final_price ?? p.price)}</div>
+                            </div>
+                            <i class="fas fa-chevron-right text-muted"></i>
+                        </a>`).join('');
+                    productsBox.innerHTML = `<div class="small text-muted mb-1">Products</div>${items}`;
+                }
+                dropdown.style.display = 'block';
+            };
+
+            const fetchSuggestions = debounce(async (q) => {
+                try{
+                    const res = await fetch(`{{ route('search.suggest') }}?q=${encodeURIComponent(q)}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' }});
+                    const data = await res.json();
+                    if(q===lastQuery){ render(data); }
+                }catch(e){ dropdown.style.display='none'; }
+            }, 400);
+
+            input.addEventListener('input', (e)=>{
+                const q = e.target.value.trim();
+                lastQuery = q;
+                if(q.length < 2){ dropdown.style.display='none'; return; }
+                fetchSuggestions(q);
+            });
+
+            // Click outside to close
+            document.addEventListener('click', (e)=>{
+                if(!dropdown.contains(e.target) && e.target !== input){ dropdown.style.display='none'; }
+            });
+
+            // Click suggestion
+            dropdown.addEventListener('click', (e)=>{
+                const chip = e.target.closest('.suggestion-chip');
+                if(chip){ input.value = chip.dataset.q; input.form.submit(); }
+            });
+
+            // Navigate on Enter opens search page with current query
+            input.addEventListener('keydown', (e)=>{
+                if(e.key==='Enter'){
+                    if(input.value.trim().length){ input.form.submit(); }
+                }
+            });
+        })();
+    </script>
+    
+    <script>
+        // Add live search dropdown UI and debounced fetch to /search/suggest; render products and suggestions; navigate on enter.
     </script>
     
     @stack('scripts')

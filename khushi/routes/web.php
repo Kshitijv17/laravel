@@ -9,6 +9,7 @@ use App\Http\Controllers\Web\CartController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\AdminController;
+use App\Http\Controllers\Web\PaymentController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -17,6 +18,7 @@ Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact', [HomeController::class, 'contactSubmit'])->name('contact.submit');
 Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
+Route::get('/search/suggest', [HomeController::class, 'suggest'])->name('search.suggest');
 Route::post('/newsletter/subscribe', [HomeController::class, 'newsletterSubscribe'])->name('newsletter.subscribe');
 
 // Authentication Routes
@@ -77,6 +79,14 @@ Route::prefix('orders')->name('orders.')->middleware('auth')->group(function () 
 
 // Order success route (accessible without auth for guest orders)
 Route::get('/order/{orderId}/success', [OrderController::class, 'success'])->name('order.success');
+
+// Payments (Razorpay)
+Route::middleware('auth')->group(function () {
+    Route::get('/payment/{order}/initiate', [PaymentController::class, 'initiate'])->name('payment.initiate');
+    Route::post('/payment/verify', [PaymentController::class, 'verify'])->name('payment.verify');
+});
+// Webhook does not require auth; protect with secret inside controller
+Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
 
 // User Dashboard Routes
 Route::prefix('user')->name('user.')->middleware('auth')->group(function () {

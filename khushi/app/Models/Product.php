@@ -162,4 +162,10 @@ class Product extends Model
     {
         return $this->stock > 0;
     }
+
+    // Backward-compatible accessor for views using stock_quantity
+    public function getStockQuantityAttribute()
+    {
+        return (int) ($this->stock ?? 0);
+    }
 }

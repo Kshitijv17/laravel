@@ -239,7 +239,22 @@ class OrderController extends Controller
                 'phone' => $billingAddress->phone
             ]);
 
-            // Process payment
+            // If card or paypal selected, redirect to Razorpay initiation page
+            if (in_array($validated['payment_method'], ['card', 'paypal'])) {
+                DB::commit();
+
+                $redirect = route('payment.initiate', $order->id);
+                if (request()->ajax()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Redirecting to secure payment...',
+                        'redirect_url' => $redirect,
+                    ]);
+                }
+                return redirect()->to($redirect);
+            }
+
+            // Otherwise (COD, wallet) use existing mock processor
             $paymentStatus = $this->processPayment($order, $validated['payment_method']);
 
             if ($paymentStatus['success']) {

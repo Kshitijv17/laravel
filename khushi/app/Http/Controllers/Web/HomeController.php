@@ -143,4 +143,69 @@ class HomeController extends Controller
 
         return view('web.search', compact('products', 'query'));
     }
+
+    /**
+     * Live search suggestions (JSON)
+     */
+    public function suggest(Request $request)
+    {
+        $q = trim((string) $request->get('q', ''));
+
+        if (mb_strlen($q) < 2) {
+            return response()->json([
+                'success' => true,
+                'query' => $q,
+                'products' => [],
+                'suggestions' => []
+            ]);
+        }
+
+        $tokens = preg_split('/\s+/', $q, -1, PREG_SPLIT_NO_EMPTY);
+
+        // Products matching all tokens across name/description/sku
+        $products = Product::active()
+            ->select(['id', 'name', 'slug', 'image', 'price', 'discount_price'])
+            ->where(function ($qB) use ($tokens) {
+                foreach ($tokens as $t) {
+                    $qB->where(function ($sub) use ($t) {
+                        $sub->where('name', 'like', "%$t%")
+                            ->orWhere('description', 'like', "%$t%")
+                            ->orWhere('sku', 'like', "%$t%");
+                    });
+                }
+            })
+            ->orderBy('name')
+            ->limit(8)
+            ->get()
+            ->map(function ($p) {
+                return [
+                    'id' => $p->id,
+                    'name' => $p->name,
+                    'slug' => $p->slug,
+                    'image_url' => $p->image_url,
+                    'price' => $p->price,
+                    'discount_price' => $p->discount_price,
+                    'final_price' => $p->final_price,
+                ];
+            });
+
+        // Name suggestions
+        $suggestions = Product::active()
+            ->where(function ($qB) use ($tokens) {
+                foreach ($tokens as $t) {
+                    $qB->where('name', 'like', "%$t%");
+                }
+            })
+            ->distinct()
+            ->orderBy('name')
+            ->limit(5)
+            ->pluck('name');
+
+        return response()->json([
+            'success' => true,
+            'query' => $q,
+            'products' => $products,
+            'suggestions' => $suggestions,
+        ]);
+    }
 }

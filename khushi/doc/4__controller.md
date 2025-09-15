@@ -121,3 +121,6 @@ php artisan make:controller Web/RefundPolicyController
 php artisan make:controller Api/RefundPolicyController
 php artisan make:controller Web/AnalyticsLogController
 php artisan make:controller Api/AnalyticsLogController
+
+
+composer require razorpay/razorpay
