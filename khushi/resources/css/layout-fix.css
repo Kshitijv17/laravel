@@ -1,0 +1,112 @@
+/* Layout Fix for Enhanced Homepage */
+
+/* Remove all debug content and fix layout issues */
+.main-content {
+    position: relative;
+    overflow: visible !important;
+}
+
+/* Ensure proper content stacking */
+.hero-section,
+section {
+    position: relative;
+    z-index: 100 !important;
+    background: transparent;
+}
+
+/* Fix hero section positioning */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
+    border-radius: 24px 24px 0 0;
+    margin: 0;
+    padding: 80px 0;
+    min-height: 70vh;
+}
+
+/* Ensure sections are visible */
+section.py-5 {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(5px);
+    padding: 60px 0;
+    margin: 0;
+    border: none;
+}
+
+/* Product cards proper sizing */
+.product-card-premium {
+    min-height: 450px;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.product-image-premium {
+    height: 280px;
+    overflow: hidden;
+}
+
+.product-image-premium img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Category tiles proper sizing */
+.category-tile-premium {
+    min-height: 200px;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Remove any unwanted content */
+.main-content > pre,
+.main-content > code,
+.main-content > .debug {
+    display: none !important;
+}
+
+/* Ensure proper text visibility */
+h1, h2, h3, h4, h5, h6 {
+    color: inherit;
+    z-index: 101;
+    position: relative;
+}
+
+/* Button styling */
+.btn-premium {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    border-radius: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+    color: white;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 60vh;
+        padding: 60px 0;
+    }
+    
+    .display-1 {
+        font-size: 2.5rem;
+    }
+    
+    .display-3 {
+        font-size: 2rem;
+    }
+}

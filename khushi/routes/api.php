@@ -305,7 +305,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('v1/admin')->group(function
     
     // Coupon management
     Route::apiResource('coupons', CouponController::class);
-    Route::post('/coupons/validate', [CouponController::class, 'validate']);
+    Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
     Route::post('/coupons/apply', [CouponController::class, 'apply']);
     Route::get('/coupons/statistics', [CouponController::class, 'statistics']);
     

@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\LocalizationMiddleware::class,
         ]);
         
+        $middleware->api(prepend: [
+            \App\Http\Middleware\CorsMiddleware::class,
+        ]);
+        
         $middleware->api(append: [
             \App\Http\Middleware\ApiRateLimitMiddleware::class,
         ]);
@@ -25,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'api.rate.limit' => \App\Http\Middleware\ApiRateLimitMiddleware::class,
             'localization' => \App\Http\Middleware\LocalizationMiddleware::class,
+            'cors' => \App\Http\Middleware\CorsMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -54,6 +54,77 @@ class HomeController extends Controller
     }
 
     /**
+     * Display the enhanced homepage with modern UI
+     */
+    public function enhanced()
+    {
+        // Get featured products with category and review count
+        $featuredProducts = Product::where('status', true)
+            ->where('is_featured', true)
+            ->with(['category'])
+            ->withCount('reviews')
+            ->limit(8)
+            ->get();
+
+        // Get new products
+        $newProducts = Product::where('status', true)
+            ->with(['category'])
+            ->withCount('reviews')
+            ->orderBy('created_at', 'desc')
+            ->limit(8)
+            ->get();
+
+        // Get categories with product count
+        $categories = Category::where('status', true)
+            ->whereNull('parent_id')
+            ->withCount('products')
+            ->limit(6)
+            ->get();
+
+        // Get banners
+        $heroBanners = Banner::where('status', true)
+            ->where('position', 'hero')
+            ->limit(3)
+            ->get();
+
+        $sidebarBanners = Banner::where('status', true)
+            ->where('position', 'sidebar')
+            ->limit(2)
+            ->get();
+
+        return view('web.enhanced-home', compact(
+            'featuredProducts',
+            'newProducts', 
+            'categories',
+            'heroBanners',
+            'sidebarBanners'
+        ));
+    }
+
+    public function simple()
+    {
+        // Get featured products with category and review count
+        $featuredProducts = Product::where('status', true)
+            ->where('is_featured', true)
+            ->with(['category'])
+            ->withCount('reviews')
+            ->limit(8)
+            ->get();
+
+        // Get categories with product count
+        $categories = Category::where('status', true)
+            ->whereNull('parent_id')
+            ->withCount('products')
+            ->limit(6)
+            ->get();
+
+        return view('web.simple-enhanced', compact(
+            'featuredProducts',
+            'categories'
+        ));
+    }
+
+    /**
      * Display about page
      */
     public function about()

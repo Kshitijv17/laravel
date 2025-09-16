@@ -19,14 +19,28 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Modern UI CSS -->
+    <link href="{{ asset('css/modern-ui.css') }}" rel="stylesheet">
+    <!-- Premium UI CSS -->
+    <link href="{{ asset('css/premium-ui.css') }}" rel="stylesheet">
+    <!-- Hero Enhancements CSS -->
+    <link href="{{ asset('css/hero-enhancements.css') }}" rel="stylesheet">
+    <!-- Layout Fix CSS -->
+    <link href="{{ asset('css/layout-fix.css') }}" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     @stack('styles')
 </head>
-<body class="font-sans antialiased bg-light">
+<body class="font-sans antialiased" style="font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh;">
     <div class="min-vh-100 d-flex flex-column">
         <!-- Header -->
-        <header class="bg-white shadow-sm">
-            <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <header class="position-sticky top-0" style="z-index: 1000;">
+            <nav class="navbar navbar-expand-lg navbar-light" id="mainNavbar">
                 <div class="container">
                     <a class="navbar-brand fw-bold text-primary" href="{{ url('/') }}">
                         {{ config('app.name', 'Laravel') }}
@@ -43,8 +57,45 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('home') }}">Home</a>
                             </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="menDropdown" role="button" data-bs-toggle="dropdown">
+                                    Men
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/categories/men-shirts">Shirts</a></li>
+                                    <li><a class="dropdown-item" href="/categories/men-tshirts">T-Shirts</a></li>
+                                    <li><a class="dropdown-item" href="/categories/men-jeans">Jeans</a></li>
+                                    <li><a class="dropdown-item" href="/categories/men-formal">Formal Wear</a></li>
+                                    <li><a class="dropdown-item" href="/categories/men-ethnic">Ethnic Wear</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="womenDropdown" role="button" data-bs-toggle="dropdown">
+                                    Women
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/categories/women-kurtis">Kurtis</a></li>
+                                    <li><a class="dropdown-item" href="/categories/women-sarees">Sarees</a></li>
+                                    <li><a class="dropdown-item" href="/categories/women-dresses">Dresses</a></li>
+                                    <li><a class="dropdown-item" href="/categories/women-tops">Tops & Shirts</a></li>
+                                    <li><a class="dropdown-item" href="/categories/women-ethnic">Ethnic Wear</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="kidsDropdown" role="button" data-bs-toggle="dropdown">
+                                    Kids
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/categories/boys-clothing">Boys</a></li>
+                                    <li><a class="dropdown-item" href="/categories/girls-clothing">Girls</a></li>
+                                    <li><a class="dropdown-item" href="/categories/baby-clothing">Baby</a></li>
+                                </ul>
+                            </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('products.index') }}">Shop</a>
+                                <a class="nav-link" href="/categories/footwear">Footwear</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/categories/accessories">Accessories</a>
                             </li>
                         </ul>
 
@@ -144,6 +195,9 @@
 
     @stack('scripts')
     
+    <!-- Modern Animations JS -->
+    <script src="{{ asset('js/modern-animations.js') }}"></script>
+    
     <script>
         // Enable Bootstrap tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -151,16 +205,31 @@
             return new bootstrap.Tooltip(tooltipTriggerEl)
         });
         
-        // Flash message auto-hide
+        // Flash message auto-hide with animation
         document.addEventListener('DOMContentLoaded', function() {
             var alertList = [].slice.call(document.querySelectorAll('.alert'));
             alertList.forEach(function (alert) {
+                alert.style.animation = 'fadeInUp 0.5s ease-out';
                 setTimeout(function() {
-                    var bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
+                    alert.style.animation = 'fadeOut 0.3s ease-in-out';
+                    setTimeout(function() {
+                        if (alert.parentElement) {
+                            alert.remove();
+                        }
+                    }, 300);
                 }, 5000);
             });
         });
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(-20px); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>

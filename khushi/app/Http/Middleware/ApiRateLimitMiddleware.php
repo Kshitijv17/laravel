@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class ApiRateLimitMiddleware
@@ -64,7 +65,7 @@ class ApiRateLimitMiddleware
         return $this->limiter->retriesLeft($key, $maxAttempts);
     }
 
-    protected function addHeaders($response, $maxAttempts, $remainingAttempts): Response
+    protected function addHeaders($response, $maxAttempts, $remainingAttempts): ResponseAlias
     {
         $response->headers->add([
             'X-RateLimit-Limit' => $maxAttempts,

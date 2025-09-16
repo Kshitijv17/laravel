@@ -17,8 +17,11 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('image')->nullable();
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->boolean('status')->default(true);
             $table->timestamps();
+            
+            $table->foreign('parent_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
     

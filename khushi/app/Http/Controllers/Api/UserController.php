@@ -135,29 +135,54 @@ class UserController extends Controller
      */
     public function register(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:20',
-            'referred_by' => 'nullable|string|exists:users,referral_code'
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required|string|min:8|confirmed',
+                'phone' => 'nullable|string|max:20',
+                'referred_by' => 'nullable|string|exists:users,referral_code'
+            ]);
 
-        $validated['password'] = Hash::make($validated['password']);
-        $validated['referral_code'] = $this->generateReferralCode();
+            $validated['password'] = Hash::make($validated['password']);
+            $validated['referral_code'] = $this->generateReferralCode();
+            $validated['status'] = 'active';
 
-        $user = User::create($validated);
+            $user = User::create($validated);
 
-        $token = $user->createToken('user-token')->plainTextToken;
+            $token = $user->createToken('user-token')->plainTextToken;
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'user' => $user,
-                'token' => $token
-            ],
-            'message' => 'Registration successful'
-        ], 201);
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'user' => $user,
+                    'token' => $token
+                ],
+                'message' => 'Registration successful'
+            ], 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) { // Duplicate entry error
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email already exists. Please use a different email address.'
+                ], 422);
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Registration failed: Database error'
+            ], 500);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Registration failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

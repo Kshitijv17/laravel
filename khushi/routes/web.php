@@ -31,6 +31,8 @@ use App\Http\Controllers\Admin\InventoryController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/enhanced', [HomeController::class, 'enhanced'])->name('enhanced');
+Route::get('/simple', [HomeController::class, 'simple'])->name('simple');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact', [HomeController::class, 'contactSubmit'])->name('contact.submit');
