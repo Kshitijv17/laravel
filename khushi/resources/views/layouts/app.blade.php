@@ -84,6 +84,20 @@
         .product-card:hover .card-img-top {
             transform: scale(1.05);
         }
+
+        /* Out-of-stock overlay */
+        .product-card .oos-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,.35);
+            backdrop-filter: blur(1px);
+            color: #fff;
+            z-index: 2;
+        }
+        .product-card .oos-overlay .badge { font-size: .9rem; }
+
+        /* Small hover bg utility (used in live search rows) */
+        .hover-bg:hover { background: #f8fafc; }
         
         .hero-section {
             background: linear-gradient(135deg, var(--brand-grad-start) 0%, var(--brand-grad-end) 100%);

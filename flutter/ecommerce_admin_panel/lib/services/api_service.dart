@@ -6,7 +6,7 @@ import '../models/product.dart';
 import '../models/order.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.1.79:8080/api/v1';
+  static const String baseUrl = 'http://localhost:8080/api/v1';
   static String? _token;
 
   // Get stored token

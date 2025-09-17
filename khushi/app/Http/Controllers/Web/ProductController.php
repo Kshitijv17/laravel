@@ -17,37 +17,72 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::active()->with(['category', 'reviews']);
+        $query = Product::active()
+            ->with(['category'])
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews');
 
-        // Filter by category
-        if ($request->has('category')) {
+        // Search (word-by-word across name/description/sku)
+        if ($request->filled('search')) {
+            $tokens = preg_split('/\s+/', trim((string) $request->search), -1, PREG_SPLIT_NO_EMPTY);
+            $query->where(function ($qb) use ($tokens) {
+                foreach ($tokens as $t) {
+                    $qb->where(function ($sub) use ($t) {
+                        $sub->where('name', 'like', "%$t%")
+                            ->orWhere('description', 'like', "%$t%")
+                            ->orWhere('sku', 'like', "%$t%");
+                    });
+                }
+            });
+        }
+
+        // Filter by category slug (single)
+        if ($request->filled('category')) {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('slug', $request->category);
             });
         }
 
-        // Filter by price range
-        if ($request->has('min_price') && $request->min_price !== null) {
-            $query->where('price', '>=', $request->min_price);
+        // Filter by multiple category IDs
+        if ($request->filled('categories')) {
+            $ids = array_filter((array) $request->get('categories'));
+            if (!empty($ids)) {
+                $query->whereIn('category_id', $ids);
+            }
         }
-        if ($request->has('max_price') && $request->max_price !== null) {
-            $query->where('price', '<=', $request->max_price);
+
+        // Filter by price range
+        if ($request->filled('min_price')) {
+            $query->whereRaw('COALESCE(discount_price, price) >= ?', [$request->min_price]);
+        }
+        if ($request->filled('max_price')) {
+            $query->whereRaw('COALESCE(discount_price, price) <= ?', [$request->max_price]);
+        }
+
+        // Availability
+        if ($request->boolean('in_stock')) {
+            $query->where('stock', '>', 0);
+        }
+
+        // Minimum rating
+        if ($request->filled('rating')) {
+            $query->having('reviews_avg_rating', '>=', (int) $request->rating);
         }
 
         // Sort products
         $sort = $request->get('sort', 'latest');
         switch ($sort) {
             case 'price_low':
-                $query->orderBy('price', 'asc');
+                $query->orderByRaw('COALESCE(discount_price, price) ASC');
                 break;
             case 'price_high':
-                $query->orderBy('price', 'desc');
+                $query->orderByRaw('COALESCE(discount_price, price) DESC');
                 break;
             case 'name':
                 $query->orderBy('name', 'asc');
                 break;
             case 'rating':
-                $query->withAvg('reviews', 'rating')->orderBy('reviews_avg_rating', 'desc');
+                $query->orderBy('reviews_avg_rating', 'desc');
                 break;
             default:
                 $query->latest();

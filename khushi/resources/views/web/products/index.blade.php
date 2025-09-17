@@ -1,4 +1,4 @@
-@extends('layouts.web')
+@extends('layouts.app')
 
 @section('title', 'Products - E-Commerce Store')
 
@@ -19,7 +19,7 @@
                 <div class="card-header">
                     <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filters</h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body collapse d-lg-block" id="filtersCollapse">
                     <form id="filter-form" method="GET">
                         <!-- Search -->
                         <div class="mb-4">
@@ -45,17 +45,18 @@
                         </div>
 
                         <!-- Price Range -->
-                        <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
                             <label class="form-label fw-bold">Price Range</label>
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <input type="number" name="min_price" class="form-control" placeholder="Min" 
-                                           value="{{ request('min_price') }}" min="0" step="0.01">
-                                </div>
-                                <div class="col-6">
-                                    <input type="number" name="max_price" class="form-control" placeholder="Max" 
-                                           value="{{ request('max_price') }}" min="0" step="0.01">
-                                </div>
+                            <div class="ms-auto small text-muted">INR</div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" name="min_price" class="form-control" placeholder="Min" 
+                                       value="{{ request('min_price') }}" min="0" step="0.01">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" name="max_price" class="form-control" placeholder="Max" 
+                                       value="{{ request('max_price') }}" min="0" step="0.01">
                             </div>
                         </div>
 
@@ -94,12 +95,15 @@
         <!-- Products Grid -->
         <div class="col-lg-9 col-md-8">
             <!-- Header with Sort -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
                 <div>
                     <h2 class="mb-1">Products</h2>
                     <p class="text-muted mb-0">{{ $products->total() }} products found</p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-secondary d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse">
+                        <i class="fas fa-filter me-1"></i> Filters
+                    </button>
                     <label class="form-label mb-0">Sort by:</label>
                     <select class="form-select" style="width: auto;" onchange="updateSort(this.value)">
                         <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name</option>
@@ -111,15 +115,65 @@
                 </div>
             </div>
 
+            <!-- Applied Filters Chips -->
+            @php
+                $selectedCategories = (array) request('categories', []);
+                $categoriesById = $categories->keyBy('id');
+                $hasAnyFilter = request()->hasAny(['search','categories','min_price','max_price','rating','in_stock']);
+            @endphp
+            @if($hasAnyFilter)
+            <div class="mb-3 d-flex flex-wrap align-items-center gap-2">
+                <span class="text-muted small">Applied filters:</span>
+                @if(request('search'))
+                    @php $query = request()->except('search'); @endphp
+                    <a href="{{ route('products.index', $query) }}" class="badge rounded-pill bg-light text-dark px-3 py-2">
+                        <i class="fas fa-search me-1"></i>{{ request('search') }} <i class="fas fa-times ms-2"></i>
+                    </a>
+                @endif
+                @foreach($selectedCategories as $catId)
+                    @php
+                        $newCats = array_values(array_diff($selectedCategories, [$catId]));
+                        $query = request()->except('categories');
+                        if(count($newCats)) { $query['categories'] = $newCats; }
+                        $catName = $categoriesById[$catId]->name ?? ('Category #'.$catId);
+                    @endphp
+                    <a href="{{ route('products.index', $query) }}" class="badge rounded-pill bg-light text-dark px-3 py-2">
+                        {{ $catName }} <i class="fas fa-times ms-2"></i>
+                    </a>
+                @endforeach
+                @if(request('min_price') || request('max_price'))
+                    @php $query = request()->except(['min_price','max_price']); @endphp
+                    <a href="{{ route('products.index', $query) }}" class="badge rounded-pill bg-light text-dark px-3 py-2">
+                        Price {{ request('min_price') ? '₹'.request('min_price') : '' }}{{ request('min_price') && request('max_price') ? ' - ' : '' }}{{ request('max_price') ? '₹'.request('max_price') : '' }}
+                        <i class="fas fa-times ms-2"></i>
+                    </a>
+                @endif
+                @if(request('rating'))
+                    @php $query = request()->except('rating'); @endphp
+                    <a href="{{ route('products.index', $query) }}" class="badge rounded-pill bg-light text-dark px-3 py-2">
+                        {{ request('rating') }}+ Stars<i class="fas fa-times ms-2"></i>
+                    </a>
+                @endif
+                @if(request('in_stock'))
+                    @php $query = request()->except('in_stock'); @endphp
+                    <a href="{{ route('products.index', $query) }}" class="badge rounded-pill bg-light text-dark px-3 py-2">
+                        In Stock<i class="fas fa-times ms-2"></i>
+                    </a>
+                @endif
+                <a href="{{ route('products.index') }}" class="ms-auto small text-decoration-none">Clear all</a>
+            </div>
+            @endif
+
             @if($products->count() > 0)
             <!-- Products Grid -->
-            <div class="row g-4">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
                 @foreach($products as $product)
-                <div class="col-lg-4 col-md-6">
+                <div class="col">
                     <div class="card product-card h-100">
                         <div class="position-relative">
                             <img src="{{ $product->image_url }}" 
-                                 class="card-img-top" alt="{{ $product->name }}">
+                                 class="card-img-top" alt="{{ $product->name }}"
+                                 onerror="this.onerror=null;this.src='https://via.placeholder.com/300x250/f8f9fa/6c757d?text=Product';">
                             
                             @if($product->discount_percentage > 0)
                             <span class="badge bg-danger position-absolute top-0 start-0 m-2">
@@ -128,9 +182,9 @@
                             @endif
 
                             @if($product->stock_quantity <= 0)
-                            <span class="badge bg-secondary position-absolute top-0 start-0 m-2">
-                                Out of Stock
-                            </span>
+                            <div class="oos-overlay d-flex align-items-center justify-content-center">
+                                <span class="badge bg-dark bg-opacity-75">Out of Stock</span>
+                            </div>
                             @endif
 
                             <div class="position-absolute top-0 end-0 m-2">
@@ -174,11 +228,11 @@
 
                             <!-- Price -->
                             <div class="price-section mb-2">
-                                @if($product->sale_price && $product->sale_price < $product->price)
-                                <span class="price">${{ number_format($product->sale_price, 2) }}</span>
-                                <span class="original-price ms-2">${{ number_format($product->price, 2) }}</span>
+                                @if($product->is_on_sale)
+                                <span class="price">₹{{ number_format($product->final_price, 2) }}</span>
+                                <span class="original-price ms-2">₹{{ number_format($product->price, 2) }}</span>
                                 @else
-                                <span class="price">${{ number_format($product->price, 2) }}</span>
+                                <span class="price">₹{{ number_format($product->final_price, 2) }}</span>
                                 @endif
                             </div>
 
@@ -217,7 +271,7 @@
 
             <!-- Pagination -->
             <div class="d-flex justify-content-center mt-5">
-                {{ $products->appends(request()->query())->links() }}
+                {{ $products->appends(request()->query())->links('pagination::bootstrap-5') }}
             </div>
             @else
             <!-- No Products Found -->
