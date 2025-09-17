@@ -39,6 +39,18 @@ class Order extends Model
         return $this->hasMany(OrderAddress::class);
     }
 
+    // Alias for convenience in views/controllers
+    public function addresses()
+    {
+        return $this->hasMany(OrderAddress::class);
+    }
+
+    // Primary shipping address alias used in admin views/controllers
+    public function address()
+    {
+        return $this->hasOne(OrderAddress::class)->where('type', 'shipping');
+    }
+
     public function payments()
     {
         return $this->hasMany(Payment::class);
@@ -65,6 +77,12 @@ class Order extends Model
     }
 
     public function courierTracking()
+    {
+        return $this->hasOne(CourierTracking::class);
+    }
+
+    // Alias to support eager load: tracking.updates
+    public function tracking()
     {
         return $this->hasOne(CourierTracking::class);
     }

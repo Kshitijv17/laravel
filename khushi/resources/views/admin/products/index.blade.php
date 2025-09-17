@@ -1,28 +1,20 @@
 @extends('layouts.admin')
 
 @section('title', 'Products Management')
+@section('subtitle', 'Manage your product catalog')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">Products Management</h1>
-            <p class="page-subtitle">Manage your product catalog</p>
-        </div>
-        <div>
-            <a href="{{ route('admin.products.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Add New Product
-            </a>
-        </div>
+<div class="d-flex justify-content-end align-items-center mb-3">
+    <a href="{{ route('admin.products.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Add New Product
+    </a>
     </div>
-    
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Products</li>
-        </ol>
-    </nav>
-</div>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Products</li>
+    </ol>
+</nav>
 
 <!-- Stats Cards -->
 <div class="row mb-4">

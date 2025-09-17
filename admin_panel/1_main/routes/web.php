@@ -126,10 +126,12 @@ Route::prefix('admin')->group(function () {
         'index' => 'admin.products.index',
         'create' => 'admin.products.create',
         'store' => 'admin.products.store',
+        'show' => 'admin.products.show',
         'edit' => 'admin.products.edit',
         'update' => 'admin.products.update',
         'destroy' => 'admin.products.destroy',
     ]);
+    Route::delete('products/images/{image}', [ProductController::class, 'deleteImage'])->name('admin.products.delete-image');
 
     // Category CRUD
     Route::resource('categories', CategoryController::class)->names([

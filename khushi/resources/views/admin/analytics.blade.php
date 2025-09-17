@@ -1,28 +1,20 @@
 @extends('layouts.admin')
 
 @section('title', 'Analytics & Reports')
+@section('subtitle', 'Monitor your business performance and insights')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">Analytics & Reports</h1>
-            <p class="page-subtitle">Monitor your business performance and insights</p>
-        </div>
-        <div>
-            <button class="btn btn-primary" onclick="exportReport()">
-                <i class="fas fa-download me-2"></i>Export Report
-            </button>
-        </div>
+<div class="d-flex justify-content-end align-items-center mb-3">
+    <button class="btn btn-primary" onclick="exportReport()">
+        <i class="fas fa-download me-2"></i>Export Report
+    </button>
     </div>
-    
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Analytics</li>
-        </ol>
-    </nav>
-</div>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Analytics</li>
+    </ol>
+</nav>
 
 <!-- Date Range Filter -->
 <div class="card mb-4">

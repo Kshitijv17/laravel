@@ -626,7 +626,7 @@
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
         <a class="sidebar-brand" href="{{ route('admin.dashboard') }}">
-            <i class="fas fa-store me-2"></i>
+            <img src="{{ asset('logo.png') }}" alt="Logo" height="32" class="me-2">
             <span>Admin Panel</span>
         </a>
         
@@ -667,6 +667,13 @@
                         <span>Categories</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.inventory*') ? 'active' : '' }}" 
+                       href="{{ route('admin.inventory.index') }}">
+                        <i class="fas fa-warehouse"></i>
+                        <span>Inventory</span>
+                    </a>
+                </li>
             </div>
             
             <div class="nav-section">
@@ -705,6 +712,13 @@
                         <span>Support Tickets</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.chat*') ? 'active' : '' }}" 
+                       href="{{ route('admin.chat.dashboard') }}">
+                        <i class="fas fa-comments"></i>
+                        <span>Admin Chat</span>
+                    </a>
+                </li>
                 
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.newsletter*') ? 'active' : '' }}" 
@@ -725,6 +739,13 @@
             
             <div class="nav-section">
                 <div class="nav-section-title">SYSTEM</div>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.performance*') ? 'active' : '' }}" 
+                       href="{{ route('admin.performance.dashboard') }}">
+                        <i class="fas fa-gauge-high"></i>
+                        <span>Performance</span>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.settings*') ? 'active' : '' }}" 
                        href="{{ route('admin.settings') }}">
@@ -819,8 +840,52 @@
             </div>
         </nav>
         
+        <!-- Global Flash Messages -->
+        @php($hasFlash = session('success') || session('status') || session('error') || ($errors ?? null)?->any())
+        @if($hasFlash)
+        <div class="px-3 pt-3">
+            @if(session('success') || session('status'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                {{ session('success') ?? session('status') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+            @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-triangle-exclamation me-2"></i>
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+            @if(($errors ?? null)?->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>There were some problems with your input.</strong>
+                <ul class="mb-0 mt-2 small">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+        </div>
+        @endif
+
         <!-- Content Wrapper -->
         <div class="content-wrapper fade-in">
+            @if (!View::hasSection('hide_page_header'))
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <div class="page-title">@yield('title', 'Admin Panel')</div>
+                        @hasSection('subtitle')
+                            <p class="page-subtitle">@yield('subtitle')</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
             @yield('content')
         </div>
     </div>
@@ -1060,14 +1125,7 @@
             toastEl.setAttribute('aria-live', 'assertive');
             toastEl.setAttribute('aria-atomic', 'true');
             toastEl.innerHTML = `<div class="d-flex"><div class="toast-body">${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div>`;
-            container.appendChild(toastEl);
-            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-            toast.show();
-            toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
-        }
-
-        // Initialize controls on load
-        document.addEventListener('DOMContentLoaded', function() {
+            document.head.appendChild(style);
             initTheme();
             setFullscreenIcon();
             document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);

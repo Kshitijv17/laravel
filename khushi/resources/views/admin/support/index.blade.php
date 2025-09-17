@@ -1,28 +1,20 @@
 @extends('layouts.admin')
 
 @section('title', 'Support Tickets')
+@section('subtitle', 'Manage customer support requests and inquiries')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">Support Tickets</h1>
-            <p class="page-subtitle">Manage customer support requests and inquiries</p>
-        </div>
-        <div>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTicketModal">
-                <i class="fas fa-plus me-2"></i>Create Ticket
-            </button>
-        </div>
-    </div>
-    
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Support Tickets</li>
-        </ol>
-    </nav>
+<div class="d-flex justify-content-end align-items-center mb-3">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTicketModal">
+        <i class="fas fa-plus me-2"></i>Create Ticket
+    </button>
 </div>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Support Tickets</li>
+    </ol>
+</nav>
 
 <!-- Stats Cards -->
 <div class="row mb-4">

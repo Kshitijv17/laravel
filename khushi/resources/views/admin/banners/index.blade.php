@@ -1,28 +1,20 @@
 @extends('layouts.admin')
 
 @section('title', 'Banners Management')
+@section('subtitle', 'Manage promotional banners and advertisements')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">Banners Management</h1>
-            <p class="page-subtitle">Manage promotional banners and advertisements</p>
-        </div>
-        <div>
-            <a href="{{ route('admin.banners.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Add New Banner
-            </a>
-        </div>
+<div class="d-flex justify-content-end align-items-center mb-3">
+    <a href="{{ route('admin.banners.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Add New Banner
+    </a>
     </div>
-    
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Banners</li>
-        </ol>
-    </nav>
-</div>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Banners</li>
+    </ol>
+</nav>
 
 <!-- Statistics Cards -->
 <div class="row mb-4">

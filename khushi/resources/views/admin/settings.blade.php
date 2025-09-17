@@ -1,23 +1,15 @@
 @extends('layouts.admin')
 
 @section('title', 'System Settings')
+@section('subtitle', 'Configure your application settings')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">System Settings</h1>
-            <p class="page-subtitle">Configure your application settings</p>
-        </div>
-    </div>
-    
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Settings</li>
-        </ol>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Settings</li>
+    </ol>
     </nav>
-</div>
 
 <div class="row">
     <!-- General Settings -->

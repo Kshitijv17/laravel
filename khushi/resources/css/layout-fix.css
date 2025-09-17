@@ -6,6 +6,25 @@
     overflow: visible !important;
 }
 
+/* --- Global Navbar and Spacing Fixes --- */
+/* Ensure navbar logo is always small */
+.navbar-brand img {
+    height: 32px !important;
+    max-height: 32px !important;
+    width: auto !important;
+}
+
+/* Reduce default vertical gap under navbar */
+main.flex-grow-1 {
+    padding-top: 0.75rem !important;
+}
+
+/* Reduce navbar vertical padding */
+.navbar {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+}
+
 /* Ensure proper content stacking */
 .hero-section,
 section {

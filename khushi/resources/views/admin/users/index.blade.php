@@ -1,28 +1,20 @@
 @extends('layouts.admin')
 
 @section('title', 'Users Management')
+@section('subtitle', 'Manage customer accounts and user data')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">Users Management</h1>
-            <p class="page-subtitle">Manage customer accounts and user data</p>
-        </div>
-        <div>
-            <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Add New User
-            </a>
-        </div>
-    </div>
-    
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Users</li>
-        </ol>
-    </nav>
+<div class="d-flex justify-content-end align-items-center mb-3">
+    <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Add New User
+    </a>
 </div>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Users</li>
+    </ol>
+</nav>
 
 <!-- Stats Cards -->
 <div class="row mb-4">

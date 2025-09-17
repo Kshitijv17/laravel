@@ -1,29 +1,21 @@
 @extends('layouts.admin')
 
 @section('title', 'Orders Management')
+@section('subtitle', 'Manage and track all customer orders')
 
 @section('content')
 <div class="container-fluid">
-    <div class="page-header">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="page-title mb-1">Orders Management</h1>
-                <p class="page-subtitle mb-0">Manage and track all customer orders</p>
-            </div>
-            <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <button class="btn btn-primary" onclick="exportOrders()">
-                    <i class="fas fa-download me-2"></i>Export Orders
-                </button>
-            </div>
-        </div>
-        
-        <nav aria-label="breadcrumb" class="mt-3">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item active">Orders</li>
-            </ol>
-        </nav>
+    <div class="d-flex justify-content-end align-items-center mb-3">
+        <button class="btn btn-primary" onclick="exportOrders()">
+            <i class="fas fa-download me-2"></i>Export Orders
+        </button>
     </div>
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Orders</li>
+        </ol>
+    </nav>
 
     <!-- Stats Cards -->
     <div class="row mb-4">

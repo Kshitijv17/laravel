@@ -42,7 +42,8 @@
         <header class="position-sticky top-0" style="z-index: 1000;">
             <nav class="navbar navbar-expand-lg navbar-light" id="mainNavbar">
                 <div class="container">
-                    <a class="navbar-brand fw-bold text-primary" href="{{ url('/') }}">
+                    <a class="navbar-brand fw-bold text-primary d-flex align-items-center" href="{{ url('/') }}">
+                        <img src="{{ asset('logo.png') }}" alt="{{ config('app.name', 'Laravel') }}" class="me-2" style="height:32px; max-height:32px; width:auto;">
                         {{ config('app.name', 'Laravel') }}
                     </a>
                     

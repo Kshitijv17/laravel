@@ -1,28 +1,20 @@
 @extends('layouts.admin')
 
 @section('title', 'Categories Management')
+@section('subtitle', 'Organize your product categories')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">Categories Management</h1>
-            <p class="page-subtitle">Organize your product categories</p>
-        </div>
-        <div>
-            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Add New Category
-            </a>
-        </div>
+<div class="d-flex justify-content-end align-items-center mb-3">
+    <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Add New Category
+    </a>
     </div>
-    
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Categories</li>
-        </ol>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Categories</li>
+    </ol>
     </nav>
-</div>
 
 <!-- Stats Cards -->
 <div class="row mb-4">

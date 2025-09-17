@@ -36,6 +36,11 @@ class CourierTracking extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function updates()
+    {
+        return $this->hasMany(TrackingUpdate::class);
+    }
+
     // Scopes
     public function scopeShipped($query)
     {

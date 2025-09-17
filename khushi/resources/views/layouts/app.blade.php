@@ -211,7 +211,7 @@
     <header class="header-main shadow-sm sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="srcreationworld logo" class="brand-logo me-2">
+                <img src="{{ asset('logo.png') }}" alt="srcreationworld logo" class="brand-logo me-2" style="height:32px;width:32px;object-fit:contain;">
                 <span class="brand-text">srcreationworld</span>
             </a>
             
@@ -240,8 +240,12 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end p-2">
                         <li><a class="dropdown-item" href="{{ route('user.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                        <li><a class="dropdown-item" href="{{ route('user.profile') }}"><i class="fas fa-user-gear me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="{{ route('user.orders') }}"><i class="fas fa-bag-shopping me-2"></i>Orders</a></li>
                         <li><a class="dropdown-item" href="{{ route('user.wishlist') }}"><i class="fas fa-heart me-2"></i>Wishlist</a></li>
+                        <li><a class="dropdown-item" href="{{ route('user.change-password') }}"><i class="fas fa-key me-2"></i>Change Password</a></li>
+                        <li><a class="dropdown-item" href="{{ route('user.two-factor') }}"><i class="fas fa-shield-halved me-2"></i>Two-Factor</a></li>
+                        <li><a class="dropdown-item" href="{{ route('user.support-tickets') }}"><i class="fas fa-life-ring me-2"></i>Support Tickets</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="d-inline">

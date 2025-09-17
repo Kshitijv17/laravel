@@ -3,12 +3,14 @@
 @section('title', 'Dashboard - E-Commerce Store')
 
 @section('content')
-<div class="container py-4">
-    <div class="row">
-        <div class="col-12">
-            <h2 class="mb-4">Welcome back, {{ auth()->user()->name }}!</h2>
-        </div>
-    </div>
+<div class="modern-container">
+  <div class="container">
+    <div class="profile-card">
+      <div class="profile-header text-center">
+        <h2 class="profile-name mb-0">Welcome back, {{ auth()->user()->name }}!</h2>
+        <p class="profile-email mb-0">Here’s a quick look at your account</p>
+      </div>
+      <div class="profile-body">
 
     <!-- Dashboard Stats -->
     <div class="row g-4 mb-5">
@@ -134,7 +136,7 @@
                                     </td>
                                     <td>${{ number_format($order->total_amount, 2) }}</td>
                                     <td>
-                                        <a href="{{ route('orders.track', $order->order_number) }}" 
+                                        <a href="{{ route('orders.track', ['order_number' => $order->order_number]) }}" 
                                            class="btn btn-sm btn-outline-info">Track</a>
                                     </td>
                                 </tr>
@@ -256,12 +258,21 @@
             </div>
         </div>
     </div>
+      </div>
+    </div>
+  </div>
 </div>
 @endsection
 
 @push('styles')
 <style>
-.timeline {
+ .modern-container { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.25rem 0 2rem; }
+ .profile-card { background: rgba(255,255,255,.95); backdrop-filter: blur(20px); border: none; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,.1); overflow: hidden; max-width: 1200px; margin: 0 auto; }
+ .profile-header { background: linear-gradient(135deg, #4285f4 0%, #34a853 100%); color:#fff; padding: 1.25rem 2rem; }
+ .profile-name { margin:0; font-weight:800; font-size:1.25rem; }
+ .profile-email { margin:.2rem 0 0; opacity:.9; }
+ .profile-body { padding: 1.25rem 1.25rem 1.5rem; }
+ .timeline {
     position: relative;
 }
 

@@ -2,156 +2,114 @@
 
 @section('title', 'My Wishlist')
 
+@push('styles')
+<style>
+ .modern-container {
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+     padding: 1.25rem 0 2rem;
+ }
+ .profile-card {
+     background: rgba(255, 255, 255, 0.95);
+     backdrop-filter: blur(20px);
+     border-radius: 24px;
+     border: none;
+     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+     overflow: hidden;
+     max-width: 900px;
+     margin: 0 auto;
+ }
+ .profile-header {
+     background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+     padding: 1.5rem 2rem;
+     text-align: center;
+     position: relative;
+     color: #fff;
+ }
+ .profile-name { font-size: 1.4rem; font-weight: 700; margin: 0; }
+ .profile-email { opacity: .85; margin: .25rem 0 0; }
+ .profile-body { padding: 1.25rem 1.25rem 1.5rem; }
+ .wishlist-empty { text-align:center; padding: 3rem 1rem; }
+ .wishlist-empty i { opacity: .35; }
+ .item-row { display:flex; gap:1rem; align-items:center; }
+ .item-img { width:80px; height:80px; border-radius:12px; object-fit:cover; flex:0 0 auto; }
+ .item-title { font-weight:600; margin:0 0 .25rem; }
+ .item-meta { color:#6b7280; font-size:.9rem; }
+ .item-actions { display:flex; flex-direction:column; gap:.5rem; }
+ @media (max-width: 640px){ .item-row { flex-direction:column; align-items:flex-start; } .item-actions{ width:100%; flex-direction:row; } }
+</style>
+@endpush
+
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-6xl mx-auto">
-        <!-- Page Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">My Wishlist</h1>
-            <p class="text-gray-600">Items you've saved for later</p>
-        </div>
-
-        @if($wishlistItems->count() > 0)
-            <div class="bg-white rounded-lg shadow-sm border">
-                <!-- Wishlist Header -->
-                <div class="p-6 border-b border-gray-200">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-lg font-semibold text-gray-900">
-                            {{ $wishlistItems->count() }} {{ Str::plural('Item', $wishlistItems->count()) }}
-                        </h2>
-                        <div class="flex space-x-2">
-                            <button onclick="clearWishlist()" class="text-red-600 hover:text-red-700 text-sm font-medium">
-                                Clear All
-                            </button>
-                        </div>
+<div class="modern-container">
+    <div class="container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <h2 class="profile-name">My Wishlist</h2>
+                <p class="profile-email">Items you've saved for later</p>
+            </div>
+            <div class="profile-body">
+                @if($wishlistItems->count() > 0)
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="fw-semibold">{{ $wishlistItems->count() }} {{ Str::plural('Item', $wishlistItems->count()) }}</div>
+                        <button onclick="clearWishlist()" class="btn btn-sm btn-outline-danger">Clear All</button>
                     </div>
-                </div>
 
-                <!-- Wishlist Items -->
-                <div class="divide-y divide-gray-200">
-                    @foreach($wishlistItems as $item)
-                        <div class="p-6 wishlist-item" data-product-id="{{ $item->product->id }}">
-                            <div class="flex items-center space-x-4">
-                                <!-- Product Image -->
-                                <div class="flex-shrink-0">
-                                    <img src="{{ $item->product->primary_image }}" 
-                                         alt="{{ $item->product->name }}" 
-                                         class="w-20 h-20 object-cover rounded-lg">
-                                </div>
-
-                                <!-- Product Details -->
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="text-lg font-medium text-gray-900 mb-1">
-                                        <a href="{{ route('products.show', $item->product->slug) }}" 
-                                           class="hover:text-blue-600 transition duration-200">
-                                            {{ $item->product->name }}
-                                        </a>
-                                    </h3>
-                                    
-                                    <p class="text-sm text-gray-600 mb-2 line-clamp-2">
-                                        {{ Str::limit($item->product->description, 100) }}
-                                    </p>
-
-                                    <div class="flex items-center space-x-4">
-                                        <!-- Price -->
-                                        <div class="flex items-center space-x-2">
-                                            @if($item->product->sale_price && $item->product->sale_price < $item->product->price)
-                                                <span class="text-lg font-bold text-red-600">
-                                                    ${{ number_format($item->product->sale_price, 2) }}
-                                                </span>
-                                                <span class="text-sm text-gray-500 line-through">
-                                                    ${{ number_format($item->product->price, 2) }}
-                                                </span>
+                    <div class="list-group">
+                        @foreach($wishlistItems as $item)
+                            <div class="list-group-item wishlist-item py-3" data-product-id="{{ $item->product->id }}">
+                                <div class="item-row">
+                                    <img src="{{ $item->product->primary_image }}" alt="{{ $item->product->name }}" class="item-img">
+                                    <div class="flex-grow-1">
+                                        <h3 class="item-title">
+                                            <a href="{{ route('products.show', $item->product->slug) }}" class="text-decoration-none">{{ $item->product->name }}</a>
+                                        </h3>
+                                        <div class="item-meta mb-2">{{ Str::limit($item->product->description, 100) }}</div>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div>
+                                                @if($item->product->sale_price && $item->product->sale_price < $item->product->price)
+                                                    <span class="fw-bold text-danger">${{ number_format($item->product->sale_price, 2) }}</span>
+                                                    <span class="text-muted text-decoration-line-through">${{ number_format($item->product->price, 2) }}</span>
+                                                @else
+                                                    <span class="fw-bold">${{ number_format($item->product->price, 2) }}</span>
+                                                @endif
+                                            </div>
+                                            @if($item->product->stock_quantity > 0)
+                                                <span class="badge bg-success">In Stock</span>
                                             @else
-                                                <span class="text-lg font-bold text-gray-900">
-                                                    ${{ number_format($item->product->price, 2) }}
-                                                </span>
+                                                <span class="badge bg-danger">Out of Stock</span>
                                             @endif
                                         </div>
-
-                                        <!-- Stock Status -->
+                                    </div>
+                                    <div class="item-actions">
                                         @if($item->product->stock_quantity > 0)
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                In Stock
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                Out of Stock
-                                            </span>
+                                            <button onclick="addToCart({{ $item->product->id }})" class="btn btn-primary btn-sm">Add to Cart</button>
                                         @endif
+                                        <button onclick="removeFromWishlist({{ $item->product->id }})" class="btn btn-outline-danger btn-sm">Remove</button>
                                     </div>
                                 </div>
-
-                                <!-- Actions -->
-                                <div class="flex flex-col space-y-2">
-                                    @if($item->product->stock_quantity > 0)
-                                        <button onclick="addToCart({{ $item->product->id }})" 
-                                                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200 text-sm font-medium">
-                                            Add to Cart
-                                        </button>
-                                    @endif
-                                    
-                                    <button onclick="removeFromWishlist({{ $item->product->id }})" 
-                                            class="bg-red-100 text-red-700 px-4 py-2 rounded-md hover:bg-red-200 transition duration-200 text-sm font-medium">
-                                        Remove
-                                    </button>
-                                </div>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
+                        @endforeach
+                    </div>
 
-                <!-- Wishlist Footer -->
-                <div class="p-6 bg-gray-50 border-t border-gray-200">
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm text-gray-600">
-                            Total: {{ $wishlistItems->count() }} {{ Str::plural('item', $wishlistItems->count()) }}
-                        </p>
-                        <div class="flex space-x-3">
-                            <a href="{{ route('home') }}" 
-                               class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition duration-200 text-sm font-medium">
-                                Continue Shopping
-                            </a>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted small">Total: {{ $wishlistItems->count() }} {{ Str::plural('item', $wishlistItems->count()) }}</div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('home') }}" class="btn btn-light btn-sm">Continue Shopping</a>
                             @if($wishlistItems->where('product.stock_quantity', '>', 0)->count() > 0)
-                                <button onclick="addAllToCart()" 
-                                        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200 text-sm font-medium">
-                                    Add All to Cart
-                                </button>
+                                <button onclick="addAllToCart()" class="btn btn-primary btn-sm">Add All to Cart</button>
                             @endif
                         </div>
                     </div>
-                </div>
-            </div>
-        @else
-            <!-- Empty Wishlist -->
-            <div class="bg-white rounded-lg shadow-sm border p-12 text-center">
-                <div class="max-w-md mx-auto">
-                    <i class="fas fa-heart text-gray-300 text-6xl mb-4"></i>
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-2">Your wishlist is empty</h2>
-                    <p class="text-gray-600 mb-6">
-                        Start adding items to your wishlist by clicking the heart icon on products you love.
-                    </p>
-                    <a href="{{ route('home') }}" 
-                       class="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-200 font-medium">
-                        <i class="fas fa-shopping-bag mr-2"></i>
-                        Start Shopping
-                    </a>
-                </div>
-            </div>
-        @endif
-
-        <!-- Recently Viewed Products -->
-        @if($wishlistItems->count() > 0)
-            <div class="mt-12">
-                <h3 class="text-xl font-semibold text-gray-900 mb-6">You might also like</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- This would typically show recommended products -->
-                    <div class="text-center text-gray-500 col-span-full py-8">
-                        <p>Recommended products would appear here</p>
+                @else
+                    <div class="wishlist-empty">
+                        <i class="fas fa-heart fa-3x mb-3"></i>
+                        <h3 class="fw-semibold mb-2">Your wishlist is empty</h3>
+                        <p class="text-muted mb-3">Start adding items to your wishlist by clicking the heart icon on products you love.</p>
+                        <a href="{{ route('home') }}" class="btn btn-primary"><i class="fas fa-shopping-bag me-2"></i>Start Shopping</a>
                     </div>
-                </div>
+                @endif
             </div>
-        @endif
+        </div>
     </div>
 </div>
 

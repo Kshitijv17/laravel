@@ -2,15 +2,10 @@
 
 @section('title', 'Admin Dashboard')
 
+@section('subtitle', 'Welcome back, ' . Auth::guard('admin')->user()->name . '!')
+
 @section('content')
 <div class="container-fluid">
-    <!-- Page Header -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-        <div class="d-none d-lg-inline-block">
-            <span class="text-muted">Welcome back, {{ Auth::guard('admin')->user()->name }}!</span>
-        </div>
-    </div>
 
     <!-- Statistics Cards Row -->
     <div class="row">
@@ -177,7 +172,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Recent Orders</h6>
-                    <a href="#" class="btn btn-sm btn-primary">View All</a>
+                    <a href="{{ route('admin.orders.index') }}" class="btn btn-sm btn-primary">View All</a>
                 </div>
                 <div class="card-body">
                     @if($recentOrders->count() > 0)
@@ -223,7 +218,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Recent Users</h6>
-                    <a href="#" class="btn btn-sm btn-primary">View All</a>
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-primary">View All</a>
                 </div>
                 <div class="card-body">
                     @if($recentUsers->count() > 0)
@@ -281,22 +276,22 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3 mb-3">
-                            <a href="#" class="btn btn-outline-primary btn-block">
+                            <a href="{{ route('admin.products.index') }}" class="btn btn-outline-primary btn-block">
                                 <i class="fas fa-box mr-2"></i>Manage Products
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <a href="#" class="btn btn-outline-success btn-block">
+                            <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-success btn-block">
                                 <i class="fas fa-shopping-cart mr-2"></i>View Orders
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <a href="#" class="btn btn-outline-info btn-block">
+                            <a href="{{ route('admin.users.index') }}" class="btn btn-outline-info btn-block">
                                 <i class="fas fa-users mr-2"></i>Manage Users
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <a href="#" class="btn btn-outline-warning btn-block">
+                            <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-warning btn-block">
                                 <i class="fas fa-tags mr-2"></i>Categories
                             </a>
                         </div>

@@ -167,7 +167,15 @@ class UserController extends Controller
 
         $orders = $query->latest()->paginate(10);
 
-        return view('web.user.orders', compact('orders'));
+        // Get user stats for sidebar
+        $stats = [
+            'total_orders' => Order::where('user_id', Auth::id())->count(),
+            'pending_orders' => Order::where('user_id', Auth::id())->where('status', 'pending')->count(),
+            'total_spent' => Order::where('user_id', Auth::id())->sum('total_amount'),
+            'wishlist_items' => Wishlist::where('user_id', Auth::id())->count(),
+        ];
+
+        return view('web.user.orders', compact('orders', 'stats'));
     }
 
     /**
@@ -179,7 +187,15 @@ class UserController extends Controller
             ->with(['items.product', 'payment', 'addresses', 'tracking'])
             ->findOrFail($id);
 
-        return view('web.user.order-details', compact('order'));
+        // Get user stats for sidebar
+        $stats = [
+            'total_orders' => Order::where('user_id', Auth::id())->count(),
+            'pending_orders' => Order::where('user_id', Auth::id())->where('status', 'pending')->count(),
+            'total_spent' => Order::where('user_id', Auth::id())->sum('total_amount'),
+            'wishlist_items' => Wishlist::where('user_id', Auth::id())->count(),
+        ];
+
+        return view('web.user.order-details', compact('order', 'stats'));
     }
 
     /**
