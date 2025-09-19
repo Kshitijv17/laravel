@@ -6,8 +6,7 @@ use App\Models\User;
 use App\Http\Middleware\ProtectUserDashboard;
 use App\Http\Controllers\User\AuthController as UserAuthController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\AdminManagementController;
 
 //
 // 🏠 Welcome Page
@@ -94,8 +93,67 @@ Route::middleware(ProtectUserDashboard::class)->group(function () {
 });
 
 //
-//  Admin Routes
+    // Super Admin Routes (Same as Admin but with Super Admin middleware)
 //
+    Route::prefix('super-admin')->group(function () {
+        // Auth
+        Route::get('/login', function () {
+            if (Auth::guard('admin')->check()) {
+                return redirect()->route('super-admin.dashboard');
+            }
+            return app(AdminAuthController::class)->loginForm();
+        })->name('super-admin.login');
+
+        Route::post('/login', [AdminAuthController::class, 'login'])->name('super-admin.login.submit');
+
+        Route::get('/register', function () {
+            if (Auth::guard('admin')->check()) {
+                return redirect()->route('super-admin.dashboard');
+            }
+            return app(AdminAuthController::class)->registerForm();
+        })->name('super-admin.register');
+
+        Route::post('/register', [AdminAuthController::class, 'register'])->name('super-admin.register.submit');
+
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('super-admin.logout');
+
+        // Dashboard (Protected by Super Admin middleware)
+        Route::middleware('super_admin')->group(function () {
+            Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('super-admin.dashboard');
+
+            // Bulk Product Upload
+            Route::get('products/bulk-upload', [ProductController::class, 'bulkUploadForm'])->name('super-admin.products.bulk-upload-form');
+            Route::post('products/bulk-upload', [ProductController::class, 'bulkUpload'])->name('super-admin.products.bulk-upload');
+            Route::get('products/csv-template', [ProductController::class, 'downloadCsvTemplate'])->name('super-admin.products.csv-template');
+
+            // Product CRUD
+            Route::resource('products', ProductController::class)->names([
+                'index' => 'super-admin.products.index',
+                'create' => 'super-admin.products.create',
+                'store' => 'super-admin.products.store',
+                'show' => 'super-admin.products.show',
+                'edit' => 'super-admin.products.edit',
+                'update' => 'super-admin.products.update',
+                'destroy' => 'super-admin.products.destroy',
+            ]);
+            Route::delete('products/images/{image}', [ProductController::class, 'deleteImage'])->name('super-admin.products.delete-image');
+
+            // Category CRUD
+            Route::resource('categories', CategoryController::class)->names([
+                'index' => 'super-admin.categories.index',
+                'create' => 'super-admin.categories.create',
+                'store' => 'super-admin.categories.store',
+                'show' => 'super-admin.categories.show',
+                'edit' => 'super-admin.categories.edit',
+                'update' => 'super-admin.categories.update',
+                'destroy' => 'super-admin.categories.destroy',
+            ]);
+        });
+    });
+
+//
+    //  Admin Routes
+    //
 Route::prefix('admin')->group(function () {
     // Auth
     Route::get('/login', function () {
@@ -121,6 +179,24 @@ Route::prefix('admin')->group(function () {
     // Dashboard
     Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
 
+    // Admin Management (Super Admin only)
+    Route::middleware('super_admin')->group(function () {
+        Route::resource('admins', AdminManagementController::class)->names([
+            'index' => 'admin.admins.index',
+            'create' => 'admin.admins.create',
+            'store' => 'admin.admins.store',
+            'show' => 'admin.admins.show',
+            'edit' => 'admin.admins.edit',
+            'update' => 'admin.admins.update',
+            'destroy' => 'admin.admins.destroy',
+        ]);
+    });
+
+    // Bulk Product Upload - defined before resource route to avoid conflicts
+    Route::get('products/bulk-upload', [ProductController::class, 'bulkUploadForm'])->name('admin.products.bulk-upload-form');
+    Route::post('products/bulk-upload', [ProductController::class, 'bulkUpload'])->name('admin.products.bulk-upload');
+    Route::get('products/csv-template', [ProductController::class, 'downloadCsvTemplate'])->name('admin.products.csv-template');
+
     // Product CRUD
     Route::resource('products', ProductController::class)->names([
         'index' => 'admin.products.index',
@@ -138,6 +214,7 @@ Route::prefix('admin')->group(function () {
         'index' => 'admin.categories.index',
         'create' => 'admin.categories.create',
         'store' => 'admin.categories.store',
+        'show' => 'admin.categories.show',
         'edit' => 'admin.categories.edit',
         'update' => 'admin.categories.update',
         'destroy' => 'admin.categories.destroy',

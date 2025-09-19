@@ -1,32 +1,24 @@
 @extends('layouts.admin')
 
-@section('title', 'Support Ticket Details')
+@section('title', 'Ticket #{{ str_pad($ticket->id, 3, "0", STR_PAD_LEFT) }}')
+@section('subtitle', '{{ $ticket->subject }}')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">Ticket #{{ str_pad($ticket->id, 3, '0', STR_PAD_LEFT) }}</h1>
-            <p class="page-subtitle">{{ $ticket->subject }}</p>
-        </div>
-        <div>
-            <button class="btn btn-info me-2" onclick="updateTicketStatus({{ $ticket->id }})">
-                <i class="fas fa-edit me-2"></i>Update Status
-            </button>
-            <a href="{{ route('admin.support.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Back to Tickets
-            </a>
-        </div>
-    </div>
-    
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('admin.support.index') }}">Support Tickets</a></li>
-            <li class="breadcrumb-item active">#{{ str_pad($ticket->id, 3, '0', STR_PAD_LEFT) }}</li>
-        </ol>
-    </nav>
+<div class="d-flex justify-content-end align-items-center mb-3">
+    <button class="btn btn-info me-2" onclick="updateTicketStatus({{ $ticket->id }})">
+        <i class="fas fa-edit me-2"></i>Update Status
+    </button>
+    <a href="{{ route('admin.support.index') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Tickets
+    </a>
 </div>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.support.index') }}">Support Tickets</a></li>
+        <li class="breadcrumb-item active">#{{ str_pad($ticket->id, 3, '0', STR_PAD_LEFT) }}</li>
+    </ol>
+</nav>
 
 <div class="row">
     <div class="col-lg-8">

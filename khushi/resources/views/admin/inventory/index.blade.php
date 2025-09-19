@@ -1,25 +1,35 @@
 @extends('layouts.admin')
 
 @section('title', 'Inventory Management')
+@section('subtitle', 'Monitor and manage product stock levels')
 
 @section('content')
+<div class="d-flex justify-content-end align-items-center mb-3">
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#stockAdjustmentModal">
+            <i class="fas fa-plus"></i> Stock Adjustment
+        </button>
+        <button type="button" class="btn btn-success" onclick="generateReport()">
+            <i class="fas fa-chart-bar"></i> Generate Report
+        </button>
+        <button type="button" class="btn btn-warning" onclick="checkLowStock()">
+            <i class="fas fa-exclamation-triangle"></i> Low Stock Alert
+        </button>
+    </div>
+</div>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Inventory</li>
+    </ol>
+</nav>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Inventory Management</h3>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#stockAdjustmentModal">
-                            <i class="fas fa-plus"></i> Stock Adjustment
-                        </button>
-                        <button type="button" class="btn btn-success" onclick="generateReport()">
-                            <i class="fas fa-chart-bar"></i> Generate Report
-                        </button>
-                        <button type="button" class="btn btn-warning" onclick="checkLowStock()">
-                            <i class="fas fa-exclamation-triangle"></i> Low Stock Alert
-                        </button>
-                    </div>
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Inventory Management</h5>
                 </div>
                 <div class="card-body">
                     <!-- Filters -->

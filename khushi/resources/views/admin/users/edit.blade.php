@@ -1,30 +1,23 @@
 @extends('layouts.admin')
 
 @section('title', 'Edit User')
+@section('subtitle', 'Update user information')
 
 @section('content')
+<div class="d-flex justify-content-end align-items-center mb-3">
+    <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Users
+    </a>
+</div>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.users.index') }}">Users</a></li>
+        <li class="breadcrumb-item active">Edit User</li>
+    </ol>
+</nav>
+
 <div class="container-fluid">
-    <div class="page-header">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="page-title mb-1">Edit User</h1>
-                <p class="page-subtitle mb-0">Update user information</p>
-            </div>
-            <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Users
-                </a>
-            </div>
-        </div>
-        
-        <nav aria-label="breadcrumb" class="mt-3">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.users.index') }}">Users</a></li>
-                <li class="breadcrumb-item active">Edit User</li>
-            </ol>
-        </nav>
-    </div>
 
     <div class="row justify-content-center">
         <div class="col-lg-8">

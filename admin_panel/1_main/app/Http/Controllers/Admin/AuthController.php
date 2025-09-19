@@ -42,29 +42,44 @@ class AuthController extends Controller
     }
 
     // Show registration form
-public function registerForm()
-{
-    return view('admin.register');
-}
+    public function registerForm()
+    {
+        $isFirstAdmin = \App\Models\Admin::count() === 0;
+        $canCreateSuperAdmin = $isFirstAdmin || (auth('admin')->check() && auth('admin')->user()->isSuperAdmin());
 
-// Handle registration
-public function register(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:admins,email',
-        'password' => 'required|min:6|confirmed',
-    ]);
+        return view('admin.register', compact('isFirstAdmin', 'canCreateSuperAdmin'));
+    }
 
-    $admin = \App\Models\Admin::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-    ]);
+    // Handle registration
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:admins,email',
+            'password' => 'required|min:6|confirmed',
+            'role' => 'sometimes|in:admin,super_admin',
+        ]);
 
-    Auth::guard('admin')->login($admin);
+        // Check if this is the first admin (make them super admin by default)
+        $isFirstAdmin = \App\Models\Admin::count() === 0;
 
-    return redirect()->route('admin.dashboard');
-}
+        // Only allow role selection for super admins or if no admins exist yet
+        $role = $request->role ?? ($isFirstAdmin ? 'super_admin' : 'admin');
 
+        // If not a super admin trying to set super_admin role, default to admin
+        if ($role === 'super_admin' && (!auth('admin')->check() || !auth('admin')->user()->isSuperAdmin())) {
+            $role = 'admin';
+        }
+
+        $admin = \App\Models\Admin::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'role' => $role,
+        ]);
+
+        Auth::guard('admin')->login($admin);
+
+        return redirect()->route('admin.dashboard');
+    }
 }

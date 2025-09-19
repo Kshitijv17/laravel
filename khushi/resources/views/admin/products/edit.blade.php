@@ -1,33 +1,25 @@
 @extends('layouts.admin')
 
 @section('title', 'Edit Product')
+@section('subtitle', 'Update product information')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">Edit Product</h1>
-            <p class="page-subtitle">Update product information</p>
-        </div>
-        <div>
-            <a href="{{ route('admin.products.show', $product->id) }}" class="btn btn-info me-2">
-                <i class="fas fa-eye me-2"></i>View Product
-            </a>
-            <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Back to Products
-            </a>
-        </div>
-    </div>
-    
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('admin.products.show', $product->id) }}">{{ $product->name }}</a></li>
-            <li class="breadcrumb-item active">Edit</li>
-        </ol>
-    </nav>
+<div class="d-flex justify-content-end align-items-center mb-3">
+    <a href="{{ route('admin.products.show', $product->id) }}" class="btn btn-info me-2">
+        <i class="fas fa-eye me-2"></i>View Product
+    </a>
+    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Products
+    </a>
 </div>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.products.show', $product->id) }}">{{ $product->name }}</a></li>
+        <li class="breadcrumb-item active">Edit</li>
+    </ol>
+</nav>
 
 <div class="row">
     <div class="col-lg-8">

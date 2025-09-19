@@ -1,31 +1,23 @@
 @extends('layouts.admin')
 
 @section('title', 'Newsletter Management')
+@section('subtitle', 'Manage newsletter subscribers and campaigns')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">Newsletter Management</h1>
-            <p class="page-subtitle">Manage newsletter subscribers and campaigns</p>
-        </div>
-        <div>
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#sendNewsletterModal">
-                <i class="fas fa-paper-plane me-2"></i>Send Newsletter
-            </button>
-            <button class="btn btn-primary" onclick="exportSubscribers()">
-                <i class="fas fa-download me-2"></i>Export Subscribers
-            </button>
-        </div>
-    </div>
-    
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Newsletter</li>
-        </ol>
-    </nav>
+<div class="d-flex justify-content-end align-items-center mb-3">
+    <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#sendNewsletterModal">
+        <i class="fas fa-paper-plane me-2"></i>Send Newsletter
+    </button>
+    <button class="btn btn-primary" onclick="exportSubscribers()">
+        <i class="fas fa-download me-2"></i>Export Subscribers
+    </button>
 </div>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Newsletter</li>
+    </ol>
+</nav>
 
 <!-- Stats Cards -->
 <div class="row mb-4">

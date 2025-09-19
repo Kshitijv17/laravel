@@ -42,6 +42,24 @@
                                 <label for="password_confirmation" class="form-label">Confirm Password</label>
                                 <input type="password" name="password_confirmation" class="form-control" id="password_confirmation" required>
                             </div>
+
+                            @if($canCreateSuperAdmin ?? false)
+                            <div class="mb-3">
+                                <label for="role" class="form-label">Admin Role</label>
+                                <select name="role" class="form-control" id="role">
+                                    <option value="admin" {{ old('role', 'admin') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="super_admin" {{ old('role', 'super_admin') == 'super_admin' || ($isFirstAdmin ?? false) ? 'selected' : '' }}>Super Admin</option>
+                                </select>
+                                <div class="form-text">
+                                    @if($isFirstAdmin ?? false)
+                                        <span class="text-success">First admin will be Super Admin by default</span>
+                                    @else
+                                        <span class="text-info">Only Super Admins can create other Super Admins</span>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
+
                             <button type="submit" class="btn btn-success w-100">Register</button>
                         </form>
 

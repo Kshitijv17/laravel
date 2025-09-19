@@ -413,6 +413,63 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/cache/clear', [AdminController::class, 'clearCache'])->name('cache.clear');
         Route::post('/database/optimize', [AdminController::class, 'optimizeDatabase'])->name('database.optimize');
         
+        // Reviews Management
+        Route::prefix('reviews')->name('reviews.')->group(function () {
+            Route::get('/', [AdminController::class, 'reviewsIndex'])->name('index');
+            Route::get('/{review}', [AdminController::class, 'showReview'])->name('show');
+            Route::post('/{review}/approve', [AdminController::class, 'approveReview'])->name('approve');
+            Route::post('/{review}/reject', [AdminController::class, 'rejectReview'])->name('reject');
+            Route::delete('/{review}', [AdminController::class, 'deleteReview'])->name('destroy');
+            Route::post('/bulk-action', [AdminController::class, 'bulkReviewAction'])->name('bulk-action');
+            Route::post('/{review}/respond', [AdminController::class, 'respondToReview'])->name('respond');
+        });
+        
+        // Media/File Manager
+        Route::prefix('media')->name('media.')->group(function () {
+            Route::get('/', [AdminController::class, 'mediaIndex'])->name('index');
+            Route::post('/upload', [AdminController::class, 'uploadFile'])->name('upload');
+            Route::post('/folder', [AdminController::class, 'createFolder'])->name('folder.create');
+            Route::put('/rename', [AdminController::class, 'renameFile'])->name('rename');
+            Route::delete('/delete', [AdminController::class, 'deleteFiles'])->name('delete');
+            Route::get('/download', [AdminController::class, 'downloadFile'])->name('download');
+        });
+        
+        // System Logs
+        Route::prefix('system')->name('system.')->group(function () {
+            Route::get('/logs', [AdminController::class, 'systemLogs'])->name('logs');
+            Route::post('/logs/clear', [AdminController::class, 'clearLogs'])->name('logs.clear');
+            Route::get('/logs/download', [AdminController::class, 'downloadLogs'])->name('logs.download');
+            Route::get('/logs/data', [AdminController::class, 'getLogsData'])->name('logs.data');
+        });
+        
+        // Shipping Management
+        Route::prefix('shipping')->name('shipping.')->group(function () {
+            Route::get('/', [AdminController::class, 'shippingIndex'])->name('index');
+            Route::post('/zones', [AdminController::class, 'storeShippingZone'])->name('zones.store');
+            Route::put('/zones/{zone}', [AdminController::class, 'updateShippingZone'])->name('zones.update');
+            Route::post('/zones/{zone}/toggle', [AdminController::class, 'toggleShippingZone'])->name('zones.toggle');
+            Route::delete('/zones/{zone}', [AdminController::class, 'deleteShippingZone'])->name('zones.destroy');
+            Route::post('/methods', [AdminController::class, 'storeShippingMethod'])->name('methods.store');
+            Route::put('/methods/{method}', [AdminController::class, 'updateShippingMethod'])->name('methods.update');
+            Route::delete('/methods/{method}', [AdminController::class, 'deleteShippingMethod'])->name('methods.destroy');
+            Route::post('/settings', [AdminController::class, 'saveShippingSettings'])->name('settings');
+            Route::post('/calculate', [AdminController::class, 'calculateShipping'])->name('calculate');
+        });
+        
+        // Tax Management
+        Route::prefix('taxes')->name('taxes.')->group(function () {
+            Route::get('/', [AdminController::class, 'taxesIndex'])->name('index');
+            Route::post('/rates', [AdminController::class, 'storeTaxRate'])->name('rates.store');
+            Route::put('/rates/{rate}', [AdminController::class, 'updateTaxRate'])->name('rates.update');
+            Route::post('/rates/{rate}/toggle', [AdminController::class, 'toggleTaxRate'])->name('rates.toggle');
+            Route::delete('/rates/{rate}', [AdminController::class, 'deleteTaxRate'])->name('rates.destroy');
+            Route::post('/classes', [AdminController::class, 'storeTaxClass'])->name('classes.store');
+            Route::put('/classes/{class}', [AdminController::class, 'updateTaxClass'])->name('classes.update');
+            Route::delete('/classes/{class}', [AdminController::class, 'deleteTaxClass'])->name('classes.destroy');
+            Route::post('/settings', [AdminController::class, 'saveTaxSettings'])->name('settings');
+            Route::post('/calculate', [AdminController::class, 'calculateTax'])->name('calculate');
+        });
+        
         // Admin Chat Management
         Route::prefix('chat')->name('chat.')->group(function () {
             Route::get('/dashboard', [\App\Http\Controllers\Admin\ChatController::class, 'dashboard'])->name('dashboard');

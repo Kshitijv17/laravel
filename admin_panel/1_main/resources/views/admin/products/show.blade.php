@@ -3,13 +3,13 @@
 @section('content')
 <div class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Product Details</h2>
+    <h2><i class="fas fa-eye me-2"></i>Product Details</h2>
     <div>
       <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-warning me-2">
-        <i class="fas fa-edit"></i> Edit Product
+        <i class="fas fa-edit me-1"></i>Edit Product
       </a>
       <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
-        <i class="fas fa-arrow-left"></i> Back to Products
+        <i class="fas fa-arrow-left me-1"></i>Back to Products
       </a>
     </div>
   </div>
@@ -19,14 +19,14 @@
     <div class="col-md-6">
       <div class="card mb-4">
         <div class="card-header">
-          <h5 class="mb-0">Product Images</h5>
+          <h5 class="mb-0"><i class="fas fa-images me-2"></i>Product Images</h5>
         </div>
         <div class="card-body">
           @if($product->image)
             <div class="mb-4">
-              <h6 class="text-primary mb-3">Main Image:</h6>
+              <h6 class="text-primary mb-3"><i class="fas fa-star me-1"></i>Main Image:</h6>
               <div class="text-center">
-                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-fluid rounded shadow cursor-pointer" style="max-height: 300px;" onclick="openImageModal('{{ asset('storage/' . $product->image) }}', 'Main Image')">
+                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->title }}" class="img-fluid rounded shadow cursor-pointer" style="max-height: 300px;" onclick="openImageModal('{{ asset('storage/' . $product->image) }}', 'Main Product Image')">
               </div>
             </div>
           @endif
@@ -79,33 +79,64 @@
     <div class="col-md-6">
       <div class="card mb-4">
         <div class="card-header">
-          <h5 class="mb-0">Product Information</h5>
+          <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Product Information</h5>
         </div>
         <div class="card-body">
           <table class="table table-borderless">
             <tr>
-              <th width="30%">Name:</th>
-              <td>{{ $product->name }}</td>
+              <th width="35%">Title:</th>
+              <td class="fw-bold">{{ $product->title }}</td>
             </tr>
             <tr>
               <th>Description:</th>
               <td>
                 @if($product->description)
-                  {{ $product->description }}
+                  {!! nl2br(e($product->description)) !!}
                 @else
                   <span class="text-muted">No description</span>
                 @endif
               </td>
             </tr>
             <tr>
-              <th>Price:</th>
-              <td class="h5 text-success">₹{{ number_format($product->price, 2) }}</td>
+              <th>Original Price:</th>
+              <td class="h5 text-primary fw-bold">₹{{ number_format($product->price, 2) }}</td>
+            </tr>
+            @if($product->selling_price)
+            <tr>
+              <th>Selling Price:</th>
+              <td class="h5 text-success fw-bold">₹{{ number_format($product->selling_price, 2) }}</td>
+            </tr>
+            @endif
+            <tr>
+              <th>Stock Quantity:</th>
+              <td>
+                <span class="badge {{ $product->quantity > 0 ? 'bg-success' : 'bg-danger' }} fs-6">
+                  {{ $product->quantity }} units
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <th>Stock Status:</th>
+              <td>
+                <span class="badge {{ $product->stock_status === 'in_stock' ? 'bg-success' : 'bg-danger' }} fs-6">
+                  {{ $product->stock_status === 'in_stock' ? 'In Stock' : 'Out of Stock' }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <th>Product Status:</th>
+              <td>
+                <span class="badge {{ $product->is_active ? 'bg-success' : 'bg-secondary' }} fs-6">
+                  <i class="fas {{ $product->is_active ? 'fa-check-circle' : 'fa-times-circle' }} me-1"></i>
+                  {{ $product->is_active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
             </tr>
             <tr>
               <th>Category:</th>
               <td>
                 @if($product->category)
-                  <span class="badge bg-primary">{{ $product->category->name }}</span>
+                  <span class="badge bg-primary">{{ $product->category->title }}</span>
                 @else
                   <span class="text-muted">No category</span>
                 @endif
@@ -126,19 +157,84 @@
       <!-- Quick Actions -->
       <div class="card">
         <div class="card-header">
-          <h6 class="mb-0">Quick Actions</h6>
+          <h6 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h6>
         </div>
         <div class="card-body d-flex gap-2">
           <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-warning">
-            <i class="fas fa-edit"></i> Edit
+            <i class="fas fa-edit me-1"></i>Edit
           </a>
           <button class="btn btn-danger" onclick="confirmDelete()">
-            <i class="fas fa-trash"></i> Delete
+            <i class="fas fa-trash me-1"></i>Delete
           </button>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Features Section -->
+  @if($product->features)
+  <div class="card mt-4">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0"><i class="fas fa-star me-2"></i>Product Features</h5>
+    </div>
+    <div class="card-body">
+      <div class="features-content">
+        {!! $product->features !!}
+      </div>
+    </div>
+  </div>
+  @endif
+
+  <!-- Specifications Section -->
+  @if($product->specifications)
+  <div class="card mt-4">
+    <div class="card-header bg-info text-white">
+      <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Technical Specifications</h5>
+    </div>
+    <div class="card-body">
+      <div class="specifications-content">
+        {!! $product->specifications !!}
+      </div>
+    </div>
+  </div>
+  @endif
+
+  <!-- Discount Information -->
+  @if($product->discount_tag)
+  <div class="card mt-4">
+    <div class="card-header bg-warning text-dark">
+      <h5 class="mb-0"><i class="fas fa-tag me-2"></i>Discount Information</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <h6>Discount Tag:</h6>
+          <div class="d-flex align-items-center">
+            <span class="badge fs-6 px-3 py-2 me-3" style="background-color: {{ $product->discount_color }}; color: white; border: 2px solid #000;">
+              {{ $product->discount_tag }}
+            </span>
+            <small class="text-muted">Color: {{ $product->discount_color }}</small>
+          </div>
+        </div>
+        <div class="col-md-6">
+          @if($product->selling_price)
+          <h6>Pricing Comparison:</h6>
+          <div class="pricing-comparison">
+            <div class="text-decoration-line-through text-muted">₹{{ number_format($product->price, 2) }}</div>
+            <div class="text-success fw-bold fs-5">₹{{ number_format($product->selling_price, 2) }}</div>
+            <div class="text-success">
+              <small>
+                Save ₹{{ number_format($product->price - $product->selling_price, 2) }}
+                ({{ number_format((($product->price - $product->selling_price) / $product->price) * 100, 1) }}% off)
+              </small>
+            </div>
+          </div>
+          @endif
+        </div>
+      </div>
+    </div>
+  </div>
+  @endif
 
   <!-- All Product Images Gallery -->
   @if($product->images->count() > 0)
@@ -212,7 +308,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <a id="downloadBtn" href="" download class="btn btn-primary">
-          <i class="fas fa-download"></i> Download
+          <i class="fas fa-download me-1"></i>Download
         </a>
       </div>
     </div>
@@ -226,6 +322,22 @@
 }
 .cursor-pointer:hover {
   transform: scale(1.05);
+}
+
+.features-content, .specifications-content {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.pricing-comparison {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+}
+
+.card-header {
+  border-bottom: 2px solid rgba(0,0,0,0.125);
 }
 </style>
 

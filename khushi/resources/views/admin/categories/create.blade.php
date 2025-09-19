@@ -1,29 +1,21 @@
 @extends('layouts.admin')
 
 @section('title', 'Create Category')
+@section('subtitle', 'Add a new product category')
 
 @section('content')
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">Create Category</h1>
-            <p class="page-subtitle">Add a new product category</p>
-        </div>
-        <div>
-            <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Back to Categories
-            </a>
-        </div>
-    </div>
-    
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('admin.categories.index') }}">Categories</a></li>
-            <li class="breadcrumb-item active">Create</li>
-        </ol>
-    </nav>
+<div class="d-flex justify-content-end align-items-center mb-3">
+    <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Categories
+    </a>
 </div>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.categories.index') }}">Categories</a></li>
+        <li class="breadcrumb-item active">Create</li>
+    </ol>
+</nav>
 
 <div class="row">
     <div class="col-lg-8">

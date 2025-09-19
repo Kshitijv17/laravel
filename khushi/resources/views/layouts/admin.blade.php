@@ -674,6 +674,14 @@
                         <span>Inventory</span>
                     </a>
                 </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.reviews*') ? 'active' : '' }}" 
+                       href="{{ route('admin.reviews.index') }}">
+                        <i class="fas fa-star"></i>
+                        <span>Reviews</span>
+                    </a>
+                </li>
             </div>
             
             <div class="nav-section">
@@ -699,6 +707,22 @@
                        href="{{ route('admin.coupons.index') }}">
                         <i class="fas fa-ticket-alt"></i>
                         <span>Coupons</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.shipping*') ? 'active' : '' }}" 
+                       href="{{ route('admin.shipping.index') }}">
+                        <i class="fas fa-truck"></i>
+                        <span>Shipping</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.taxes*') ? 'active' : '' }}" 
+                       href="{{ route('admin.taxes.index') }}">
+                        <i class="fas fa-percentage"></i>
+                        <span>Tax Management</span>
                     </a>
                 </li>
             </div>
@@ -739,6 +763,22 @@
             
             <div class="nav-section">
                 <div class="nav-section-title">SYSTEM</div>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.media*') ? 'active' : '' }}" 
+                       href="{{ route('admin.media.index') }}">
+                        <i class="fas fa-folder-open"></i>
+                        <span>File Manager</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.system.logs*') ? 'active' : '' }}" 
+                       href="{{ route('admin.system.logs') }}">
+                        <i class="fas fa-file-alt"></i>
+                        <span>System Logs</span>
+                    </a>
+                </li>
+                
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.performance*') ? 'active' : '' }}" 
                        href="{{ route('admin.performance.dashboard') }}">
