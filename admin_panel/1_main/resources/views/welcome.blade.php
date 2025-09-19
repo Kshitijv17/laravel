@@ -40,7 +40,7 @@
 
         <div class="d-flex justify-content-center gap-3 flex-wrap">
             <a href="{{ route('user.login') }}" class="btn btn-primary">Customer Login</a>
-            <a href="{{ route('admin.login') }}" class="btn btn-dark">Admin Login</a>
+            <a href="{{ route('admin.login') }}" class="btn btn-warning">Admin Login</a>
             <a href="{{ route('super-admin.login') }}" class="btn btn-danger">
                 <i class="fas fa-crown me-1"></i>Super Admin
             </a>

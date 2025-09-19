@@ -4,7 +4,23 @@
 @section('subtitle', 'Manage customer accounts and user data')
 
 @section('content')
-<div class="d-flex justify-content-end align-items-center mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="bulk-actions d-none">
+        <div class="btn-group">
+            <button class="btn btn-success" onclick="bulkAction('activate')">
+                <i class="fas fa-check me-2"></i>Activate Selected
+            </button>
+            <button class="btn btn-warning" onclick="bulkAction('deactivate')">
+                <i class="fas fa-ban me-2"></i>Deactivate Selected
+            </button>
+            <button class="btn btn-danger" onclick="bulkAction('delete')">
+                <i class="fas fa-trash me-2"></i>Delete Selected
+            </button>
+        </div>
+        <span class="ms-3 text-muted">
+            <span id="selectedCount">0</span> users selected
+        </span>
+    </div>
     <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
         <i class="fas fa-plus me-2"></i>Add New User
     </a>
@@ -286,5 +302,94 @@ function unbanUser(userId) {
         });
     }
 }
+
+// Bulk Actions Functionality
+function toggleBulkActions() {
+    const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+    const bulkActions = document.querySelector('.bulk-actions');
+    const selectedCount = document.getElementById('selectedCount');
+    
+    if (checkboxes.length > 0) {
+        bulkActions.classList.remove('d-none');
+        selectedCount.textContent = checkboxes.length;
+    } else {
+        bulkActions.classList.add('d-none');
+    }
+}
+
+function bulkAction(action) {
+    const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+    const userIds = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (userIds.length === 0) {
+        alert('Please select users first');
+        return;
+    }
+    
+    let confirmMessage = '';
+    switch(action) {
+        case 'activate':
+            confirmMessage = `Are you sure you want to activate ${userIds.length} users?`;
+            break;
+        case 'deactivate':
+            confirmMessage = `Are you sure you want to deactivate ${userIds.length} users?`;
+            break;
+        case 'delete':
+            confirmMessage = `Are you sure you want to delete ${userIds.length} users? This action cannot be undone.`;
+            break;
+    }
+    
+    if (confirm(confirmMessage)) {
+        fetch('/admin/users/bulk-action', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                action: action,
+                user_ids: userIds
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error performing bulk action: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error performing bulk action');
+        });
+    }
+}
+
+// Select All functionality
+function toggleSelectAll() {
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const userCheckboxes = document.querySelectorAll('.user-checkbox');
+    
+    userCheckboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
+    
+    toggleBulkActions();
+}
+
+// Add event listeners when document loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners to user checkboxes
+    document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', toggleBulkActions);
+    });
+    
+    // Add event listener to select all checkbox
+    const selectAllCheckbox = document.getElementById('selectAll');
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', toggleSelectAll);
+    }
+});
 </script>
 @endpush

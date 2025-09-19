@@ -5,10 +5,18 @@
 
 @section('content')
 <div class="d-flex justify-content-end align-items-center mb-3">
-    <button class="btn btn-primary" onclick="exportReport()">
-        <i class="fas fa-download me-2"></i>Export Report
-    </button>
+    <div class="btn-group">
+        <button class="btn btn-primary" onclick="exportReport()">
+            <i class="fas fa-download me-2"></i>Export Report
+        </button>
+        <button class="btn btn-success" onclick="scheduleReport()">
+            <i class="fas fa-clock me-2"></i>Schedule Report
+        </button>
+        <button class="btn btn-info" onclick="refreshAnalytics()">
+            <i class="fas fa-sync me-2"></i>Refresh Data
+        </button>
     </div>
+</div>
 <nav aria-label="breadcrumb" class="mb-3">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
@@ -454,6 +462,26 @@ function exportReport() {
     // In a real implementation, this would trigger a download
     setTimeout(function() {
         alert('Report generated successfully!');
+    }, 2000);
+}
+
+function scheduleReport() {
+    alert('Schedule Report functionality would be implemented here - allowing users to set up automated reports');
+}
+
+function refreshAnalytics() {
+    // Show loading state
+    const refreshBtn = event.target.closest('button');
+    const originalText = refreshBtn.innerHTML;
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
+    refreshBtn.disabled = true;
+    
+    // Simulate data refresh
+    setTimeout(function() {
+        refreshBtn.innerHTML = originalText;
+        refreshBtn.disabled = false;
+        alert('Analytics data refreshed successfully!');
+        updateAnalytics();
     }, 2000);
 }
 

@@ -12,16 +12,20 @@ class ProductSeeder extends Seeder
     {
         Product::insert([
             [
-                'name' => 'Smartphone',
+                'title' => 'Smartphone',
                 'description' => 'Latest Android phone',
                 'price' => 14999,
                 'category_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'name' => 'Novel',
+                'title' => 'Novel',
                 'description' => 'Best-selling fiction',
                 'price' => 499,
                 'category_id' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ]);
     }

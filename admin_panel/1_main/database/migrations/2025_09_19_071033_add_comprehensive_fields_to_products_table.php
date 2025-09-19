@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            // Rename name to title
-            $table->renameColumn('name', 'title');
+            // Rename name to title (guarded)
+            if (Schema::hasColumn('products', 'name') && ! Schema::hasColumn('products', 'title')) {
+                $table->renameColumn('name', 'title');
+            }
 
             // Update description to text for rich content
             $table->text('description')->change();
@@ -51,8 +53,11 @@ return new class extends Migration
             // Revert description back to nullable string
             $table->string('description')->nullable()->change();
 
-            // Rename title back to name
-            $table->renameColumn('title', 'name');
+            // Rename title back to name (guarded)
+            if (Schema::hasColumn('products', 'title') && ! Schema::hasColumn('products', 'name')) {
+                $table->renameColumn('title', 'name');
+            }
         });
     }
 };
+

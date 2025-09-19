@@ -58,7 +58,7 @@
                   </span>
                 </td>
                 <td>
-                  <small class="text-muted">{{ $category->created_at->format('M d, Y') }}</small>
+                  <small class="text-muted">{{ $category->created_at ? $category->created_at->format('M d, Y') : 'N/A' }}</small>
                 </td>
                 <td>
                   <div class="btn-group" role="group">

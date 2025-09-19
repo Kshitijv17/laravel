@@ -21,16 +21,16 @@ class InventoryController extends Controller
 
     public function index(Request $request)
     {
-        $query = Product::with(['cat_info', 'last_movement']);
+        $query = Product::with(['category']);
 
         // Apply filters
         if ($request->filled('category')) {
-            $query->where('cat_id', $request->category);
+            $query->where('category_id', $request->category);
         }
 
         if ($request->filled('search')) {
             $query->where(function($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
+                $q->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('slug', 'like', '%' . $request->search . '%')
                   ->orWhere('sku', 'like', '%' . $request->search . '%');
             });
@@ -39,26 +39,26 @@ class InventoryController extends Controller
         if ($request->filled('stock')) {
             switch ($request->stock) {
                 case 'in_stock':
-                    $query->whereRaw('(stock - COALESCE(reserved_stock, 0)) > reorder_level');
+                    $query->where('stock', '>', 10); // Consider > 10 as in stock
                     break;
                 case 'low_stock':
-                    $query->whereRaw('(stock - COALESCE(reserved_stock, 0)) <= reorder_level AND (stock - COALESCE(reserved_stock, 0)) > 0');
+                    $query->whereBetween('stock', [1, 10]); // 1-10 is low stock
                     break;
                 case 'out_of_stock':
-                    $query->whereRaw('(stock - COALESCE(reserved_stock, 0)) <= 0');
+                    $query->where('stock', '<=', 0);
                     break;
             }
         }
 
-        $products = $query->orderBy('title')->paginate(20);
+        $products = $query->orderBy('name')->paginate(20);
         $categories = Category::where('status', 'active')->get();
 
         // Calculate stats
         $stats = [
             'total_products' => Product::count(),
-            'in_stock' => Product::whereRaw('(stock - COALESCE(reserved_stock, 0)) > reorder_level')->count(),
-            'low_stock' => Product::whereRaw('(stock - COALESCE(reserved_stock, 0)) <= reorder_level AND (stock - COALESCE(reserved_stock, 0)) > 0')->count(),
-            'out_of_stock' => Product::whereRaw('(stock - COALESCE(reserved_stock, 0)) <= 0')->count(),
+            'in_stock' => Product::where('stock', '>', 10)->count(),
+            'low_stock' => Product::whereBetween('stock', [1, 10])->count(),
+            'out_of_stock' => Product::where('stock', '<=', 0)->count(),
         ];
 
         return view('admin.inventory.index', compact('products', 'categories', 'stats'));
@@ -260,7 +260,7 @@ class InventoryController extends Controller
             foreach ($movements as $movement) {
                 fputcsv($file, [
                     $movement->created_at->format('Y-m-d H:i:s'),
-                    $movement->product->title,
+                    $movement->product->name,
                     $movement->type,
                     $movement->quantity,
                     $movement->reason,

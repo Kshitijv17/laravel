@@ -12,14 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->renameColumn('name', 'title');
+            // Only rename if the source exists and target does not
+            if (Schema::hasColumn('products', 'name') && ! Schema::hasColumn('products', 'title')) {
+                $table->renameColumn('name', 'title');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->renameColumn('title', 'name');
+            // Only revert if the current column exists and original does not
+            if (Schema::hasColumn('products', 'title') && ! Schema::hasColumn('products', 'name')) {
+                $table->renameColumn('title', 'name');
+            }
         });
     }
 };

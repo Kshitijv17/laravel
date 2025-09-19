@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            $table->renameColumn('name', 'title');
+            // Only rename if source exists and target does not
+            if (Schema::hasColumn('categories', 'name') && ! Schema::hasColumn('categories', 'title')) {
+                $table->renameColumn('name', 'title');
+            }
             $table->string('image')->nullable()->after('title');
             $table->enum('active', ['active', 'inactive'])->default('active')->after('image');
             $table->enum('show_on_home', ['show', 'hide'])->default('show')->after('active');
@@ -26,7 +29,9 @@ return new class extends Migration
     {
         Schema::table('categories', function (Blueprint $table) {
             $table->dropColumn(['show_on_home', 'active', 'image']);
-            $table->renameColumn('title', 'name');
+            if (Schema::hasColumn('categories', 'title') && ! Schema::hasColumn('categories', 'name')) {
+                $table->renameColumn('title', 'name');
+            }
         });
     }
 };

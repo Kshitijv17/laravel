@@ -6,7 +6,11 @@ use App\Models\User;
 use App\Http\Middleware\ProtectUserDashboard;
 use App\Http\Controllers\User\AuthController as UserAuthController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AdminManagementController;
+use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\PermissionManagementController;
 
 //
 // 🏠 Welcome Page
@@ -93,94 +97,98 @@ Route::middleware(ProtectUserDashboard::class)->group(function () {
 });
 
 //
-    // Super Admin Routes (Same as Admin but with Super Admin middleware)
+// Super Admin Registration (Separate from regular admin)
 //
-    Route::prefix('super-admin')->group(function () {
-        // Auth
-        Route::get('/login', function () {
-            if (Auth::guard('admin')->check()) {
-                return redirect()->route('super-admin.dashboard');
-            }
-            return app(AdminAuthController::class)->loginForm();
-        })->name('super-admin.login');
+Route::get('/super-admin/register', [SuperAdminController::class, 'registerForm'])->name('super-admin.register');
+Route::post('/super-admin/register', [SuperAdminController::class, 'register'])->name('super-admin.register.submit');
 
-        Route::post('/login', [AdminAuthController::class, 'login'])->name('super-admin.login.submit');
+//
+// Super Admin Routes (Same as Admin but with Super Admin middleware)
+//
+Route::prefix('super-admin')->group(function () {
+    // Auth
+    Route::get('/login', [SuperAdminController::class, 'loginForm'])->name('super-admin.login');
+    Route::post('/login', [SuperAdminController::class, 'login'])->name('super-admin.login.submit');
 
-        Route::get('/register', function () {
-            if (Auth::guard('admin')->check()) {
-                return redirect()->route('super-admin.dashboard');
-            }
-            return app(AdminAuthController::class)->registerForm();
-        })->name('super-admin.register');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('super-admin.logout');
 
-        Route::post('/register', [AdminAuthController::class, 'register'])->name('super-admin.register.submit');
+    // Dashboard (Protected by auth middleware)
+    Route::middleware('auth')->group(function () {
+        Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('super-admin.dashboard');
 
-        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('super-admin.logout');
+        // Bulk Product Upload
+        Route::get('products/bulk-upload', [ProductController::class, 'bulkUploadForm'])->name('super-admin.products.bulk-upload-form');
+        Route::post('products/bulk-upload', [ProductController::class, 'bulkUpload'])->name('super-admin.products.bulk-upload');
+        Route::get('products/csv-template', [ProductController::class, 'downloadCsvTemplate'])->name('super-admin.products.csv-template');
 
-        // Dashboard (Protected by Super Admin middleware)
-        Route::middleware('super_admin')->group(function () {
-            Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('super-admin.dashboard');
+        // Product CRUD
+        Route::resource('products', ProductController::class)->names([
+            'index' => 'super-admin.products.index',
+            'create' => 'super-admin.products.create',
+            'store' => 'super-admin.products.store',
+            'show' => 'super-admin.products.show',
+            'edit' => 'super-admin.products.edit',
+            'update' => 'super-admin.products.update',
+            'destroy' => 'super-admin.products.destroy',
+        ]);
+        Route::delete('products/images/{image}', [ProductController::class, 'deleteImage'])->name('super-admin.products.delete-image');
 
-            // Bulk Product Upload
-            Route::get('products/bulk-upload', [ProductController::class, 'bulkUploadForm'])->name('super-admin.products.bulk-upload-form');
-            Route::post('products/bulk-upload', [ProductController::class, 'bulkUpload'])->name('super-admin.products.bulk-upload');
-            Route::get('products/csv-template', [ProductController::class, 'downloadCsvTemplate'])->name('super-admin.products.csv-template');
-
-            // Product CRUD
-            Route::resource('products', ProductController::class)->names([
-                'index' => 'super-admin.products.index',
-                'create' => 'super-admin.products.create',
-                'store' => 'super-admin.products.store',
-                'show' => 'super-admin.products.show',
-                'edit' => 'super-admin.products.edit',
-                'update' => 'super-admin.products.update',
-                'destroy' => 'super-admin.products.destroy',
-            ]);
-            Route::delete('products/images/{image}', [ProductController::class, 'deleteImage'])->name('super-admin.products.delete-image');
-
-            // Category CRUD
-            Route::resource('categories', CategoryController::class)->names([
-                'index' => 'super-admin.categories.index',
-                'create' => 'super-admin.categories.create',
-                'store' => 'super-admin.categories.store',
-                'show' => 'super-admin.categories.show',
-                'edit' => 'super-admin.categories.edit',
-                'update' => 'super-admin.categories.update',
-                'destroy' => 'super-admin.categories.destroy',
-            ]);
-        });
+        // Category CRUD
+        Route::resource('categories', CategoryController::class)->names([
+            'index' => 'super-admin.categories.index',
+            'create' => 'super-admin.categories.create',
+            'store' => 'super-admin.categories.store',
+            'show' => 'super-admin.categories.show',
+            'edit' => 'super-admin.categories.edit',
+            'update' => 'super-admin.categories.update',
+            'destroy' => 'super-admin.categories.destroy',
+        ]);
     });
+});
 
 //
     //  Admin Routes
     //
 Route::prefix('admin')->group(function () {
     // Auth
-    Route::get('/login', function () {
-        if (Auth::guard('admin')->check()) {
-            return redirect()->route('admin.dashboard');
-        }
-        return app(AdminAuthController::class)->loginForm();
-    })->name('admin.login');
+    Route::get('/login', [AdminAuthController::class, 'loginForm'])->name('admin.login');
 
     Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
 
-    Route::get('/register', function () {
-        if (Auth::guard('admin')->check()) {
-            return redirect()->route('admin.dashboard');
-        }
-        return app(AdminAuthController::class)->registerForm();
-    })->name('admin.register');
+    Route::get('/register', [AdminAuthController::class, 'registerForm'])->name('admin.register');
 
     Route::post('/register', [AdminAuthController::class, 'register'])->name('admin.register.submit');
 
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
-    // Dashboard
-    Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
+    // Dashboard (Protected)
+    Route::middleware('auth')->group(function () {
+        Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
+    });
 
-    // Admin Management (Super Admin only)
-    Route::middleware('super_admin')->group(function () {
+    // Permission Management (Super Admin only)
+    Route::middleware('auth')->group(function () {
+        // Permission CRUD
+        Route::get('permissions', [PermissionManagementController::class, 'index'])->name('admin.permissions.index');
+        Route::get('permissions/create', [PermissionManagementController::class, 'create'])->name('admin.permissions.create');
+        Route::post('permissions', [PermissionManagementController::class, 'store'])->name('admin.permissions.store');
+        Route::get('permissions/{id}', [PermissionManagementController::class, 'show'])->name('admin.permissions.show');
+        Route::get('permissions/{id}/edit', [PermissionManagementController::class, 'edit'])->name('admin.permissions.edit');
+        Route::put('permissions/{id}', [PermissionManagementController::class, 'update'])->name('admin.permissions.update');
+        Route::delete('permissions/{id}', [PermissionManagementController::class, 'destroy'])->name('admin.permissions.destroy');
+        
+        // User Permission Management
+        Route::get('permissions/users/{user}', [PermissionManagementController::class, 'showUser'])->name('admin.permissions.user.show');
+        Route::put('permissions/users/{user}', [PermissionManagementController::class, 'updateUser'])->name('admin.permissions.user.update');
+        
+        // AJAX Routes
+        Route::post('permissions/bulk-update', [PermissionManagementController::class, 'bulkUpdate'])->name('admin.permissions.bulk-update');
+        Route::post('permissions/bulk-assign', [PermissionManagementController::class, 'bulkAssign'])->name('admin.permissions.bulk-assign');
+        Route::post('permissions/remove-from-user', [PermissionManagementController::class, 'removeFromUser'])->name('admin.permissions.remove-from-user');
+        Route::get('permissions/api/get-permissions', [PermissionManagementController::class, 'getPermissions'])->name('admin.permissions.api.get');
+        Route::get('permissions/api/user/{user}', [PermissionManagementController::class, 'getUserPermissions'])->name('admin.permissions.api.user');
+
+        // Admin Management
         Route::resource('admins', AdminManagementController::class)->names([
             'index' => 'admin.admins.index',
             'create' => 'admin.admins.create',

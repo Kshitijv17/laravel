@@ -11,9 +11,21 @@ class CategorySeeder extends Seeder
     public function run()
     {
         Category::insert([
-            ['name' => 'Electronics'],
-            ['name' => 'Books'],
-            ['name' => 'Fashion'],
+            [
+                'title' => 'Electronics',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'Books',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'Fashion',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

@@ -67,3 +67,16 @@ php artisan make:seeder UserSeeder
 php artisan make:seeder AdminSeeder
 php artisan make:seeder CategorySeeder
 php artisan make:seeder ProductSeeder
+
+
+
+
+php artisan tinker
+// See all Super Admins
+App\Models\User::where('role', 'superadmin')->get(['id', 'name', 'email', 'role', 'created_at']);
+
+// Count Super Admins
+App\Models\User::where('role', 'superadmin')->count();
+
+// See all users with their roles
+App\Models\User::select('id', 'name', 'email', 'role')->get();

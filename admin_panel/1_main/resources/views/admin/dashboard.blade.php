@@ -9,12 +9,12 @@
         <div class="card-body py-4">
           <div class="d-flex justify-content-between align-items-center">
             <div>
-              <h2 class="mb-1">Welcome back, {{ auth('admin')->user()->name }}!</h2>
+              <h2 class="mb-1">Welcome back, {{ auth()->user()->name }}!</h2>
               <p class="text-muted mb-0">Manage your store from the admin dashboard</p>
             </div>
             <div class="text-end">
-              <span class="badge fs-6 px-3 py-2 bg-{{ auth('admin')->user()->role_badge_color }}">
-                <i class="fas fa-crown me-1"></i>{{ auth('admin')->user()->role_display }}
+              <span class="badge fs-6 px-3 py-2 bg-{{ auth()->user()->isSuperAdmin() ? 'danger' : 'warning' }}">
+                <i class="fas {{ auth()->user()->isSuperAdmin() ? 'fa-crown' : 'fa-user-shield' }} me-1"></i>{{ auth()->user()->isSuperAdmin() ? 'Super Admin' : 'Admin' }}
               </span>
             </div>
           </div>
@@ -44,22 +44,22 @@
     </div>
 
     <!-- Super Admin Only Section -->
-    @if(auth('admin')->user()->isSuperAdmin())
+    @if(auth()->check() && auth()->user()->isSuperAdmin())
     <div class="col-md-6">
       <div class="card card-hover border-danger">
         <div class="card-body">
-          <h5 class="card-title text-danger"><i class="fas fa-users-cog me-2"></i> Admin Management</h5>
-          <p class="card-text">Manage admin users and their roles.</p>
-          <a href="{{ route('admin.admins.index') }}" class="btn btn-danger">Manage Admins</a>
+          <h5 class="card-title text-danger"><i class="fas fa-key me-2"></i>Permission Management</h5>
+          <p class="card-text">Manage permissions for admin users.</p>
+          <a href="{{ route('admin.permissions.index') }}" class="btn btn-danger">Manage Permissions</a>
         </div>
       </div>
     </div>
     <div class="col-md-6">
       <div class="card card-hover border-warning">
         <div class="card-body">
-          <h5 class="card-title text-warning"><i class="fas fa-chart-bar me-2"></i> Analytics</h5>
-          <p class="card-text">View detailed analytics and reports.</p>
-          <a href="{{ route('admin.analytics') }}" class="btn btn-warning">View Analytics</a>
+          <h5 class="card-title text-warning"><i class="fas fa-users-cog me-2"></i>User Management</h5>
+          <p class="card-text">Manage admin users and their roles.</p>
+          <a href="{{ route('admin.admins.index') }}" class="btn btn-warning">Manage Users</a>
         </div>
       </div>
     </div>

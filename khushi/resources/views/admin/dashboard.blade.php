@@ -673,12 +673,5 @@ setInterval(checkNotifications, 60000);
 .fa-spin {
     animation: pulse 1s infinite;
 }
-{{ ... }}
-    100% { opacity: 1; }
-}
-
-.fa-spin {
-    animation: pulse 1s infinite;
-}
 </style>
 @endsection

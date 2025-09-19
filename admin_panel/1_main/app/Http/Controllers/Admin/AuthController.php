@@ -3,51 +3,99 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
     // Show login form
     public function loginForm()
     {
+        // Redirect if already logged in
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->isSuperAdmin()) {
+                return redirect()->route('super-admin.dashboard');
+            } elseif ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+        }
+
         return view('admin.login');
     }
 
     // Handle login
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-        if (Auth::guard('admin')->attempt($credentials)) {
-            return redirect()->route('admin.dashboard');
+        $user = User::where('email', $request->email)->first();
+
+        if ($user && ($user->isAdmin() || $user->isSuperAdmin()) && Hash::check($request->password, $user->password)) {
+            Auth::login($user);
+            
+            // Redirect based on role
+            if ($user->isSuperAdmin()) {
+                return redirect()->route('super-admin.dashboard');
+            } else {
+                return redirect()->route('admin.dashboard');
+            }
         }
 
         return back()->withErrors([
-            'email' => 'Invalid credentials',
+            'email' => 'Invalid credentials or not an admin account.',
         ])->withInput();
     }
 
     // Show dashboard
     public function dashboard()
     {
+        // Ensure user is authenticated
+        if (!auth()->check()) {
+            return redirect()->route('admin.login')->with('error', 'Please login to access admin dashboard.');
+        }
+
+        // Redirect super admins to their own dashboard
+        if (auth()->user()->isSuperAdmin()) {
+            return redirect()->route('super-admin.dashboard');
+        }
+
+        // Ensure user is admin
+        if (!auth()->user()->isAdmin()) {
+            return redirect()->route('admin.login')->with('error', 'Access denied. Admin privileges required.');
+        }
+
         return view('admin.dashboard');
     }
 
     // Handle logout
     public function logout()
     {
-        Auth::guard('admin')->logout();
+        Auth::logout();
         return redirect()->route('welcome');
     }
 
     // Show registration form
     public function registerForm()
     {
-        $isFirstAdmin = \App\Models\Admin::count() === 0;
-        $canCreateSuperAdmin = $isFirstAdmin || (auth('admin')->check() && auth('admin')->user()->isSuperAdmin());
+        // Redirect if already logged in
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->isSuperAdmin()) {
+                return redirect()->route('super-admin.dashboard');
+            } elseif ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+        }
 
-        return view('admin.register', compact('isFirstAdmin', 'canCreateSuperAdmin'));
+        $isFirstAdmin = User::whereIn('role', ['admin', 'superadmin'])->count() === 0;
+        return view('admin.register', compact('isFirstAdmin'));
     }
 
     // Handle registration
@@ -55,31 +103,31 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:admins,email',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
-            'role' => 'sometimes|in:admin,super_admin',
         ]);
 
-        // Check if this is the first admin (make them super admin by default)
-        $isFirstAdmin = \App\Models\Admin::count() === 0;
+        // Check if this is the first admin (make them admin by default)
+        $isFirstAdmin = User::whereIn('role', ['admin', 'superadmin'])->count() === 0;
+        $role = $isFirstAdmin ? 'admin' : 'admin'; // Regular admins only
 
-        // Only allow role selection for super admins or if no admins exist yet
-        $role = $request->role ?? ($isFirstAdmin ? 'super_admin' : 'admin');
+        try {
+            $userId = DB::table('users')->insertGetId([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => $role,
+                'is_guest' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
-        // If not a super admin trying to set super_admin role, default to admin
-        if ($role === 'super_admin' && (!auth('admin')->check() || !auth('admin')->user()->isSuperAdmin())) {
-            $role = 'admin';
+            $user = User::find($userId);
+            Auth::login($user);
+
+            return redirect()->route('admin.dashboard')->with('success', 'Admin account created successfully!');
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(['error' => 'Failed to create account: ' . $e->getMessage()]);
         }
-
-        $admin = \App\Models\Admin::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-            'role' => $role,
-        ]);
-
-        Auth::guard('admin')->login($admin);
-
-        return redirect()->route('admin.dashboard');
     }
 }

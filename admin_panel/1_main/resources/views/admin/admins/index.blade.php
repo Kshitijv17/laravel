@@ -50,7 +50,7 @@
                     </td>
                     <td>
                       <div class="fw-bold">{{ $admin->name }}</div>
-                      @if($admin->id === auth('admin')->user()->id)
+                      @if($admin->id === auth()->user()->id)
                         <small class="text-muted">(You)</small>
                       @endif
                     </td>
@@ -71,7 +71,7 @@
                         <a href="{{ route('admin.admins.edit', $admin) }}" class="btn btn-sm btn-warning" title="Edit Admin">
                           <i class="fas fa-edit"></i>
                         </a>
-                        @if($admin->id !== auth('admin')->user()->id && !($admin->isSuperAdmin() && $admins->where('role', 'super_admin')->count() === 1))
+                        @if($admin->id !== auth()->user()->id && !($admin->isSuperAdmin() && $admins->where('role', 'superadmin')->count() === 1))
                           <form action="{{ route('admin.admins.destroy', $admin) }}" method="POST" class="d-inline">
                             @csrf @method('DELETE')
                             <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this admin?')" title="Delete Admin">

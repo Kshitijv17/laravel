@@ -40,7 +40,7 @@
               <div class="form-text">
                 <i class="fas fa-info-circle me-1"></i>
                 Super Admins have full access to all features including admin management.
-                @if($admin->id === auth('admin')->user()->id)
+                @if($admin->id === auth()->user()->id)
                   <br><small class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>You cannot change your own Super Admin role.</small>
                 @endif
               </div>

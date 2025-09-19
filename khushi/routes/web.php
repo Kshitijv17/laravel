@@ -276,42 +276,6 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     Route::post('/support-tickets/{ticket}/reply', [UserController::class, 'replySupportTicket'])->name('support-tickets.reply');
 });
 
-// Admin Performance Routes
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-    Route::get('/performance', [PerformanceController::class, 'dashboard'])->name('performance.dashboard');
-    Route::post('/performance/clear-cache', [PerformanceController::class, 'clearCache'])->name('performance.clear-cache');
-    Route::post('/performance/warm-cache', [PerformanceController::class, 'warmUpCache'])->name('performance.warm-cache');
-    Route::post('/performance/optimize-db', [PerformanceController::class, 'optimizeDatabase'])->name('performance.optimize-db');
-    Route::get('/performance/metrics', [PerformanceController::class, 'getPerformanceMetrics'])->name('performance.metrics');
-    
-    // Analytics Routes
-    Route::get('/analytics', [AnalyticsController::class, 'dashboard'])->name('analytics.dashboard');
-    Route::get('/analytics/revenue', [AnalyticsController::class, 'revenue'])->name('analytics.revenue');
-    Route::get('/analytics/products', [AnalyticsController::class, 'products'])->name('analytics.products');
-    Route::get('/analytics/users', [AnalyticsController::class, 'users'])->name('analytics.users');
-    Route::get('/analytics/traffic', [AnalyticsController::class, 'traffic'])->name('analytics.traffic');
-    Route::get('/analytics/conversion', [AnalyticsController::class, 'conversion'])->name('analytics.conversion');
-    Route::get('/analytics/search', [AnalyticsController::class, 'search'])->name('analytics.search');
-    Route::get('/analytics/chart-data', [AnalyticsController::class, 'getChartData'])->name('analytics.chart-data');
-    Route::get('/analytics/export', [AnalyticsController::class, 'export'])->name('analytics.export');
-    
-    // SEO Admin Routes
-    Route::get('/seo/meta', [SEOController::class, 'generateMeta'])->name('seo.meta');
-    Route::get('/seo/structured-data', [SEOController::class, 'generateStructuredData'])->name('seo.structured-data');
-    Route::post('/seo/optimize-slug', [SEOController::class, 'optimizeSlug'])->name('seo.optimize-slug');
-    
-    // Inventory Management Routes
-    Route::prefix('inventory')->name('inventory.')->group(function () {
-        Route::get('/', [InventoryController::class, 'index'])->name('index');
-        Route::post('/adjust', [InventoryController::class, 'adjust'])->name('adjust');
-        Route::get('/movements/{product}', [InventoryController::class, 'movements'])->name('movements');
-        Route::get('/forecast/{product}', [InventoryController::class, 'forecast'])->name('forecast');
-        Route::get('/report', [InventoryController::class, 'report'])->name('report');
-        Route::get('/low-stock', [InventoryController::class, 'lowStockAlert'])->name('low-stock');
-        Route::post('/bulk-adjust', [InventoryController::class, 'bulkAdjustment'])->name('bulk-adjust');
-        Route::get('/export-movements', [InventoryController::class, 'exportMovements'])->name('export-movements');
-    });
-});
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -339,6 +303,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('users.edit');
         Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
         Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.destroy');
+        Route::post('/users/bulk-action', [AdminController::class, 'bulkUserAction'])->name('users.bulk-action');
         
         // Order Management
         Route::get('/orders', [AdminController::class, 'orders'])->name('orders.index');
@@ -427,6 +392,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Media/File Manager
         Route::prefix('media')->name('media.')->group(function () {
             Route::get('/', [AdminController::class, 'mediaIndex'])->name('index');
+            Route::get('/files', [AdminController::class, 'getFiles'])->name('files');
             Route::post('/upload', [AdminController::class, 'uploadFile'])->name('upload');
             Route::post('/folder', [AdminController::class, 'createFolder'])->name('folder.create');
             Route::put('/rename', [AdminController::class, 'renameFile'])->name('rename');
@@ -436,6 +402,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         // System Logs
         Route::prefix('system')->name('system.')->group(function () {
+            Route::get('/', function () { return redirect()->route('admin.system.logs'); })->name('index');
             Route::get('/logs', [AdminController::class, 'systemLogs'])->name('logs');
             Route::post('/logs/clear', [AdminController::class, 'clearLogs'])->name('logs.clear');
             Route::get('/logs/download', [AdminController::class, 'downloadLogs'])->name('logs.download');
@@ -483,6 +450,25 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/{chatRoom}/priority', [\App\Http\Controllers\Admin\ChatController::class, 'updatePriority'])->name('priority');
             Route::post('/{chatRoom}/typing', [\App\Http\Controllers\Admin\ChatController::class, 'typing'])->name('typing');
             Route::get('/stats/live', [\App\Http\Controllers\Admin\ChatController::class, 'getStats'])->name('stats');
+        });
+        
+        // Performance Management
+        Route::get('/performance', [\App\Http\Controllers\Web\PerformanceController::class, 'dashboard'])->name('performance.dashboard');
+        Route::post('/performance/clear-cache', [\App\Http\Controllers\Web\PerformanceController::class, 'clearCache'])->name('performance.clear-cache');
+        Route::post('/performance/warm-cache', [\App\Http\Controllers\Web\PerformanceController::class, 'warmUpCache'])->name('performance.warm-cache');
+        Route::post('/performance/optimize-db', [\App\Http\Controllers\Web\PerformanceController::class, 'optimizeDatabase'])->name('performance.optimize-db');
+        Route::get('/performance/metrics', [\App\Http\Controllers\Web\PerformanceController::class, 'getPerformanceMetrics'])->name('performance.metrics');
+        
+        // Inventory Management Routes
+        Route::prefix('inventory')->name('inventory.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\InventoryController::class, 'index'])->name('index');
+            Route::post('/adjust', [\App\Http\Controllers\Admin\InventoryController::class, 'adjust'])->name('adjust');
+            Route::get('/movements/{product}', [\App\Http\Controllers\Admin\InventoryController::class, 'movements'])->name('movements');
+            Route::get('/forecast/{product}', [\App\Http\Controllers\Admin\InventoryController::class, 'forecast'])->name('forecast');
+            Route::get('/report', [\App\Http\Controllers\Admin\InventoryController::class, 'report'])->name('report');
+            Route::get('/low-stock', [\App\Http\Controllers\Admin\InventoryController::class, 'lowStockAlert'])->name('low-stock');
+            Route::post('/bulk-adjust', [\App\Http\Controllers\Admin\InventoryController::class, 'bulkAdjustment'])->name('bulk-adjust');
+            Route::get('/export-movements', [\App\Http\Controllers\Admin\InventoryController::class, 'exportMovements'])->name('export-movements');
         });
     });
 });

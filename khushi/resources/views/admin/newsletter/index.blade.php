@@ -160,7 +160,7 @@
                             </span>
                         </td>
                         <td>{{ $subscriber->subscribed_at ? $subscriber->subscribed_at->format('M d, Y') : $subscriber->created_at->format('M d, Y') }}</td>
-                        <td>Website</td>
+                        <td>{{ $subscriber->source ?? 'Website' }}</td>
                         <td>
                             <div class="btn-group" role="group">
                                 <button class="btn btn-sm btn-outline-primary" onclick="editSubscriber({{ $subscriber->id }})">
@@ -342,20 +342,36 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Check if DataTable is already initialized
-    if ($.fn.DataTable.isDataTable('#subscribersTable')) {
-        $('#subscribersTable').DataTable().destroy();
+    // Initialize DataTable with proper error handling
+    try {
+        // Check if DataTable is already initialized
+        if ($.fn.DataTable.isDataTable('#subscribersTable')) {
+            $('#subscribersTable').DataTable().destroy();
+        }
+        
+        // Initialize DataTable
+        $('#subscribersTable').DataTable({
+            pageLength: 25,
+            order: [[4, 'desc']],
+            columnDefs: [
+                { orderable: false, targets: [0, 6] }
+            ],
+            autoWidth: false,
+            responsive: true,
+            language: {
+                emptyTable: "No subscribers found"
+            },
+            drawCallback: function() {
+                // Re-bind event handlers after table redraw
+                $('.subscriber-checkbox').off('change').on('change', function() {
+                    updateBulkActions();
+                });
+            }
+        });
+    } catch (error) {
+        console.log('DataTable initialization error:', error);
+        // Fallback: just show the table without DataTable features
     }
-    
-    $('#subscribersTable').DataTable({
-        pageLength: 25,
-        order: [[4, 'desc']],
-        columnDefs: [
-            { orderable: false, targets: [0, 6] }
-        ],
-        autoWidth: false,
-        responsive: true
-    });
 });
 
 // Select all functionality

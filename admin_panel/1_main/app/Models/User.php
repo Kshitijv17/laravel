@@ -22,6 +22,7 @@ class User extends Authenticatable
         'password',
         'is_guest',
         'expires_at',
+        'role',
     ];
 
     /**
@@ -47,5 +48,125 @@ class User extends Authenticatable
             'is_guest' => 'boolean',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Check if the user is a guest
+     */
+    public function isGuest(): bool
+    {
+        return $this->role === 'guest';
+    }
+
+    /**
+     * Check if the user is a customer
+     */
+    public function isCustomer(): bool
+    {
+        return $this->role === 'customer';
+    }
+
+    /**
+     * Check if the user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if the user is a super admin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
+    }
+
+    /**
+     * Get the user's role display name
+     */
+    public function getRoleDisplayAttribute(): string
+    {
+        return match($this->role) {
+            'guest' => 'Guest',
+            'customer' => 'Customer',
+            'admin' => 'Admin',
+            'superadmin' => 'Super Admin',
+            default => 'Customer'
+        };
+    }
+
+    /**
+     * Get the user's role badge color
+     */
+    public function getRoleBadgeColorAttribute(): string
+    {
+        return match($this->role) {
+            'guest' => 'secondary',
+            'customer' => 'primary',
+            'admin' => 'warning',
+            'superadmin' => 'danger',
+            default => 'secondary'
+        };
+    }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'user_permissions');
+    }
+
+    /**
+     * Check if user has a specific permission
+     */
+    public function hasPermission($permission): bool
+    {
+        // Super admins have all permissions
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        // Regular admins have admin permissions by default
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        // Check specific permissions for regular users
+        return $this->permissions()->where('name', $permission)->exists();
+    }
+
+    /**
+     * Check if user has any of the given permissions
+     */
+    public function hasAnyPermission(array $permissions): bool
+    {
+        // Super admins have all permissions
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        // Regular admins have admin permissions by default
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        // Check if user has any of the specified permissions
+        return $this->permissions()->whereIn('name', $permissions)->exists();
+    }
+
+    /**
+     * Assign permissions to user
+     */
+    public function assignPermissions(array $permissions)
+    {
+        $permissionIds = Permission::whereIn('name', $permissions)->pluck('id');
+        $this->permissions()->sync($permissionIds);
+    }
+
+    /**
+     * Get user's permissions as array
+     */
+    public function getPermissionsArray(): array
+    {
+        return $this->permissions->pluck('name')->toArray();
     }
 }
