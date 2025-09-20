@@ -12,19 +12,20 @@
     <style type="text/tailwindcss">
         :root {
             --background-light: #F5F7F0;
-            --background-dark: #292E1E;
+            --background-dark: #2D3748;
             --card-light: #FFFFFF;
-            --card-dark: #3A412A;
-            --text-light: #6B7280;
-            --text-dark: #C6D1B3;
-            --heading-light: #374151;
-            --heading-dark: #FBFBF3;
-            --border-light: #E5E7EB;
-            --border-dark: #4F583B;
-            --accent-light: #10B981;
-            --accent-dark: #A5D6A7;
-            --primary: #FFFFFF;
-            --sidebar-bg: #10B981;
+            --card-dark: #4A5568;
+            --text-light: #4A5568;
+            --text-dark: #E2E8F0;
+            --heading-light: #2D3748;
+            --heading-dark: #F7FAFC;
+            --border-light: #E2E8F0;
+            --border-dark: #4A5568;
+            --accent-light: #68D391;
+            --accent-dark: #9AE6B4;
+            --primary: #F0FFF4;
+            --sidebar-bg: #68D391;
+            --sidebar-active: #48BB78;
         }
         .font-display {
             font-family: 'Montserrat', sans-serif;
@@ -52,55 +53,55 @@
 <body class="font-display bg-[var(--background-light)] dark:bg-[var(--background-dark)] text-[var(--text-light)] dark:text-[var(--text-dark)]">
 <div class="flex h-screen">
     <!-- Sidebar -->
-    <aside class="w-64 flex-shrink-0 bg-[var(--primary)] dark:bg-[var(--card-dark)] text-gray-800 dark:text-gray-200 flex flex-col shadow-lg">
-        <div class="h-20 flex items-center justify-center border-b border-[var(--border-light)] dark:border-[var(--border-dark)]">
+    <aside class="w-64 flex-shrink-0 bg-[var(--sidebar-bg)] text-white flex flex-col shadow-lg">
+        <div class="h-20 flex items-center justify-center border-b border-white border-opacity-20">
             @if(auth()->user()->shop && auth()->user()->shop->logo)
                 <img src="{{ asset('storage/' . auth()->user()->shop->logo) }}" alt="Shop Logo" class="w-8 h-8 rounded-full mr-2">
             @else
-                <span class="material-symbols-outlined text-3xl text-[var(--accent-light)] dark:text-[var(--accent-dark)] mr-2">storefront</span>
+                <span class="material-symbols-outlined text-3xl text-white mr-2">eco</span>
             @endif
-            <h1 class="text-xl font-serif font-bold text-[var(--heading-light)] dark:text-[var(--heading-dark)]">
-                {{ auth()->user()->shop->name ?? 'My Shop' }}
+            <h1 class="text-xl font-serif font-bold text-white">
+                {{ auth()->user()->shop->name ?? 'HerbDash' }}
             </h1>
         </div>
         
-        <nav class="flex-1 px-4 py-6 space-y-2">
-            <a class="flex items-center px-4 py-2 rounded-lg {{ request()->routeIs('shopkeeper.dashboard') ? 'bg-[var(--accent-light)] text-white dark:bg-[var(--accent-dark)] dark:text-[var(--background-dark)]' : 'hover:bg-green-100 dark:hover:bg-gray-700' }}" href="{{ route('shopkeeper.dashboard') }}">
-                <span class="material-symbols-outlined mr-3">dashboard</span> Dashboard
+        <nav class="flex-1 px-4 py-6 space-y-1">
+            <a class="flex items-center px-4 py-3 rounded-lg text-white {{ request()->routeIs('shopkeeper.dashboard') ? 'bg-[var(--sidebar-active)] bg-opacity-80' : 'hover:bg-white hover:bg-opacity-10' }} transition-all duration-200" href="{{ route('shopkeeper.dashboard') }}">
+                <span class="material-symbols-outlined mr-3 text-lg">dashboard</span> Dashboard
             </a>
             
             @if(!auth()->user()->shop)
-                <a class="flex items-center px-4 py-2 rounded-lg {{ request()->routeIs('shopkeeper.shop.*') ? 'bg-[var(--accent-light)] text-white dark:bg-[var(--accent-dark)] dark:text-[var(--background-dark)]' : 'hover:bg-green-100 dark:hover:bg-gray-700' }}" href="{{ route('shopkeeper.shop.create') }}">
-                    <span class="material-symbols-outlined mr-3">add_business</span> Setup Shop
+                <a class="flex items-center px-4 py-3 rounded-lg text-white {{ request()->routeIs('shopkeeper.shop.*') ? 'bg-[var(--sidebar-active)] bg-opacity-80' : 'hover:bg-white hover:bg-opacity-10' }} transition-all duration-200" href="{{ route('shopkeeper.shop.create') }}">
+                    <span class="material-symbols-outlined mr-3 text-lg">add_business</span> Setup Shop
                 </a>
             @else
-                <a class="flex items-center px-4 py-2 rounded-lg {{ request()->routeIs('shopkeeper.shop.*') ? 'bg-[var(--accent-light)] text-white dark:bg-[var(--accent-dark)] dark:text-[var(--background-dark)]' : 'hover:bg-green-100 dark:hover:bg-gray-700' }}" href="{{ route('shopkeeper.shop.edit') }}">
-                    <span class="material-symbols-outlined mr-3">storefront</span> Manage Shop
+                <a class="flex items-center px-4 py-3 rounded-lg text-white {{ request()->routeIs('shopkeeper.shop.*') ? 'bg-[var(--sidebar-active)] bg-opacity-80' : 'hover:bg-white hover:bg-opacity-10' }} transition-all duration-200" href="{{ route('shopkeeper.shop.edit') }}">
+                    <span class="material-symbols-outlined mr-3 text-lg">spa</span> Manage Shop
                 </a>
             @endif
             
-            <a class="flex items-center px-4 py-2 rounded-lg {{ request()->routeIs('shopkeeper.products.*') ? 'bg-[var(--accent-light)] text-white dark:bg-[var(--accent-dark)] dark:text-[var(--background-dark)]' : 'hover:bg-green-100 dark:hover:bg-gray-700' }}" href="{{ route('shopkeeper.products.index') }}">
-                <span class="material-symbols-outlined mr-3">inventory_2</span> Products
+            <a class="flex items-center px-4 py-3 rounded-lg text-white {{ request()->routeIs('shopkeeper.products.*') ? 'bg-[var(--sidebar-active)] bg-opacity-80' : 'hover:bg-white hover:bg-opacity-10' }} transition-all duration-200" href="{{ route('shopkeeper.products.index') }}">
+                <span class="material-symbols-outlined mr-3 text-lg">grass</span> Products
             </a>
-            <a class="flex items-center px-4 py-2 rounded-lg {{ request()->routeIs('shopkeeper.orders.*') ? 'bg-[var(--accent-light)] text-white dark:bg-[var(--accent-dark)] dark:text-[var(--background-dark)]' : 'hover:bg-green-100 dark:hover:bg-gray-700' }}" href="{{ route('shopkeeper.orders.index') }}">
-                <span class="material-symbols-outlined mr-3">receipt_long</span> Orders
+            <a class="flex items-center px-4 py-3 rounded-lg text-white {{ request()->routeIs('shopkeeper.orders.*') ? 'bg-[var(--sidebar-active)] bg-opacity-80' : 'hover:bg-white hover:bg-opacity-10' }} transition-all duration-200" href="{{ route('shopkeeper.orders.index') }}">
+                <span class="material-symbols-outlined mr-3 text-lg">receipt_long</span> Orders
             </a>
-            <a class="flex items-center px-4 py-2 rounded-lg {{ request()->routeIs('shopkeeper.categories.*') ? 'bg-[var(--accent-light)] text-white dark:bg-[var(--accent-dark)] dark:text-[var(--background-dark)]' : 'hover:bg-green-100 dark:hover:bg-gray-700' }}" href="{{ route('shopkeeper.categories.index') }}">
-                <span class="material-symbols-outlined mr-3">category</span> Categories
+            <a class="flex items-center px-4 py-3 rounded-lg text-white {{ request()->routeIs('shopkeeper.categories.*') ? 'bg-[var(--sidebar-active)] bg-opacity-80' : 'hover:bg-white hover:bg-opacity-10' }} transition-all duration-200" href="{{ route('shopkeeper.categories.index') }}">
+                <span class="material-symbols-outlined mr-3 text-lg">eco</span> Categories
             </a>
-            <a class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 dark:hover:bg-gray-700" href="#">
-                <span class="material-symbols-outlined mr-3">analytics</span> Analytics
+            <a class="flex items-center px-4 py-3 rounded-lg text-white hover:bg-white hover:bg-opacity-10 transition-all duration-200" href="#">
+                <span class="material-symbols-outlined mr-3 text-lg">potted_plant</span> Analytics
             </a>
-            <a class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 dark:hover:bg-gray-700" href="#">
-                <span class="material-symbols-outlined mr-3">settings</span> Settings
+            <a class="flex items-center px-4 py-3 rounded-lg text-white hover:bg-white hover:bg-opacity-10 transition-all duration-200" href="#">
+                <span class="material-symbols-outlined mr-3 text-lg">settings</span> Settings
             </a>
         </nav>
         
-        <div class="p-4 border-t border-green-600">
+        <div class="p-4 border-t border-white border-opacity-20">
             <form action="{{ route('shopkeeper.logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="flex items-center px-4 py-3 rounded-lg text-green-100 hover:bg-green-600 hover:text-white transition-colors duration-200 w-full text-left">
-                    <span class="material-symbols-outlined mr-3 text-sm">logout</span> Logout
+                <button type="submit" class="flex items-center px-4 py-3 rounded-lg text-white hover:bg-red-500 hover:bg-opacity-20 w-full text-left transition-all duration-200">
+                    <span class="material-symbols-outlined mr-3 text-lg">logout</span> Logout
                 </button>
             </form>
         </div>
@@ -108,28 +109,25 @@
     
     <!-- Main Content -->
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8">
+        <header class="h-16 bg-white border-b border-[var(--border-light)] flex items-center justify-between px-8 shadow-sm">
             <div class="flex items-center">
-                <button class="md:hidden mr-4">
-                    <span class="material-symbols-outlined">menu</span>
-                </button>
-                <h2 class="text-2xl font-semibold text-gray-800">@yield('page-title', 'Dashboard')</h2>
+                <h2 class="text-2xl font-semibold text-[var(--heading-light)]">@yield('page-title', 'Dashboard')</h2>
             </div>
-            <div class="flex items-center space-x-6">
-                <button class="p-2 rounded-lg hover:bg-gray-100">
-                    <span class="material-symbols-outlined text-gray-600">notifications</span>
+            <div class="flex items-center space-x-4">
+                <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                    <span class="material-symbols-outlined text-[var(--text-light)]">notifications</span>
                 </button>
                 <div class="flex items-center space-x-3">
                     @if(auth()->user()->shop && auth()->user()->shop->logo)
-                        <img alt="Shop avatar" class="w-10 h-10 rounded-full border-2 border-green-500" src="{{ asset('storage/' . auth()->user()->shop->logo) }}">
+                        <img alt="Shop avatar" class="w-10 h-10 rounded-full border-2 border-[var(--accent-light)]" src="{{ asset('storage/' . auth()->user()->shop->logo) }}">
                     @else
-                        <div class="w-10 h-10 rounded-full border-2 border-green-500 bg-green-500 flex items-center justify-center">
+                        <div class="w-10 h-10 rounded-full border-2 border-[var(--accent-light)] bg-[var(--accent-light)] flex items-center justify-center">
                             <span class="material-symbols-outlined text-white text-sm">person</span>
                         </div>
                     @endif
                     <div>
-                        <p class="font-semibold text-gray-800">{{ auth()->user()->name }}</p>
-                        <p class="text-sm text-gray-500">Admin</p>
+                        <p class="font-semibold text-[var(--heading-light)]">{{ auth()->user()->name }}</p>
+                        <p class="text-sm text-[var(--text-light)]">Shopkeeper</p>
                     </div>
                 </div>
             </div>

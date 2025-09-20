@@ -5,31 +5,67 @@
 @section('content')
 <!-- Hero Section -->
 <section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center">
+    <div class="container hero-content">
+        <div class="row align-items-center min-vh-50">
             <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">Discover Amazing Products</h1>
-                <p class="lead mb-4">Shop from thousands of verified sellers and find exactly what you're looking for at the best prices.</p>
-                <div class="d-flex gap-3 mb-4">
-                    <div class="text-center">
-                        <h3 class="fw-bold">{{ $stats['total_products'] }}+</h3>
-                        <small>Products</small>
-                    </div>
-                    <div class="text-center">
-                        <h3 class="fw-bold">{{ $stats['total_shops'] }}+</h3>
-                        <small>Shops</small>
-                    </div>
-                    <div class="text-center">
-                        <h3 class="fw-bold">{{ $stats['total_categories'] }}+</h3>
-                        <small>Categories</small>
-                    </div>
+                <div class="mb-4">
+                    <span class="badge bg-white text-primary px-3 py-2 rounded-pill mb-3" style="font-weight: 600; color: #65a30d !important;">Best products for hair growth</span>
                 </div>
-                <a href="#products" class="btn btn-light btn-lg">
-                    <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+                <h1 class="display-4 fw-bold mb-4" style="line-height: 1.1;">Best products for hair growth</h1>
+                <p class="lead mb-5" style="font-size: 1.1rem; opacity: 0.9;">Shop from the best hair care products</p>
+                <a href="#products" class="btn btn-light btn-lg px-4 py-3" style="font-weight: 600; border-radius: 12px;">
+                    Shop now
                 </a>
             </div>
             <div class="col-lg-6 text-center">
-                <i class="fas fa-shopping-cart" style="font-size: 200px; opacity: 0.3;"></i>
+                <div class="position-relative">
+                    <!-- Decorative elements similar to the uploaded image -->
+                    <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
+                        <div class="position-relative">
+                            <!-- Main product showcase area -->
+                            <div class="bg-white rounded-4 p-4 shadow-lg" style="width: 300px; height: 200px; display: flex; align-items: center; justify-content: center;">
+                                <div class="text-center">
+                                    <i class="fas fa-leaf" style="font-size: 3rem; margin-bottom: 1rem; color: #16a34a;"></i>
+                                    <h5 class="text-dark mb-0">Natural Products</h5>
+                                    <small class="text-muted">Organic & Safe</small>
+                                </div>
+                            </div>
+                            <!-- Floating elements -->
+                            <div class="position-absolute" style="top: -20px; right: -30px; width: 60px; height: 60px; background: #84cc16; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check text-white"></i>
+                            </div>
+                            <div class="position-absolute" style="bottom: -20px; left: -30px; width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; backdrop-filter: blur(10px);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Row -->
+        <div class="row mt-5 pt-4">
+            <div class="col-md-3 col-6 text-center mb-3">
+                <div class="bg-white bg-opacity-20 rounded-3 p-3 backdrop-blur">
+                    <h3 class="fw-bold mb-1">{{ $stats['total_products'] }}+</h3>
+                    <small class="opacity-75">Products</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 text-center mb-3">
+                <div class="bg-white bg-opacity-20 rounded-3 p-3 backdrop-blur">
+                    <h3 class="fw-bold mb-1">{{ $stats['total_shops'] }}+</h3>
+                    <small class="opacity-75">Shops</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 text-center mb-3">
+                <div class="bg-white bg-opacity-20 rounded-3 p-3 backdrop-blur">
+                    <h3 class="fw-bold mb-1">{{ $stats['total_categories'] }}+</h3>
+                    <small class="opacity-75">Categories</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 text-center mb-3">
+                <div class="bg-white bg-opacity-20 rounded-3 p-3 backdrop-blur">
+                    <h3 class="fw-bold mb-1">1000+</h3>
+                    <small class="opacity-75">Happy Customers</small>
+                </div>
             </div>
         </div>
     </div>
@@ -37,17 +73,18 @@
 
 <!-- Featured Products -->
 @if($featuredProducts->count() > 0)
-<section class="py-5">
+<section class="py-5" style="background: #f7fee7;">
     <div class="container">
-        <div class="row mb-4">
+        <div class="row mb-5">
             <div class="col-12 text-center">
-                <h2 class="fw-bold">Featured Products</h2>
-                <p class="text-muted">Hand-picked products from our best sellers</p>
+                <span class="badge px-3 py-2 rounded-pill mb-3" style="font-weight: 600; background: rgba(101, 163, 13, 0.1); color: #65a30d;">Trending Product</span>
+                <h2 class="fw-bold mb-3" style="font-size: 2.5rem;">Trending Product</h2>
+                <p class="text-muted fs-5">These are very popular products for the last few months</p>
             </div>
         </div>
-        <div class="row">
+        <div class="row g-4">
             @foreach($featuredProducts as $product)
-                <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                <div class="col-lg-3 col-md-6 mb-4">
                     <div class="card product-card h-100">
                         <div class="position-relative">
                             @if($product->image)
@@ -116,10 +153,11 @@
 <!-- Filters and Products Section -->
 <section class="py-5" id="products">
     <div class="container">
-        <div class="row mb-4">
-            <div class="col-12">
-                <h2 class="fw-bold">All Products</h2>
-                <p class="text-muted">Browse our complete collection</p>
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <span class="badge px-3 py-2 rounded-pill mb-3" style="font-weight: 600; background: rgba(132, 204, 22, 0.1); color: #84cc16;">Best Selling Product</span>
+                <h2 class="fw-bold mb-3" style="font-size: 2.5rem;">Best Selling Product</h2>
+                <p class="text-muted fs-5">These are very popular products for the last few months</p>
             </div>
         </div>
         
@@ -191,10 +229,10 @@
         </div>
         
         <!-- Products Grid -->
-        <div class="row">
+        <div class="row g-4">
             @if($products->count() > 0)
                 @foreach($products as $product)
-                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="col-lg-3 col-md-6 mb-4">
                         <div class="card product-card h-100">
                             <div class="position-relative">
                                 @if($product->image)
@@ -275,6 +313,53 @@
                 </div>
             </div>
         @endif
+    </div>
+</section>
+
+<!-- Kind Words Section -->
+<section class="py-5" style="background: #f0fdf4;">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <span class="badge px-3 py-2 rounded-pill mb-3" style="font-weight: 600; background: rgba(22, 163, 74, 0.1); color: #16a34a;">Kind Words</span>
+                <h2 class="fw-bold mb-3" style="font-size: 2.5rem;">Kind Words</h2>
+                <p class="text-muted fs-5">What our customers say about our products and services</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-6 mb-4">
+                <div class="testimonial-card">
+                    <div class="d-flex align-items-start mb-3">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face" 
+                             alt="Customer" class="testimonial-avatar me-3">
+                        <div>
+                            <h6 class="mb-1 fw-bold">Sarah Johnson</h6>
+                            <small class="text-muted">Verified Customer</small>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-0">"I can't say enough good things about this organic shampoo. My hair has never looked or felt better. The natural ingredients really make a difference, and I love that it's environmentally friendly too."</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 mb-4">
+                <div class="testimonial-card">
+                    <div class="d-flex align-items-start mb-3">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" 
+                             alt="Customer" class="testimonial-avatar me-3">
+                        <div>
+                            <h6 class="mb-1 fw-bold">Michael Chen</h6>
+                            <small class="text-muted">Regular Customer</small>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-0">"Fast shipping and great customer service! I've been using their hair growth serum for 3 months now and I'm seeing real results. The quality is outstanding and the price is very reasonable."</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="#" class="btn btn-outline-primary">View all reviews</a>
+        </div>
     </div>
 </section>
 @endsection

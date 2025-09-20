@@ -12,12 +12,12 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::latest()->get();
-        return view('admin.categories.index', compact('categories'));
+        return view('shopkeeper.categories.index', compact('categories'));
     }
 
     public function create()
     {
-        return view('admin.categories.create');
+        return view('shopkeeper.categories.create');
     }
 
     public function store(Request $request)

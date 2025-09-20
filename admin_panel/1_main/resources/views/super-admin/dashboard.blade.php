@@ -1,47 +1,134 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        .dashboard-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: none;
-            border-radius: 15px;
-        }
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px;
-        }
-        .navbar-custom {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-        }
-    </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#">
-                <i class="fas fa-crown text-warning me-2"></i>Super Admin Panel
-            </a>
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle me-1"></i>{{ auth()->user()->name }}
+@extends('super-admin.layout')
+
+@section('title', 'Super Admin Dashboard')
+@section('page-title', 'Dashboard Overview')
+
+@section('content')
+<!-- Welcome Hero Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" style="background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); border: none; color: white;">
+            <div class="card-body py-5">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3" style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-crown fa-2x"></i>
+                            </div>
+                            <div>
+                                <h1 class="mb-1" style="font-size: 2rem; font-weight: 800;">Welcome back, Super Admin!</h1>
+                                <p class="mb-0 opacity-75" style="font-size: 1.1rem;">You have complete control over the marketplace ecosystem</p>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-4 mt-4">
+                            <div class="text-center">
+                                <div style="background: rgba(255,255,255,0.2); border-radius: 12px; padding: 1rem; backdrop-filter: blur(10px);">
+                                    <h3 class="mb-1">{{ \App\Models\Shop::count() }}</h3>
+                                    <small class="opacity-75">Active Shops</small>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <div style="background: rgba(255,255,255,0.2); border-radius: 12px; padding: 1rem; backdrop-filter: blur(10px);">
+                                    <h3 class="mb-1">{{ \App\Models\Product::count() }}</h3>
+                                    <small class="opacity-75">Total Products</small>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <div style="background: rgba(255,255,255,0.2); border-radius: 12px; padding: 1rem; backdrop-filter: blur(10px);">
+                                    <h3 class="mb-1">{{ \App\Models\Order::count() }}</h3>
+                                    <small class="opacity-75">Orders Today</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <div class="position-relative">
+                            <div style="width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; backdrop-filter: blur(10px);">
+                                <i class="fas fa-chart-line" style="font-size: 4rem; opacity: 0.7;"></i>
+                            </div>
+                            <div class="position-absolute" style="top: -10px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-trending-up"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Metrics Cards -->
+<div class="row g-4 mb-5">
+    <div class="col-lg-3 col-md-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                    <i class="fas fa-store fa-lg text-white"></i>
+                </div>
+                <h3 class="fw-bold text-primary">{{ \App\Models\Shop::count() }}</h3>
+                <p class="text-muted mb-2">Total Shops</p>
+                <div class="d-flex justify-content-center align-items-center">
+                    <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill">
+                        <i class="fas fa-arrow-up me-1"></i>+12%
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--success-color), #047857); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                    <i class="fas fa-box-open fa-lg text-white"></i>
+                </div>
+                <h3 class="fw-bold text-success">{{ \App\Models\Product::count() }}</h3>
+                <p class="text-muted mb-2">Products Listed</p>
+                <div class="d-flex justify-content-center align-items-center">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-pill">
+                        <i class="fas fa-arrow-up me-1"></i>+8%
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--warning-color), #d97706); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                    <i class="fas fa-shopping-cart fa-lg text-white"></i>
+                </div>
+                <h3 class="fw-bold text-warning">{{ \App\Models\Order::count() }}</h3>
+                <p class="text-muted mb-2">Total Orders</p>
+                <div class="d-flex justify-content-center align-items-center">
+                    <span class="badge bg-warning bg-opacity-10 text-warning px-2 py-1 rounded-pill">
+                        <i class="fas fa-arrow-up me-1"></i>+24%
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--info-color), #0e7490); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                    <i class="fas fa-users fa-lg text-white"></i>
+                </div>
+                <h3 class="fw-bold text-info">{{ \App\Models\User::where('role', 'admin')->count() }}</h3>
+                <p class="text-muted mb-2">Shopkeepers</p>
+                <div class="d-flex justify-content-center align-items-center">
+                    <span class="badge bg-info bg-opacity-10 text-info px-2 py-1 rounded-pill">
+                        <i class="fas fa-arrow-up me-1"></i>+5%
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Management Grid -->
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('super-admin.dashboard') }}">Dashboard</a></li>

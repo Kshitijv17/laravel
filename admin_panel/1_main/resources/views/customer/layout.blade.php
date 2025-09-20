@@ -10,150 +10,456 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary-color: #007bff;
-            --secondary-color: #6c757d;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --info-color: #17a2b8;
+            --primary-color: #65a30d;
+            --secondary-color: #84cc16;
+            --accent-color: #a3a3a3;
+            --success-color: #16a34a;
+            --danger-color: #dc2626;
+            --warning-color: #eab308;
+            --info-color: #059669;
+            --dark-color: #365314;
+            --light-color: #f7fee7;
+            --border-color: #d9f99d;
+            --text-primary: #1a2e05;
+            --text-secondary: #365314;
+            --text-muted: #65a30d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #ffffff;
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-weight: 400;
+        }
+        
+        /* Modern Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
         }
         
         .navbar-brand {
-            font-weight: bold;
-            font-size: 1.5rem;
+            font-weight: 700;
+            font-size: 1.75rem;
+            color: var(--primary-color) !important;
+            letter-spacing: -0.025em;
         }
         
-        .product-card {
-            transition: transform 0.2s, box-shadow 0.2s;
+        .navbar-nav .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            background-color: var(--light-color);
+            color: var(--primary-color) !important;
+        }
+        
+        .dropdown-menu {
             border: none;
-            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-radius: 0.75rem;
+            padding: 0.5rem;
+        }
+        
+        .dropdown-item {
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--light-color);
+            color: var(--primary-color);
+        }
+        
+        /* Modern Search Bar */
+        .search-bar {
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            background: white;
+            transition: all 0.2s ease;
+        }
+        
+        .search-bar:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(101, 163, 13, 0.1);
+            outline: none;
+        }
+        
+        .search-btn {
+            border: 2px solid var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .search-btn:hover {
+            background: #16a34a;
+            border-color: #16a34a;
+            transform: translateY(-1px);
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #84cc16 0%, #65a30d 50%, #16a34a 100%);
+            color: white;
+            padding: 5rem 0;
+            position: relative;
             overflow: hidden;
         }
         
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Modern Product Cards */
+        .product-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
         .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: var(--primary-color);
         }
         
         .product-image {
-            height: 200px;
+            height: 240px;
             object-fit: cover;
             width: 100%;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+        
+        .product-card .card-body {
+            padding: 1.25rem;
+        }
+        
+        .card-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
         }
         
         .price-tag {
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 1.25rem;
+            font-weight: 700;
             color: var(--primary-color);
         }
         
         .original-price {
             text-decoration: line-through;
-            color: var(--secondary-color);
+            color: var(--text-muted);
             font-size: 0.9rem;
+            font-weight: 500;
         }
         
         .discount-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 0.75rem;
+            right: 0.75rem;
             background: var(--danger-color);
             color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
         }
         
         .shop-badge {
             background: var(--info-color);
             color: white;
-            padding: 3px 8px;
-            border-radius: 12px;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
             font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-right: 0.5rem;
+            margin-bottom: 0.25rem;
         }
         
         .category-badge {
             background: var(--secondary-color);
             color: white;
-            padding: 3px 8px;
-            border-radius: 12px;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
             font-size: 0.75rem;
-        }
-        
-        .hero-section {
-            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
-            color: white;
-            padding: 80px 0;
-        }
-        
-        .search-bar {
-            border-radius: 25px;
-            border: none;
-            padding: 12px 20px;
-            font-size: 1.1rem;
-        }
-        
-        .search-btn {
-            border-radius: 25px;
-            padding: 12px 25px;
-        }
-        
-        .filter-card {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .btn-buy-now {
-            background: linear-gradient(45deg, var(--success-color), #20c997);
-            border: none;
-            color: white;
-            font-weight: bold;
-            padding: 10px 20px;
-            border-radius: 25px;
-            transition: all 0.3s;
-        }
-        
-        .btn-buy-now:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
-            color: white;
-        }
-        
-        .footer {
-            background: #343a40;
-            color: white;
-            padding: 40px 0 20px;
-            margin-top: 60px;
+            font-weight: 500;
+            display: inline-block;
         }
         
         .stock-badge {
             font-size: 0.75rem;
-            padding: 3px 8px;
-            border-radius: 12px;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            display: inline-block;
         }
         
         .out-of-stock {
-            background: var(--danger-color);
-            color: white;
+            background: #fecaca;
+            color: var(--danger-color);
         }
         
         .low-stock {
-            background: var(--warning-color);
-            color: #212529;
+            background: #fef08a;
+            color: #a16207;
         }
         
         .in-stock {
-            background: var(--success-color);
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        /* Modern Buttons */
+        .btn {
+            font-weight: 600;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.2s ease;
+            border: none;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
             color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #16a34a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(101, 163, 13, 0.4);
+        }
+        
+        .btn-buy-now {
+            background: linear-gradient(135deg, #84cc16, #65a30d);
+            color: white;
+            font-weight: 600;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-buy-now:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(132, 204, 22, 0.4);
+            color: white;
+        }
+        
+        .btn-outline-secondary {
+            border: 2px solid var(--border-color);
+            color: var(--text-secondary);
+            background: white;
+        }
+        
+        .btn-outline-secondary:hover {
+            background: var(--light-color);
+            border-color: var(--secondary-color);
+            color: var(--text-primary);
+        }
+        
+        /* Filter Card */
+        .filter-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        .filter-card .card-body {
+            padding: 1.5rem;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(101, 163, 13, 0.1);
+            outline: none;
+        }
+        
+        /* Section Headings */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.025em;
+        }
+        
+        .display-4 {
+            font-weight: 800;
+            letter-spacing: -0.05em;
+        }
+        
+        .lead {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 400;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 3rem 0 1.5rem;
+            margin-top: 4rem;
+        }
+        
+        .footer h5, .footer h6 {
+            color: white;
+            font-weight: 600;
+        }
+        
+        .footer .text-muted {
+            color: #94a3b8 !important;
+        }
+        
+        .footer a {
+            transition: color 0.2s ease;
+        }
+        
+        .footer a:hover {
+            color: var(--primary-color) !important;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 3rem 0;
+            }
+            
+            .display-4 {
+                font-size: 2rem;
+            }
+            
+            .product-image {
+                height: 200px;
+            }
+            
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* Additional Modern Styles */
+        .min-vh-50 {
+            min-height: 50vh;
+        }
+        
+        .backdrop-blur {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .bg-opacity-20 {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        .rounded-4 {
+            border-radius: 1.5rem !important;
+        }
+        
+        .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        .fs-5 {
+            font-size: 1.25rem !important;
+        }
+        
+        /* Section Spacing */
+        section {
+            position: relative;
+        }
+        
+        /* Kind Words Section Styling */
+        .testimonial-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--border-color);
+        }
+        
+        /* Utility Classes */
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+        
+        .bg-light {
+            background-color: var(--light-color) !important;
+        }
+        
+        .border-light {
+            border-color: var(--border-color) !important;
         }
     </style>
     
@@ -161,10 +467,10 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="{{ route('customer.home') }}">
-                <i class="fas fa-store me-2"></i>E-Store
+                <a class="navbar-brand" href="{{ route('customer.home') }}">
+                <i class="fas fa-home me-2"></i>H
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

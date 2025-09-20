@@ -1,118 +1,161 @@
 @extends('shopkeeper.layout')
 
+@section('page-title', 'Categories')
+
 @section('content')
-<div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-tags me-2"></i>Categories</h2>
-    <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
-      <i class="fas fa-plus me-1"></i>Add Category
-    </a>
-  </div>
-
-  @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  @endif
-
-  <div class="card">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover mb-0">
-          <thead class="table-dark">
-            <tr>
-              <th width="8%">Image</th>
-              <th width="25%">Title</th>
-              <th width="15%">Status</th>
-              <th width="15%">Home Display</th>
-              <th width="15%">Created</th>
-              <th width="12%">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($categories as $category)
-              <tr>
-                <td>
-                  @if($category->image)
-                    <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->title }}" class="img-thumbnail" style="max-width: 50px; max-height: 50px;">
-                  @else
-                    <div class="text-center">
-                      <i class="fas fa-image text-muted" style="font-size: 24px;"></i>
-                    </div>
-                  @endif
-                </td>
-                <td>
-                  <div class="fw-bold">{{ $category->title }}</div>
-                </td>
-                <td>
-                  <span class="badge {{ $category->active === 'active' ? 'bg-success' : 'bg-secondary' }}">
-                    <i class="fas {{ $category->active === 'active' ? 'fa-check-circle' : 'fa-times-circle' }} me-1"></i>
-                    {{ ucfirst($category->active) }}
-                  </span>
-                </td>
-                <td>
-                  <span class="badge {{ $category->show_on_home === 'show' ? 'bg-info' : 'bg-warning' }}">
-                    <i class="fas {{ $category->show_on_home === 'show' ? 'fa-eye' : 'fa-eye-slash' }} me-1"></i>
-                    {{ ucfirst($category->show_on_home) }}
-                  </span>
-                </td>
-                <td>
-                  <small class="text-muted">{{ $category->created_at ? $category->created_at->format('M d, Y') : 'N/A' }}</small>
-                </td>
-                <td>
-                  <div class="btn-group" role="group">
-                    <a href="{{ route('admin.categories.show', $category) }}" class="btn btn-sm btn-info" title="View Category">
-                      <i class="fas fa-eye"></i>
-                    </a>
-                    <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-sm btn-warning" title="Edit Category">
-                      <i class="fas fa-edit"></i>
-                    </a>
-                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="d-inline">
-                      @csrf @method('DELETE')
-                      <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this category?')" title="Delete Category">
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    @if($categories->isEmpty())
-      <div class="card-body text-center py-5">
-        <i class="fas fa-tags fa-4x text-muted mb-3"></i>
-        <h4 class="text-muted">No Categories Found</h4>
-        <p class="text-muted">Start by adding your first category to organize your products.</p>
-        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
-          <i class="fas fa-plus me-1"></i>Add Your First Category
-        </a>
-      </div>
-    @endif
-  </div>
+<div class="mb-6">
+    <h3 class="text-2xl font-bold text-gray-900 mb-2">Herbal Categories</h3>
+    <p class="text-gray-600">Organize your herbal products into categories</p>
 </div>
 
-<style>
-.table th {
-  vertical-align: middle;
-  font-weight: 600;
-}
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <div class="relative flex-1 max-w-md">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</span>
+        <input type="text" placeholder="Search categories..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+    </div>
+    <a href="{{ route('shopkeeper.categories.create') }}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors duration-200">
+        <span class="material-symbols-outlined">add</span>
+        Add Category
+    </a>
+</div>
 
-.table td {
-  vertical-align: middle;
-}
+@if(session('success'))
+    <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+        <div class="flex items-center">
+            <span class="material-symbols-outlined mr-2">check_circle</span>
+            {{ session('success') }}
+        </div>
+    </div>
+@endif
 
-.btn-group .btn {
-  border-radius: 0.25rem !important;
-  margin-right: 2px;
-}
+<!-- Categories Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    @if(isset($categories) && $categories->count() > 0)
+        @foreach($categories as $category)
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
+                <!-- Category Image -->
+                <div class="h-32 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                    @if($category->image ?? false)
+                        <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->title }}" class="w-full h-full object-cover">
+                    @else
+                        <span class="material-symbols-outlined text-4xl text-green-600">category</span>
+                    @endif
+                </div>
+                
+                <!-- Category Content -->
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $category->title ?? 'Category Name' }}</h3>
+                    
+                    <!-- Status Badge -->
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full {{ ($category->active ?? 'active') === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                            {{ ($category->active ?? 'active') === 'active' ? 'Active' : 'Inactive' }}
+                        </span>
+                        <span class="text-xs text-gray-500">{{ $category->created_at->format('M d, Y') ?? 'Recently' }}</span>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex items-center space-x-2">
+                        <a href="{{ route('shopkeeper.categories.edit', $category->id ?? 1) }}" class="flex-1 bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-1">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                            Edit
+                        </a>
+                        <button onclick="deleteCategory({{ $category->id ?? 1 }})" class="bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    @else
+        <!-- Sample Categories -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
+            <div class="h-32 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                <span class="material-symbols-outlined text-4xl text-green-600">spa</span>
+            </div>
+            <div class="p-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Herbal Teas</h3>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                    <span class="text-xs text-gray-500">Oct 26, 2023</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <a href="#" class="flex-1 bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-1">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                        Edit
+                    </a>
+                    <button class="bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-.badge {
-  font-size: 0.75em;
-}
-</style>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
+            <div class="h-32 bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center">
+                <span class="material-symbols-outlined text-4xl text-yellow-600">local_florist</span>
+            </div>
+            <div class="p-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Essential Oils</h3>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                    <span class="text-xs text-gray-500">Oct 25, 2023</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <a href="#" class="flex-1 bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-1">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                        Edit
+                    </a>
+                    <button class="bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
+            <div class="h-32 bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+                <span class="material-symbols-outlined text-4xl text-purple-600">grass</span>
+            </div>
+            <div class="p-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Tinctures</h3>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                    <span class="text-xs text-gray-500">Oct 24, 2023</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <a href="#" class="flex-1 bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-1">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                        Edit
+                    </a>
+                    <button class="bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
+            <div class="h-32 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                <span class="material-symbols-outlined text-4xl text-blue-600">eco</span>
+            </div>
+            <div class="p-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Topicals</h3>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                    <span class="text-xs text-gray-500">Oct 23, 2023</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <a href="#" class="flex-1 bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-1">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                        Edit
+                    </a>
+                    <button class="bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+</div>
 @endsection
