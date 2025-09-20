@@ -114,7 +114,7 @@
                 @foreach($heroBanners as $index => $banner)
                 <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
                     <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}">
-                    @if(!empty($banner->title) || !empty($banner->description) || !empty($banner->link))
+                    @if(!empty($banner->title) || !empty($banner->description) || !empty($banner->link_url))
                     <div class="carousel-caption text-start d-none d-md-block">
                         @if(!empty($banner->title))
                         <h2 class="fw-bold">{{ $banner->title }}</h2>
@@ -122,8 +122,8 @@
                         @if(!empty($banner->description))
                         <p class="mb-2">{{ $banner->description }}</p>
                         @endif
-                        @if(!empty($banner->link))
-                        <a href="{{ $banner->link }}" class="btn btn-primary btn-sm">Shop Now</a>
+                        @if(!empty($banner->link_url))
+                        <a href="{{ $banner->link_url }}" class="btn btn-primary btn-sm">Shop Now</a>
                         @endif
                     </div>
                     @endif
@@ -154,14 +154,27 @@
 <section class="brands-strip">
     <div class="container">
         <div class="logos">
-            <div class="logo">NIKE</div>
-            <div class="logo">ADIDAS</div>
-            <div class="logo">PUMA</div>
-            <div class="logo">LEVIS</div>
-            <div class="logo">H&amp;M</div>
-            <div class="logo">ZARA</div>
-            <div class="logo">ROADSTER</div>
-            <div class="logo">U.S. POLO</div>
+            @if(isset($brands) && $brands->count() > 0)
+                @foreach($brands as $brand)
+                <div class="logo">
+                    @if($brand->logo)
+                        <img src="{{ $brand->logo_url }}" alt="{{ $brand->name }}" style="max-height: 40px; max-width: 100px;">
+                    @else
+                        {{ strtoupper($brand->name) }}
+                    @endif
+                </div>
+                @endforeach
+            @else
+                <!-- Fallback static brands if no brands in database -->
+                <div class="logo">NIKE</div>
+                <div class="logo">ADIDAS</div>
+                <div class="logo">PUMA</div>
+                <div class="logo">LEVIS</div>
+                <div class="logo">H&amp;M</div>
+                <div class="logo">ZARA</div>
+                <div class="logo">ROADSTER</div>
+                <div class="logo">U.S. POLO</div>
+            @endif
         </div>
     </div>
 </section>
@@ -222,8 +235,8 @@
                 <div class="card-body">
                     <h6 class="card-title mb-1">{{ Str::limit($product->name, 48) }}</h6>
                     <div class="price-section">
-                        @if($product->sale_price && $product->sale_price < $product->price)
-                        <span class="price">${{ number_format($product->sale_price, 2) }}</span>
+                        @if($product->discount_price && $product->discount_price < $product->price)
+                        <span class="price">${{ number_format($product->discount_price, 2) }}</span>
                         <span class="original-price ms-2">${{ number_format($product->price, 2) }}</span>
                         @else
                         <span class="price">${{ number_format($product->price, 2) }}</span>
@@ -269,8 +282,8 @@
                     <div class="card-body">
                         <h6 class="card-title mb-1">{{ Str::limit($product->name, 48) }}</h6>
                         <div class="price-section">
-                            @if($product->sale_price && $product->sale_price < $product->price)
-                            <span class="price">${{ number_format($product->sale_price, 2) }}</span>
+                            @if($product->discount_price && $product->discount_price < $product->price)
+                            <span class="price">${{ number_format($product->discount_price, 2) }}</span>
                             <span class="original-price ms-2">${{ number_format($product->price, 2) }}</span>
                             @else
                             <span class="price">${{ number_format($product->price, 2) }}</span>
@@ -290,7 +303,7 @@
         <div class="row g-3">
             @foreach($midBanners as $banner)
             <div class="col-12 col-md-6 col-lg-4">
-                <a href="{{ $banner->link ?? '#' }}" class="d-block text-decoration-none">
+                <a href="{{ $banner->link_url ?? '#' }}" class="d-block text-decoration-none">
                     <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" class="img-fluid rounded shadow-sm w-100" />
                 </a>
             </div>
@@ -372,8 +385,8 @@
                             @endif
                         </div>
                         <div class="price-section">
-                            @if($product->sale_price && $product->sale_price < $product->price)
-                            <span class="price">${{ number_format($product->sale_price, 2) }}</span>
+                            @if($product->discount_price && $product->discount_price < $product->price)
+                            <span class="price">${{ number_format($product->discount_price, 2) }}</span>
                             <span class="original-price ms-2">${{ number_format($product->price, 2) }}</span>
                             @else
                             <span class="price">${{ number_format($product->price, 2) }}</span>

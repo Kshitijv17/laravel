@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Banner;
+use App\Models\Brand;
 use App\Models\Faq;
 use App\Models\Newsletter;
 use Illuminate\Http\Request;
@@ -20,17 +21,17 @@ class HomeController extends Controller
         $featuredProducts = Product::active()
             ->featured()
             ->with(['category', 'reviews'])
-            ->limit(8)
+            ->limit(16)
             ->get();
 
         $newProducts = Product::active()
             ->with(['category', 'reviews'])
             ->latest()
-            ->limit(8)
+            ->limit(16)
             ->get();
 
         $categories = Category::active()
-            ->limit(6)
+            ->limit(12)
             ->get();
 
         // Dynamic banners
@@ -44,12 +45,19 @@ class HomeController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // Dynamic brands for brand strip
+        $brands = Brand::active()
+            ->orderBy('sort_order')
+            ->limit(8)
+            ->get();
+
         return view('web.home', compact(
             'featuredProducts',
             'newProducts', 
             'categories',
             'heroBanners',
-            'midBanners'
+            'midBanners',
+            'brands'
         ));
     }
 

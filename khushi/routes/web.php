@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\Product;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\ProductController;
@@ -320,6 +321,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/products/{id}/edit', [AdminController::class, 'editProduct'])->name('products.edit');
         Route::put('/products/{id}', [AdminController::class, 'updateProduct'])->name('products.update');
         Route::delete('/products/{id}', [AdminController::class, 'deleteProduct'])->name('products.destroy');
+        Route::get('/products/{id}/test', [AdminController::class, 'testProductImages'])->name('products.test');
         
         // Category Management
         Route::get('/categories', [AdminController::class, 'categories'])->name('categories.index');
@@ -472,3 +474,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
     });
 });
+
+// Test route for debugging product images
+Route::get('/test-images', function () {
+    $products = \App\Models\Product::with('category')->take(5)->get();
+    
+    $results = [];
+    foreach ($products as $product) {
+        $results[] = [
+            'id' => $product->id,
+            'name' => $product->name,
+            'image_path' => $product->image,
+            'image_url' => $product->image_url,
+            'public_path' => public_path('images/products/' . $product->image),
+            'file_exists' => file_exists(public_path('images/products/' . $product->image)),
+            'storage_path' => storage_path('app/public/' . $product->image),
+            'storage_exists' => file_exists(storage_path('app/public/' . $product->image)),
+        ];
+    }
+    
+    return response()->json($results);
+})->name('test.images');

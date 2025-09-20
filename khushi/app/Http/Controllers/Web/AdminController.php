@@ -12,6 +12,7 @@ use App\Models\Coupon;
 use App\Models\SupportTicket;
 use App\Models\Newsletter;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -1300,19 +1301,14 @@ class AdminController extends Controller
      */
     public function updateBanner(Request $request, Banner $banner)
     {
-        // Map form positions to database enum values
-        $positionMap = [
-            'hero' => 'top',
-            'sidebar' => 'middle', 
-            'footer' => 'bottom',
-            'popup' => 'top' // Default to top for popup
-        ];
-
-        $request->validate([
+        // Define valid position values based on database ENUM
+        $validPositions = ['hero', 'sidebar', 'footer', 'popup'];
+        
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'position' => 'required|in:hero,sidebar,footer,popup',
+            'position' => ['required', 'string', 'in:' . implode(',', $validPositions)],
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'link_url' => 'nullable|url',
             'button_text' => 'nullable|string|max:50',
             'start_date' => 'nullable|date',
@@ -1320,23 +1316,43 @@ class AdminController extends Controller
             'status' => 'required|boolean'
         ]);
 
-        $updateData = [
-            'title' => $request->title,
-            'position' => $positionMap[$request->position], // Map to database enum
-            'description' => $request->description,
-            'link' => $request->link_url, // Use 'link' column name
-            'is_active' => $request->status // Use 'is_active' column name
-        ];
+        // Get the validated position
+        $position = $request->position;
+        
+        // Manually set the attributes to ensure proper type casting
+        $banner->title = $request->title;
+        $banner->position = $position; // This will be cast to the correct enum value
+        $banner->description = $request->description;
+        
+        // Handle both link and link_url fields
+        if (Schema::hasColumn('banners', 'link')) {
+            $banner->link = $request->link_url;
+        } else if (Schema::hasColumn('banners', 'link_url')) {
+            $banner->link_url = $request->link_url;
+        }
+        
+        $banner->button_text = $request->button_text;
+        $banner->start_date = $request->start_date;
+        $banner->end_date = $request->end_date;
+        
+        // Handle status/is_active based on what's available in the model
+        if (Schema::hasColumn('banners', 'status')) {
+            $banner->status = (bool)$request->status;
+        }
+        if (Schema::hasColumn('banners', 'is_active')) {
+            $banner->is_active = (bool)$request->status;
+        }
 
         if ($request->hasFile('image')) {
             // Delete old image if exists
             if ($banner->image) {
                 Storage::disk('public')->delete($banner->image);
             }
-            $updateData['image'] = $request->file('image')->store('banners', 'public');
+            $banner->image = $request->file('image')->store('banners', 'public');
         }
 
-        $banner->update($updateData);
+        // Save the model
+        $banner->save();
 
         return redirect()->route('admin.banners.index')->with('success', 'Banner updated successfully!');
     }
@@ -1364,11 +1380,24 @@ class AdminController extends Controller
      */
     public function toggleBannerStatus(Banner $banner)
     {
-        $banner->update(['is_active' => !$banner->is_active]);
+        $updates = [];
+        
+        if (Schema::hasColumn('banners', 'is_active')) {
+            $updates['is_active'] = !$banner->is_active;
+        }
+        if (Schema::hasColumn('banners', 'status')) {
+            $updates['status'] = !$banner->status;
+        } else if (Schema::hasColumn('banners', 'is_active')) {
+            // If only is_active exists, use it for status too
+            $updates['status'] = !$banner->is_active;
+        }
+        
+        $banner->update($updates);
 
         return response()->json([
             'success' => true,
-            'message' => 'Banner status updated successfully!'
+            'message' => 'Banner status updated successfully!',
+            'new_status' => $banner->is_active ?? $banner->status
         ]);
     }
 

@@ -45,7 +45,8 @@ use App\Http\Controllers\Api\{
     BannerController,
     NewsletterController,
     SettingController,
-    FaqController
+    FaqController,
+    ImageUploadController
 };
 
 /*
@@ -74,6 +75,9 @@ Route::get('/test', function () {
 
 // Public routes (no authentication required)
 Route::prefix('v1')->group(function () {
+    // Image upload routes (public for demo, consider protecting in production)
+    Route::post('/images/upload', [ImageUploadController::class, 'upload']);
+    Route::post('/images/upload-base64', [ImageUploadController::class, 'uploadBase64']);
     
     // Authentication routes
     Route::post('/auth/register', [UserController::class, 'register']);
@@ -127,6 +131,9 @@ Route::prefix('v1')->group(function () {
 
 // Protected routes (authentication required)
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+    
+    // Protected image upload routes
+    Route::post('/images/delete', [ImageUploadController::class, 'delete']);
     
     // User routes
     Route::get('/profile', [UserController::class, 'profile']);

@@ -123,17 +123,58 @@ class Product extends Model
     // Accessors
     public function getImageUrlAttribute()
     {
-        if (!$this->image) {
+        // If no image is set, return placeholder
+        if (empty($this->image)) {
             return 'https://via.placeholder.com/500x500/e5e7eb/9ca3af?text=No+Image';
         }
 
-        // If it's already an absolute URL, return as-is
-        if (Str::startsWith($this->image, ['http://', 'https://'])) {
-            return $this->image;
+        // Clean up the image path
+        $imagePath = trim($this->image);
+        
+        // Check if it's already a full URL
+        if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
+            return $imagePath;
         }
 
-        // For local storage paths, use asset() with storage/ prefix
-        return asset('storage/' . $this->image);
+        // Check if it's a URL without protocol
+        if (preg_match('/^[a-z0-9-]+\.[a-z]{2,}(\/.*)?$/i', $imagePath)) {
+            return 'https://' . ltrim($imagePath, '/');
+        }
+
+        // Check if it's a storage path
+        $storagePath = str_replace('app/public/', '', $imagePath);
+        if (Str::startsWith($storagePath, 'storage/')) {
+            $storagePath = str_replace('storage/', '', $storagePath);
+        }
+        
+        if (Storage::disk('public')->exists($storagePath)) {
+            return asset('storage/' . ltrim($storagePath, '/'));
+        }
+
+        // Check in public/images/products
+        $publicPath = 'images/products/' . ltrim($imagePath, '/');
+        if (file_exists(public_path($publicPath))) {
+            return asset($publicPath);
+        }
+
+        // If we have a path that starts with /storage, try to resolve it
+        if (Str::startsWith($imagePath, '/storage/')) {
+            $relativePath = str_replace('/storage/', '', $imagePath);
+            if (Storage::disk('public')->exists($relativePath)) {
+                return asset('storage/' . $relativePath);
+            }
+        }
+
+        // If we get here, log the issue for debugging
+        \Log::warning('Could not resolve image URL', [
+            'product_id' => $this->id,
+            'image_path' => $this->image,
+            'storage_path' => $storagePath,
+            'public_path' => $publicPath
+        ]);
+
+        // Return a placeholder if no valid image found
+        return 'https://via.placeholder.com/500x500/e5e7eb/9ca3af?text=Image+Not+Found';
     }
     public function getFinalPriceAttribute()
     {
