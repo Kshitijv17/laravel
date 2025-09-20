@@ -231,8 +231,9 @@
                                 <i class="fas fa-user me-1"></i>{{ auth()->user()->name }}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-shopping-bag me-2"></i>My Orders</a></li>
+                                <li><a class="dropdown-item" href="{{ route('customer.profile') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ route('customer.orders') }}"><i class="fas fa-shopping-bag me-2"></i>My Orders</a></li>
+                                <li><a class="dropdown-item" href="{{ route('customer.wishlist') }}"><i class="fas fa-heart me-2"></i>Wishlist</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="POST" action="{{ route('user.logout') }}">
@@ -309,7 +310,7 @@
                 <div class="col-md-2 mb-4">
                     <h6>Sellers</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{{ route('admin.login') }}" class="text-muted">Sell on E-Store</a></li>
+                        <li><a href="{{ route('shopkeeper.login') }}" class="text-muted">Sell on E-Store</a></li>
                         <li><a href="#" class="text-muted">Seller Guidelines</a></li>
                         <li><a href="#" class="text-muted">Seller Support</a></li>
                     </ul>

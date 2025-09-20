@@ -1,171 +1,300 @@
 @extends('shopkeeper.layout')
 
-@section('title', 'Add New Product')
-@section('subtitle', 'Create a new product for your shop')
-
 @section('content')
 <div class="container py-4">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <div class="card">
-        <div class="card-header">
-          <h4 class="mb-0"><i class="fas fa-plus me-2"></i>Add New Product</h4>
-        </div>
-        <div class="card-body">
-          <form action="{{ route('shopkeeper.products.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-plus-circle me-2"></i>Add New Product</h2>
+    <a href="{{ route('shopkeeper.products.index') }}" class="btn btn-secondary">
+      <i class="fas fa-arrow-left me-1"></i>Back to Products
+    </a>
+  </div>
 
-            <div class="row">
-              <div class="col-md-8">
-                <div class="mb-3">
-                  <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
-                  <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
-                         value="{{ old('name') }}" placeholder="Enter product name" required>
-                  @error('name')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                  @enderror
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="mb-3">
-                  <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
-                  <select name="category_id" id="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
-                    <option value="">Select Category</option>
-                    @foreach($categories as $category)
-                      <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                        {{ $category->title }}
-                      </option>
-                    @endforeach
-                  </select>
-                  @error('category_id')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                  @enderror
-                </div>
-              </div>
+  <!-- Display Errors -->
+  @if ($errors->any())
+    <div class="alert alert-danger">
+      <h6><i class="fas fa-exclamation-triangle me-2"></i>Please fix the following errors:</h6>
+      <ul class="mb-0">
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
+
+  @if (session('error'))
+    <div class="alert alert-danger">
+      <i class="fas fa-exclamation-triangle me-2"></i>{{ session('error') }}
+    </div>
+  @endif
+
+  @if (session('success'))
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+    </div>
+  @endif
+
+  <form action="{{ route('shopkeeper.products.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
+
+    <div class="row">
+      <!-- Basic Information -->
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="title" class="form-label fw-bold">Product Title <span class="text-danger">*</span></label>
+              <input type="text" name="title" id="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}" required>
+              @error('title')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+              <div class="form-text">Enter a descriptive title for the product</div>
             </div>
 
             <div class="mb-3">
-              <label for="description" class="form-label">Product Description</label>
-              <textarea name="description" id="description" rows="4" 
-                        class="form-control @error('description') is-invalid @enderror"
-                        placeholder="Describe your product...">{{ old('description') }}</textarea>
-              @error('description')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
+              <label for="description" class="form-label fw-bold">Product Description</label>
+              <textarea name="description" id="description" class="form-control" rows="4">{{ old('description') }}</textarea>
+              <div class="form-text">Provide a detailed description of the product</div>
             </div>
 
             <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="mb-3">
-                  <label for="price" class="form-label">Price <span class="text-danger">*</span></label>
-                  <div class="input-group">
-                    <span class="input-group-text">$</span>
-                    <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror"
-                           value="{{ old('price') }}" placeholder="0.00" step="0.01" min="0" required>
-                  </div>
+                  <label for="price" class="form-label fw-bold">Original Price (₹) <span class="text-danger">*</span></label>
+                  <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}" step="0.01" min="0" required>
                   @error('price')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="mb-3">
-                  <label for="discount_price" class="form-label">Discount Price</label>
-                  <div class="input-group">
-                    <span class="input-group-text">$</span>
-                    <input type="number" name="discount_price" id="discount_price" 
-                           class="form-control @error('discount_price') is-invalid @enderror"
-                           value="{{ old('discount_price') }}" placeholder="0.00" step="0.01" min="0">
-                  </div>
-                  @error('discount_price')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                  @enderror
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="mb-3">
-                  <label for="quantity" class="form-label">Stock Quantity <span class="text-danger">*</span></label>
-                  <input type="number" name="quantity" id="quantity" class="form-control @error('quantity') is-invalid @enderror"
-                         value="{{ old('quantity') }}" placeholder="0" min="0" required>
-                  @error('quantity')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                  @enderror
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
               <div class="col-md-6">
                 <div class="mb-3">
-                  <label for="sku" class="form-label">SKU (Stock Keeping Unit)</label>
-                  <input type="text" name="sku" id="sku" class="form-control @error('sku') is-invalid @enderror"
-                         value="{{ old('sku') }}" placeholder="Enter unique SKU">
-                  @error('sku')
+                  <label for="selling_price" class="form-label fw-bold">Selling Price (₹)</label>
+                  <input type="number" name="selling_price" id="selling_price" class="form-control @error('selling_price') is-invalid @enderror" value="{{ old('selling_price') }}" step="0.01" min="0">
+                  @error('selling_price')
                     <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="weight" class="form-label">Weight (kg)</label>
-                  <input type="number" name="weight" id="weight" class="form-control @error('weight') is-invalid @enderror"
-                         value="{{ old('weight') }}" placeholder="0.00" step="0.01" min="0">
-                  @error('weight')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                  @enderror
+                  <div class="form-text">Leave empty if same as original price</div>
                 </div>
               </div>
             </div>
 
             <div class="mb-3">
-              <label for="image" class="form-label">Product Image</label>
-              <input type="file" name="image" id="image" class="form-control @error('image') is-invalid @enderror"
-                     accept="image/*">
-              @error('image')
+              <label for="category_id" class="form-label fw-bold">Category <span class="text-danger">*</span></label>
+              <select name="category_id" id="category_id" class="form-control @error('category_id') is-invalid @enderror" required>
+                <option value="">Select Category</option>
+                @foreach($categories as $category)
+                  <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                    {{ $category->title }}
+                  </option>
+                @endforeach
+              </select>
+              @error('category_id')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
-              <small class="text-muted">Upload a high-quality image of your product (JPG, PNG, max 2MB)</small>
+              <div class="form-text">Select the product category</div>
             </div>
 
-            <div class="row">
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="is_active" class="form-label">Product Status</label>
-                  <select name="is_active" id="is_active" class="form-select @error('is_active') is-invalid @enderror">
-                    <option value="1" {{ old('is_active', 1) == 1 ? 'selected' : '' }}>Active</option>
-                    <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>Inactive</option>
-                  </select>
-                  @error('is_active')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                  @enderror
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label for="is_featured" class="form-label">Featured Product</label>
-                  <select name="is_featured" id="is_featured" class="form-select @error('is_featured') is-invalid @enderror">
-                    <option value="0" {{ old('is_featured', 0) == 0 ? 'selected' : '' }}>No</option>
-                    <option value="1" {{ old('is_featured') == 1 ? 'selected' : '' }}>Yes</option>
-                  </select>
-                  @error('is_featured')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                  @enderror
-                </div>
+            <div class="mb-3">
+              <label for="shop_id" class="form-label fw-bold">Shop <span class="text-danger">*</span></label>
+              <select name="shop_id" id="shop_id" class="form-control @error('shop_id') is-invalid @enderror" required>
+                <option value="">Select Shop</option>
+                @foreach($shops as $shop)
+                  <option value="{{ $shop->id }}" {{ old('shop_id') == $shop->id ? 'selected' : '' }}>
+                    {{ $shop->name }}
+                  </option>
+                @endforeach
+              </select>
+              @error('shop_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+              <div class="form-text">Select the shop that will sell this product</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rich Text Content -->
+        <div class="card mb-4">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Product Details</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="features" class="form-label fw-bold">Features</label>
+              <textarea name="features" id="features" class="form-control rich-editor" rows="6">{{ old('features') }}</textarea>
+              <div class="form-text">List the key features and benefits of the product</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="specifications" class="form-label fw-bold">Specifications</label>
+              <textarea name="specifications" id="specifications" class="form-control rich-editor" rows="6">{{ old('specifications') }}</textarea>
+              <div class="form-text">Technical specifications and product details</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+        <!-- Images Section -->
+        <div class="card mb-4">
+          <div class="card-header bg-info text-white">
+            <h6 class="mb-0"><i class="fas fa-images me-2"></i>Product Images</h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="image" class="form-label fw-bold">Main Image</label>
+              <input type="file" name="image" id="image" class="form-control" accept="image/*">
+              <div class="form-text">Upload a product image (JPEG, PNG, JPG, GIF, max 2MB)</div>
+              <div id="image-preview" class="mt-2" style="display: none;">
+                <img id="preview-img" src="" alt="Preview" class="img-fluid rounded" style="max-width: 200px;">
               </div>
             </div>
 
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-success">
-                <i class="fas fa-save me-1"></i>Create Product
-              </button>
-              <a href="{{ route('shopkeeper.products.index') }}" class="btn btn-secondary">
-                <i class="fas fa-times me-1"></i>Cancel
-              </a>
+            <div class="mb-3">
+              <label for="images" class="form-label fw-bold">Gallery Images</label>
+              <input type="file" name="images[]" id="images" class="form-control" accept="image/*" multiple>
+              <div class="form-text">Upload multiple product images (JPEG, PNG, JPG, GIF, max 2MB, max 10 images)</div>
             </div>
-          </form>
+          </div>
+        </div>
+
+        <!-- Discount Section -->
+        <div class="card mb-4">
+          <div class="card-header bg-warning text-dark">
+            <h6 class="mb-0"><i class="fas fa-tag me-2"></i>Discount Settings</h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="discount_tag" class="form-label fw-bold">Discount Tag</label>
+              <input type="text" name="discount_tag" id="discount_tag" class="form-control" value="{{ old('discount_tag') }}" maxlength="50">
+              <div class="form-text">e.g., "20% OFF", "SALE", "HOT DEAL"</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="discount_color" class="form-label fw-bold">Tag Color</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <input type="color" id="color-picker" value="#FF0000">
+                </span>
+                <input type="text" name="discount_color" id="discount_color" class="form-control" value="{{ old('discount_color', '#FF0000') }}" pattern="^#[a-fA-F0-9]{6}$">
+              </div>
+              <div class="form-text">Hex color code for the discount tag</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory & Status -->
+        <div class="card mb-4">
+          <div class="card-header bg-secondary text-white">
+            <h6 class="mb-0"><i class="fas fa-cog me-2"></i>Inventory & Status</h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="quantity" class="form-label fw-bold">Stock Quantity <span class="text-danger">*</span></label>
+              <input type="number" name="quantity" id="quantity" class="form-control @error('quantity') is-invalid @enderror" value="{{ old('quantity', 0) }}" min="0" required>
+              @error('quantity')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+
+            <div class="mb-3">
+              <label for="stock_status" class="form-label fw-bold">Stock Status <span class="text-danger">*</span></label>
+              <select name="stock_status" id="stock_status" class="form-control" required>
+                <option value="in_stock" {{ old('stock_status', 'in_stock') == 'in_stock' ? 'selected' : '' }}>In Stock</option>
+                <option value="out_of_stock" {{ old('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Product Status <span class="text-danger">*</span></label>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="is_active" id="active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
+                <label class="form-check-label" for="active">
+                  <i class="fas fa-check-circle text-success me-1"></i>Active
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="is_active" id="inactive" value="0" {{ old('is_active') === '0' || old('is_active') === 0 ? 'checked' : '' }}>
+                <label class="form-check-label" for="inactive">
+                  <i class="fas fa-times-circle text-danger me-1"></i>Inactive
+                </label>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Featured Product</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" value="1" {{ old('is_featured') ? 'checked' : '' }}>
+                <label class="form-check-label" for="is_featured">
+                  <i class="fas fa-star text-warning me-1"></i>Mark as Featured Product
+                </label>
+              </div>
+              <div class="form-text">Featured products will be highlighted on the homepage</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="d-grid">
+          <button type="submit" class="btn btn-success btn-lg">
+            <i class="fas fa-save me-2"></i>Create Product
+          </button>
         </div>
       </div>
     </div>
-  </div>
+  </form>
 </div>
+
+<!-- TinyMCE Script -->
+<script src="https://cdn.tiny.cloud/1/kzlev3jad3jf8ax2yw0rdtrvnlycirfux9r48mut4a8kvuu3/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+tinymce.init({
+  selector: '.rich-editor',
+  height: 200,
+  menubar: false,
+  plugins: 'lists link image code',
+  toolbar: 'bold italic underline | bullist numlist | link image | code',
+  content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; }'
+});
+
+// Image preview functionality
+document.getElementById('image').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('preview-img').src = e.target.result;
+      document.getElementById('image-preview').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Color picker synchronization
+document.getElementById('color-picker').addEventListener('input', function(e) {
+  document.getElementById('discount_color').value = e.target.value;
+});
+
+document.getElementById('discount_color').addEventListener('input', function(e) {
+  document.getElementById('color-picker').value = e.target.value;
+});
+</script>
+
+<style>
+.rich-editor {
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+}
+
+.card-header {
+  border-bottom: 2px solid rgba(0,0,0,0.125);
+}
+
+.form-text {
+  font-size: 0.875em;
+}
+</style>
 @endsection

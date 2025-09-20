@@ -16,72 +16,92 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with('category', 'images', 'shop')->latest()->get();
-        return view('admin.products.index', compact('products'));
+        return view('shopkeeper.products.index', compact('products'));
     }
 
     public function create()
     {
         $categories = Category::all();
         $shops = \App\Models\Shop::where('is_active', true)->get();
-        return view('admin.products.create', compact('categories', 'shops'));
+        return view('shopkeeper.products.create', compact('categories', 'shops'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'features' => 'nullable|string',
-            'specifications' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'selling_price' => 'nullable|numeric|min:0',
-            'discount_tag' => 'nullable|string|max:50',
-            'discount_color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
-            'quantity' => 'required|integer|min:0',
-            'stock_status' => 'required|in:in_stock,out_of_stock',
-            'is_active' => 'required|boolean',
-            'is_featured' => 'nullable|boolean',
-            'category_id' => 'required|exists:categories,id',
-            'shop_id' => 'required|exists:shops,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Removed strict dimensions
-            'images' => 'nullable|array|max:10',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Removed strict dimensions
-        ]);
+        try {
+            // Debug: Log the incoming request data
+            \Log::info('Product Store Request Data:', $request->all());
+            
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'features' => 'nullable|string',
+                'specifications' => 'nullable|string',
+                'price' => 'required|numeric|min:0',
+                'selling_price' => 'nullable|numeric|min:0',
+                'discount_tag' => 'nullable|string|max:50',
+                'discount_color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
+                'quantity' => 'required|integer|min:0',
+                'stock_status' => 'required|in:in_stock,out_of_stock',
+                'is_active' => 'required|boolean',
+                'is_featured' => 'nullable|boolean',
+                'category_id' => 'required|exists:categories,id',
+                'shop_id' => 'required|exists:shops,id',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Removed strict dimensions
+                'images' => 'nullable|array|max:10',
+                'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Removed strict dimensions
+            ]);
 
-        $data = $request->all();
+            \Log::info('Validation passed');
 
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('products', 'public');
-        }
+            $data = $request->all();
 
-        $product = Product::create($data);
-
-        // Handle multiple images
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $index => $file) {
-                $path = $file->store('products', 'public');
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => $path,
-                    'sort_order' => $index,
-                ]);
+            if ($request->hasFile('image')) {
+                $data['image'] = $request->file('image')->store('products', 'public');
+                \Log::info('Image uploaded: ' . $data['image']);
             }
-        }
 
-        return redirect()->route('admin.products.index')->with('success', 'Product added!');
+            \Log::info('Creating product with data:', $data);
+            $product = Product::create($data);
+            \Log::info('Product created with ID: ' . $product->id);
+
+            // Handle multiple images
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $index => $file) {
+                    $path = $file->store('products', 'public');
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image_path' => $path,
+                        'sort_order' => $index,
+                    ]);
+                }
+                \Log::info('Multiple images processed');
+            }
+
+            \Log::info('Product creation successful, redirecting...');
+            return redirect()->route('shopkeeper.products.index')->with('success', 'Product added successfully!');
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation failed:', $e->errors());
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            \Log::error('Product creation failed: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            return redirect()->back()->with('error', 'Failed to create product: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function edit(Product $product)
     {
         $categories = Category::all();
         $shops = \App\Models\Shop::where('is_active', true)->get();
-        return view('admin.products.edit', compact('product', 'categories', 'shops'));
+        return view('shopkeeper.products.edit', compact('product', 'categories', 'shops'));
     }
 
     public function show(Product $product)
     {
         $product->load('category', 'images');
-        return view('admin.products.show', compact('product'));
+        return view('shopkeeper.products.show', compact('product'));
     }
 
     public function update(Request $request, Product $product)
@@ -167,7 +187,7 @@ class ProductController extends Controller
 
     public function bulkUploadForm()
     {
-        return view('admin.products.bulk-upload');
+        return view('shopkeeper.products.bulk-upload');
     }
 
     public function bulkUpload(Request $request)

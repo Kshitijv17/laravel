@@ -12,6 +12,24 @@ use Illuminate\Support\Facades\DB;
 class OrderController extends Controller
 {
     /**
+     * Display customer's orders
+     */
+    public function index()
+    {
+        // Get authenticated user's orders
+        $orders = collect(); // Empty collection for now
+        
+        if (auth()->check()) {
+            $orders = Order::with(['items.product', 'shop'])
+                          ->where('user_id', auth()->id())
+                          ->orderBy('created_at', 'desc')
+                          ->paginate(10);
+        }
+
+        return view('customer.orders.index', compact('orders'));
+    }
+
+    /**
      * Show the buy now form
      */
     public function buyNow(Product $product)

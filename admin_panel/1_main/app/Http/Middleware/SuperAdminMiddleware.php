@@ -17,12 +17,12 @@ class SuperAdminMiddleware
     {
         // Check if admin is authenticated
         if (!auth('admin')->check()) {
-            return redirect()->route('admin.login')->with('error', 'Please login first.');
+            return redirect()->route('shopkeeper.login')->with('error', 'Please login first.');
         }
 
         // Check if admin has super admin role
         if (!auth('admin')->user()->isSuperAdmin()) {
-            return redirect()->route('admin.dashboard')->with('error', 'Access denied. Super Admin privileges required.');
+            return redirect()->route('shopkeeper.dashboard')->with('error', 'Access denied. Super Admin privileges required.');
         }
 
         return $next($request);

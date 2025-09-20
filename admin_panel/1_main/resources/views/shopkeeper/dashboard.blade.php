@@ -1,259 +1,99 @@
 @extends('shopkeeper.layout')
 
+@section('page-title', 'Dashboard')
+
 @section('content')
-<div class="container-fluid py-4">
-  <!-- Welcome Section -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="card bg-gradient-primary text-white">
-        <div class="card-body">
-          <div class="row align-items-center">
-            <div class="col-md-8">
-              <h2 class="mb-1">Welcome back, {{ auth()->user()->name }}!</h2>
-              <p class="mb-0 opacity-75">Manage your shop "{{ $shop->name }}" from this dashboard</p>
-            </div>
-            <div class="col-md-4 text-end">
-              <div class="d-flex align-items-center justify-content-end">
-                @if($shop->logo)
-                  <img src="{{ asset('storage/' . $shop->logo) }}" alt="{{ $shop->name }}" 
-                       class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                @endif
-                <div>
-                  <h5 class="mb-0">{{ $shop->name }}</h5>
-                  <small class="opacity-75">{{ $shop->slug }}</small>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Statistics Cards -->
-  <div class="row mb-4">
-    <div class="col-lg-3 col-md-6 mb-3">
-      <div class="card bg-primary text-white">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <h6 class="card-title mb-0">Total Products</h6>
-              <h3 class="mb-0">{{ number_format($stats['total_products']) }}</h3>
-              <small class="opacity-75">{{ $stats['active_products'] }} active</small>
-            </div>
-            <i class="fas fa-box fa-2x opacity-75"></i>
-          </div>
-        </div>
-        <div class="card-footer bg-primary border-0">
-          <a href="{{ route('shopkeeper.products.index') }}" class="text-white text-decoration-none">
-            <small><i class="fas fa-arrow-right me-1"></i>Manage Products</small>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-3 col-md-6 mb-3">
-      <div class="card bg-success text-white">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <h6 class="card-title mb-0">Total Orders</h6>
-              <h3 class="mb-0">{{ number_format($stats['total_orders']) }}</h3>
-              <small class="opacity-75">{{ $stats['pending_orders'] }} pending</small>
-            </div>
-            <i class="fas fa-shopping-cart fa-2x opacity-75"></i>
-          </div>
-        </div>
-        <div class="card-footer bg-success border-0">
-          <a href="{{ route('shopkeeper.orders.index') }}" class="text-white text-decoration-none">
-            <small><i class="fas fa-arrow-right me-1"></i>Manage Orders</small>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-3 col-md-6 mb-3">
-      <div class="card bg-warning text-white">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <h6 class="card-title mb-0">Total Revenue</h6>
-              <h3 class="mb-0">${{ number_format($stats['total_revenue'], 2) }}</h3>
-              <small class="opacity-75">${{ number_format($stats['pending_revenue'], 2) }} pending</small>
-            </div>
-            <i class="fas fa-dollar-sign fa-2x opacity-75"></i>
-          </div>
-        </div>
-        <div class="card-footer bg-warning border-0">
-          <a href="{{ route('shopkeeper.orders.index', ['payment_status' => 'paid']) }}" class="text-white text-decoration-none">
-            <small><i class="fas fa-arrow-right me-1"></i>View Revenue</small>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-3 col-md-6 mb-3">
-      <div class="card bg-info text-white">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <h6 class="card-title mb-0">Processing Orders</h6>
-              <h3 class="mb-0">{{ number_format($stats['processing_orders']) }}</h3>
-              <small class="opacity-75">{{ $stats['shipped_orders'] }} shipped</small>
-            </div>
-            <i class="fas fa-cogs fa-2x opacity-75"></i>
-          </div>
-        </div>
-        <div class="card-footer bg-info border-0">
-          <a href="{{ route('shopkeeper.orders.index', ['status' => 'processing']) }}" class="text-white text-decoration-none">
-            <small><i class="fas fa-arrow-right me-1"></i>Process Orders</small>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <!-- Recent Orders -->
-    <div class="col-lg-8">
-      <div class="card">
-        <div class="card-header">
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Orders</h5>
-            <a href="{{ route('shopkeeper.orders.index') }}" class="btn btn-sm btn-primary">
-              <i class="fas fa-eye me-1"></i>View All
-            </a>
-          </div>
-        </div>
-        <div class="card-body p-0">
-          @if($recentOrders->count() > 0)
-            <div class="table-responsive">
-              <table class="table table-hover mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th>Order #</th>
-                    <th>Customer</th>
-                    <th>Status</th>
-                    <th>Total</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach($recentOrders as $order)
-                    <tr>
-                      <td>
-                        <strong>{{ $order->order_number }}</strong>
-                      </td>
-                      <td>
-                        <div>
-                          <div class="fw-bold">{{ $order->user->name ?? 'Guest' }}</div>
-                          <small class="text-muted">{{ $order->user->email ?? 'No email' }}</small>
-                        </div>
-                      </td>
-                      <td>
-                        <span class="badge bg-{{ $order->status_badge_color }}">
-                          {{ $order->status_display }}
-                        </span>
-                      </td>
-                      <td>
-                        <strong>${{ number_format($order->total_amount, 2) }}</strong>
-                      </td>
-                      <td>
-                        <small>{{ $order->created_at->format('M d, Y') }}</small>
-                      </td>
-                      <td>
-                        <a href="{{ route('shopkeeper.orders.show', $order) }}" class="btn btn-sm btn-outline-primary">
-                          <i class="fas fa-eye"></i>
-                        </a>
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-          @else
-            <div class="text-center py-4">
-              <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-              <h6 class="text-muted">No Recent Orders</h6>
-              <p class="text-muted">Orders will appear here once customers start purchasing your products.</p>
-            </div>
-          @endif
-        </div>
-      </div>
-    </div>
-
-    <!-- Low Stock Alert & Quick Actions -->
-    <div class="col-lg-4">
-      <!-- Low Stock Products -->
-      <div class="card mb-4">
-        <div class="card-header">
-          <h6 class="mb-0"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Low Stock Alert</h6>
-        </div>
-        <div class="card-body">
-          @if($lowStockProducts->count() > 0)
-            @foreach($lowStockProducts as $product)
-              <div class="d-flex justify-content-between align-items-center mb-3 {{ !$loop->last ? 'border-bottom pb-3' : '' }}">
-                <div class="flex-grow-1">
-                  <div class="fw-bold">{{ $product->title }}</div>
-                  <small class="text-muted">{{ $product->category->name ?? 'No Category' }}</small>
-                </div>
-                <div class="text-end">
-                  <span class="badge bg-{{ $product->quantity == 0 ? 'danger' : 'warning' }}">
-                    {{ $product->quantity }} left
-                  </span>
-                </div>
-              </div>
-            @endforeach
-            <div class="text-center mt-3">
-              <a href="{{ route('shopkeeper.products.index', ['stock' => 'low']) }}" class="btn btn-sm btn-warning">
-                <i class="fas fa-boxes me-1"></i>Manage Stock
-              </a>
-            </div>
-          @else
-            <div class="text-center">
-              <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
-              <p class="text-muted mb-0">All products are well stocked!</p>
-            </div>
-          @endif
-        </div>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="card">
-        <div class="card-header">
-          <h6 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h6>
-        </div>
-        <div class="card-body">
-          <div class="d-grid gap-2">
-            <a href="{{ route('shopkeeper.products.create') }}" class="btn btn-primary">
-              <i class="fas fa-plus me-2"></i>Add New Product
-            </a>
-            <a href="{{ route('shopkeeper.orders.index', ['status' => 'pending']) }}" class="btn btn-warning">
-              <i class="fas fa-clock me-2"></i>Process Pending Orders
-            </a>
-            <a href="{{ route('shopkeeper.shop.edit') }}" class="btn btn-info">
-              <i class="fas fa-store me-2"></i>Edit Shop Details
-            </a>
-            <a href="{{ route('shopkeeper.orders.export') }}" class="btn btn-success">
-              <i class="fas fa-download me-2"></i>Export Orders
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="mb-8">
+    <h3 class="text-3xl font-bold font-serif text-[var(--heading-light)] dark:text-[var(--heading-dark)] mb-2">Welcome back, {{ auth()->user()->name }}!</h3>
+    <p class="text-[var(--text-light)] dark:text-[var(--text-dark)]">Here's what's happening with your {{ auth()->user()->shop->name ?? 'shop' }} today.</p>
 </div>
 
-<style>
-.bg-gradient-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-}
-</style>
+<!-- Statistics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-[var(--card-light)] dark:bg-[var(--card-dark)] p-6 rounded-lg shadow-md border-l-4 border-green-500">
+        <div class="flex items-center justify-between">
+            <h4 class="text-lg font-semibold text-[var(--heading-light)] dark:text-[var(--heading-dark)]">Total Products</h4>
+            <span class="material-symbols-outlined text-green-500 text-3xl">inventory_2</span>
+        </div>
+        <p class="text-3xl font-bold text-[var(--heading-light)] dark:text-[var(--heading-dark)] mt-2">{{ $stats['total_products'] ?? 0 }}</p>
+        <p class="text-sm text-green-600 dark:text-green-400">{{ $stats['active_products'] ?? 0 }} active products</p>
+    </div>
+    
+    <div class="bg-[var(--card-light)] dark:bg-[var(--card-dark)] p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+            <h4 class="text-lg font-semibold text-[var(--heading-light)] dark:text-[var(--heading-dark)]">Total Orders</h4>
+            <span class="material-symbols-outlined text-blue-500 text-3xl">receipt_long</span>
+        </div>
+        <p class="text-3xl font-bold text-[var(--heading-light)] dark:text-[var(--heading-dark)] mt-2">{{ $stats['total_orders'] ?? 0 }}</p>
+        <p class="text-sm text-blue-600 dark:text-blue-400">{{ $stats['pending_orders'] ?? 0 }} pending orders</p>
+    </div>
+    
+    <div class="bg-[var(--card-light)] dark:bg-[var(--card-dark)] p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
+        <div class="flex items-center justify-between">
+            <h4 class="text-lg font-semibold text-[var(--heading-light)] dark:text-[var(--heading-dark)]">Revenue</h4>
+            <span class="material-symbols-outlined text-yellow-500 text-3xl">payments</span>
+        </div>
+        <p class="text-3xl font-bold text-[var(--heading-light)] dark:text-[var(--heading-dark)] mt-2">${{ number_format($stats['total_revenue'] ?? 0, 2) }}</p>
+        <p class="text-sm text-yellow-600 dark:text-yellow-400">This month</p>
+    </div>
+    
+    <div class="bg-[var(--card-light)] dark:bg-[var(--card-dark)] p-6 rounded-lg shadow-md border-l-4 border-purple-500">
+        <div class="flex items-center justify-between">
+            <h4 class="text-lg font-semibold text-[var(--heading-light)] dark:text-[var(--heading-dark)]">Low Stock</h4>
+            <span class="material-symbols-outlined text-purple-500 text-3xl">warning</span>
+        </div>
+        <p class="text-3xl font-bold text-[var(--heading-light)] dark:text-[var(--heading-dark)] mt-2">{{ $stats['low_stock_products'] ?? 0 }}</p>
+        <p class="text-sm text-purple-600 dark:text-purple-400">Items need restocking</p>
+    </div>
+</div>
+<!-- Recent Orders Section -->
+<div class="bg-[var(--card-light)] dark:bg-[var(--card-dark)] p-6 rounded-lg shadow-md" style="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAQAAADa613fAAAAAXNSR0IArs4c6QAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAZKADAAQAAAABAAAAZAAAAAAvu95hAAABUUlEQVR42u3WMQ7DIAwEUS4iUTe4/w18A/kPpSBQEYkfiyRpIeX1uM7O5fP5/C57r2PpfD5/9n2I3++2r4+P+/v7m23b/n4/Lp/P5/P5v5zP5/P5/C/nc/n8ZfJ8Pl+Gz+fz+Xw+n8/n8/l8Pp/P5/P5fD4/vwm/n8/n8/l8Pp/P5/P5fD6fz+fz+Xw+n8/n8/l8Pp/P5/P5fD6fz+fz+Xz+P8Pn8/l8Pp/P5/P5fD6fz+fz+Xw+n8/n8/l8Pp/P5/P5fD6fz+fz+Xw+n8/n8/l8Pp/P5/P5fD6fz+fz+Xw+n8/n8/l8Pp/P5/P5fD6fz+fz+fwt+Hw+n8/n8/l8Pp/P5/P5fD6fz+fz+Xw+n8/n8/l8Pp/P5/P5fD6fz+fz+fwW/L4EHy/fM3x+P5/P5/P5fD6fz+fz+Xw+n8/n8/l8Pp/P5/P5fD6fz+fz+fz+Fz/3P5/P5/P5/L/k/A0P+woYQd43YgAAAABJRU5ErkJggg=='); background-repeat: repeat; background-size: 20px;">
+    <h4 class="text-xl font-semibold font-serif text-[var(--heading-light)] dark:text-[var(--heading-dark)] mb-4">Recent Orders</h4>
+    <div class="overflow-x-auto">
+        @if(isset($recentOrders) && $recentOrders->count() > 0)
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b-2 border-dashed border-[var(--border-light)] dark:border-[var(--border-dark)]">
+                        <th class="py-3 px-4 font-semibold text-[var(--heading-light)] dark:text-[var(--heading-dark)]">Customer</th>
+                        <th class="py-3 px-4 font-semibold text-[var(--heading-light)] dark:text-[var(--heading-dark)]">Status</th>
+                        <th class="py-3 px-4 font-semibold text-[var(--heading-light)] dark:text-[var(--heading-dark)]">Date</th>
+                        <th class="py-3 px-4 font-semibold text-[var(--heading-light)] dark:text-[var(--heading-dark)] text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($recentOrders as $order)
+                        <tr class="border-b border-[var(--border-light)] dark:border-[var(--border-dark)] hover:bg-[var(--primary)] dark:hover:bg-[var(--background-dark)] transition-colors duration-200">
+                            <td class="py-3 px-4 flex items-center">
+                                <span class="material-symbols-outlined text-green-600 mr-3">person</span>
+                                <div>
+                                    <p class="font-medium text-[var(--heading-light)] dark:text-[var(--heading-dark)]">{{ $order->customer_name }}</p>
+                                    <p class="text-sm text-[var(--text-light)] dark:text-[var(--text-dark)]">{{ $order->customer_email }}</p>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                    @if($order->status === 'delivered') bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100
+                                    @elseif($order->status === 'shipped') bg-blue-100 text-blue-800 dark:bg-blue-700 dark:text-blue-100
+                                    @elseif($order->status === 'processing') bg-yellow-100 text-yellow-800 dark:bg-yellow-700 dark:text-yellow-100
+                                    @elseif($order->status === 'cancelled') bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100
+                                    @else bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100
+                                    @endif">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-[var(--text-light)] dark:text-[var(--text-dark)]">{{ $order->created_at->format('Y-m-d') }}</td>
+                            <td class="py-3 px-4 text-right font-medium text-[var(--heading-light)] dark:text-[var(--heading-dark)]">${{ number_format($order->total_amount, 2) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <div class="text-center py-8">
+                <span class="material-symbols-outlined text-6xl text-[var(--text-light)] dark:text-[var(--text-dark)] mb-4">receipt_long</span>
+                <p class="text-[var(--text-light)] dark:text-[var(--text-dark)]">No orders yet</p>
+                <p class="text-sm text-[var(--text-light)] dark:text-[var(--text-dark)]">Orders will appear here once customers start purchasing</p>
+            </div>
+        @endif
+    </div>
+</div>
 @endsection

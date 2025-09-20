@@ -23,6 +23,11 @@ class User extends Authenticatable
         'is_guest',
         'expires_at',
         'role',
+        'phone',
+        'date_of_birth',
+        'address',
+        'phone_verified_at',
+        'email_verified_at',
     ];
 
     /**
@@ -44,7 +49,9 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'expires_at' => 'datetime',
+            'date_of_birth' => 'date',
             'is_guest' => 'boolean',
             'password' => 'hashed',
         ];

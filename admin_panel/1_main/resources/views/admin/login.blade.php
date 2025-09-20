@@ -24,7 +24,7 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('admin.login.submit') }}" method="POST">
+                        <form action="{{ route('shopkeeper.login.submit') }}" method="POST">
                             @csrf
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email address</label>
@@ -39,7 +39,7 @@
 
                         
                         <div class="mt-3 text-center">
-                            <a href="{{ route('admin.register') }}">Don't have an account? Register</a>
+                            <a href="{{ route('shopkeeper.register') }}">Don't have an account? Register</a>
                         </div>
                     </div>
                 </div>

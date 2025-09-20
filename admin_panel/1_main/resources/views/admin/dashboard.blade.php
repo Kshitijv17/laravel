@@ -59,7 +59,7 @@
         <div class="card-body">
           <h5 class="card-title text-warning"><i class="fas fa-users-cog me-2"></i>User Management</h5>
           <p class="card-text">Manage admin users and their roles.</p>
-          <a href="{{ route('super-admin.admin.admins.index') }}" class="btn btn-warning">Manage Users</a>
+          <a href="#" class="btn btn-warning disabled">Manage Users</a>
         </div>
       </div>
     </div>

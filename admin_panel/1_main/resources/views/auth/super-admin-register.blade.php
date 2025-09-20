@@ -114,7 +114,7 @@
                         </form>
 
                         <div class="text-center">
-                            <a href="{{ route('welcome') }}" class="text-muted">
+                            <a href="{{ route('customer.home') }}" class="text-muted">
                                 <i class="fas fa-arrow-left me-1"></i>Back to Home
                             </a>
                         </div>

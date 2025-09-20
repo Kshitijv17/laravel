@@ -1,191 +1,167 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Shopkeeper Panel - {{ auth()->user()->shop->name ?? 'My Shop' }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .sidebar {
-      height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      position: fixed;
-      width: 250px;
-      overflow-y: auto;
-    }
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      display: block;
-      padding: 12px 20px;
-      border-radius: 8px;
-      margin: 2px 10px;
-      transition: all 0.3s ease;
-    }
-    .sidebar a:hover {
-      background-color: rgba(255,255,255,0.1);
-      transform: translateX(5px);
-    }
-    .sidebar a.active {
-      background-color: rgba(255,255,255,0.2);
-    }
-    .main-content {
-      margin-left: 250px;
-      min-height: 100vh;
-    }
-    .topbar {
-      background-color: #fff;
-      border-bottom: 1px solid #dee2e6;
-      padding: 15px 30px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .card-hover:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      transform: translateY(-2px);
-      transition: all 0.3s ease;
-    }
-    .shop-logo {
-      width: 40px;
-      height: 40px;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-    @media (max-width: 768px) {
-      .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-      }
-      .main-content {
-        margin-left: 0;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'Shopkeeper Panel')</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <style type="text/tailwindcss">
+        :root {
+            --background-light: #F5F7F0;
+            --background-dark: #292E1E;
+            --card-light: #FFFFFF;
+            --card-dark: #3A412A;
+            --text-light: #6B7280;
+            --text-dark: #C6D1B3;
+            --heading-light: #374151;
+            --heading-dark: #FBFBF3;
+            --border-light: #E5E7EB;
+            --border-dark: #4F583B;
+            --accent-light: #10B981;
+            --accent-dark: #A5D6A7;
+            --primary: #FFFFFF;
+            --sidebar-bg: #10B981;
+        }
+        .font-display {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .font-serif {
+            font-family: 'Lora', serif;
+        }
+        body {
+            background-color: var(--background-light);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%23E8E8D9' fill-opacity='0.2'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zM41 48c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zM71 78c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        .dark body {
+            background-color: var(--background-dark);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%234F583B' fill-opacity='0.2'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zM41 48c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zM71 78c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 300,
+                'GRAD' 0,
+                'opsz' 24;
+        }
+    </style>
 </head>
-<body>
-
-  <div class="d-flex">
+<body class="font-display bg-[var(--background-light)] dark:bg-[var(--background-dark)] text-[var(--text-light)] dark:text-[var(--text-dark)]">
+<div class="flex h-screen">
     <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="p-3">
-        <div class="d-flex align-items-center mb-4">
-          @if(auth()->user()->shop && auth()->user()->shop->logo)
-            <img src="{{ asset('storage/' . auth()->user()->shop->logo) }}" 
-                 alt="Shop Logo" class="shop-logo me-3">
-          @else
-            <div class="shop-logo bg-white bg-opacity-25 d-flex align-items-center justify-content-center me-3">
-              <i class="fas fa-store text-white"></i>
-            </div>
-          @endif
-          <div>
-            <h5 class="mb-0">{{ auth()->user()->shop->name ?? 'My Shop' }}</h5>
-            <small class="opacity-75">Shopkeeper Panel</small>
-          </div>
+    <aside class="w-64 flex-shrink-0 bg-[var(--primary)] dark:bg-[var(--card-dark)] text-gray-800 dark:text-gray-200 flex flex-col shadow-lg">
+        <div class="h-20 flex items-center justify-center border-b border-[var(--border-light)] dark:border-[var(--border-dark)]">
+            @if(auth()->user()->shop && auth()->user()->shop->logo)
+                <img src="{{ asset('storage/' . auth()->user()->shop->logo) }}" alt="Shop Logo" class="w-8 h-8 rounded-full mr-2">
+            @else
+                <span class="material-symbols-outlined text-3xl text-[var(--accent-light)] dark:text-[var(--accent-dark)] mr-2">storefront</span>
+            @endif
+            <h1 class="text-xl font-serif font-bold text-[var(--heading-light)] dark:text-[var(--heading-dark)]">
+                {{ auth()->user()->shop->name ?? 'My Shop' }}
+            </h1>
         </div>
         
-        <nav>
-          <a href="{{ route('shopkeeper.dashboard') }}" class="{{ request()->routeIs('shopkeeper.dashboard') ? 'active' : '' }}">
-            <i class="fas fa-home me-2"></i> Dashboard
-          </a>
-          
-          <a href="{{ route('shopkeeper.products.index') }}" class="{{ request()->routeIs('shopkeeper.products.*') ? 'active' : '' }}">
-            <i class="fas fa-box-open me-2"></i> My Products
-          </a>
-          
-          <a href="{{ route('shopkeeper.orders.index') }}" class="{{ request()->routeIs('shopkeeper.orders.*') ? 'active' : '' }}">
-            <i class="fas fa-shopping-cart me-2"></i> My Orders
-          </a>
-          
-          <a href="{{ route('shopkeeper.shop.edit') }}" class="{{ request()->routeIs('shopkeeper.shop.*') ? 'active' : '' }}">
-            <i class="fas fa-store me-2"></i> Shop Settings
-          </a>
-          
-          <hr class="my-3 opacity-25">
-          
-          <a href="#" onclick="document.getElementById('logout-form').submit();">
-            <i class="fas fa-sign-out-alt me-2"></i> Logout
-          </a>
-          
-          <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" class="d-none">
-            @csrf
-          </form>
+        <nav class="flex-1 px-4 py-6 space-y-2">
+            <a class="flex items-center px-4 py-2 rounded-lg {{ request()->routeIs('shopkeeper.dashboard') ? 'bg-[var(--accent-light)] text-white dark:bg-[var(--accent-dark)] dark:text-[var(--background-dark)]' : 'hover:bg-green-100 dark:hover:bg-gray-700' }}" href="{{ route('shopkeeper.dashboard') }}">
+                <span class="material-symbols-outlined mr-3">dashboard</span> Dashboard
+            </a>
+            
+            @if(!auth()->user()->shop)
+                <a class="flex items-center px-4 py-2 rounded-lg {{ request()->routeIs('shopkeeper.shop.*') ? 'bg-[var(--accent-light)] text-white dark:bg-[var(--accent-dark)] dark:text-[var(--background-dark)]' : 'hover:bg-green-100 dark:hover:bg-gray-700' }}" href="{{ route('shopkeeper.shop.create') }}">
+                    <span class="material-symbols-outlined mr-3">add_business</span> Setup Shop
+                </a>
+            @else
+                <a class="flex items-center px-4 py-2 rounded-lg {{ request()->routeIs('shopkeeper.shop.*') ? 'bg-[var(--accent-light)] text-white dark:bg-[var(--accent-dark)] dark:text-[var(--background-dark)]' : 'hover:bg-green-100 dark:hover:bg-gray-700' }}" href="{{ route('shopkeeper.shop.edit') }}">
+                    <span class="material-symbols-outlined mr-3">storefront</span> Manage Shop
+                </a>
+            @endif
+            
+            <a class="flex items-center px-4 py-2 rounded-lg {{ request()->routeIs('shopkeeper.products.*') ? 'bg-[var(--accent-light)] text-white dark:bg-[var(--accent-dark)] dark:text-[var(--background-dark)]' : 'hover:bg-green-100 dark:hover:bg-gray-700' }}" href="{{ route('shopkeeper.products.index') }}">
+                <span class="material-symbols-outlined mr-3">inventory_2</span> Products
+            </a>
+            <a class="flex items-center px-4 py-2 rounded-lg {{ request()->routeIs('shopkeeper.orders.*') ? 'bg-[var(--accent-light)] text-white dark:bg-[var(--accent-dark)] dark:text-[var(--background-dark)]' : 'hover:bg-green-100 dark:hover:bg-gray-700' }}" href="{{ route('shopkeeper.orders.index') }}">
+                <span class="material-symbols-outlined mr-3">receipt_long</span> Orders
+            </a>
+            <a class="flex items-center px-4 py-2 rounded-lg {{ request()->routeIs('shopkeeper.categories.*') ? 'bg-[var(--accent-light)] text-white dark:bg-[var(--accent-dark)] dark:text-[var(--background-dark)]' : 'hover:bg-green-100 dark:hover:bg-gray-700' }}" href="{{ route('shopkeeper.categories.index') }}">
+                <span class="material-symbols-outlined mr-3">category</span> Categories
+            </a>
+            <a class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 dark:hover:bg-gray-700" href="#">
+                <span class="material-symbols-outlined mr-3">analytics</span> Analytics
+            </a>
+            <a class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 dark:hover:bg-gray-700" href="#">
+                <span class="material-symbols-outlined mr-3">settings</span> Settings
+            </a>
         </nav>
-      </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- Topbar -->
-      <div class="topbar">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h5 class="mb-0">
-              @if(auth()->user()->shop)
-                {{ auth()->user()->shop->name }}
-              @else
-                Setup Your Shop
-              @endif
-            </h5>
-            <small class="text-muted">Welcome, {{ auth()->user()->name }}</small>
-          </div>
-          <div class="d-flex align-items-center">
-            <div class="dropdown">
-              <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                <i class="fas fa-user-circle me-1"></i>
-                {{ auth()->user()->name }}
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><h6 class="dropdown-header">Account</h6></li>
-                <li><a class="dropdown-item" href="{{ route('shopkeeper.shop.edit') }}">
-                  <i class="fas fa-store me-2"></i>Shop Settings
-                </a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-danger" href="#" onclick="document.getElementById('logout-form').submit();">
-                  <i class="fas fa-sign-out-alt me-2"></i>Logout
-                </a></li>
-              </ul>
-            </div>
-          </div>
+        
+        <div class="p-4 border-t border-green-600">
+            <form action="{{ route('shopkeeper.logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="flex items-center px-4 py-3 rounded-lg text-green-100 hover:bg-green-600 hover:text-white transition-colors duration-200 w-full text-left">
+                    <span class="material-symbols-outlined mr-3 text-sm">logout</span> Logout
+                </button>
+            </form>
         </div>
-      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8">
+            <div class="flex items-center">
+                <button class="md:hidden mr-4">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h2 class="text-2xl font-semibold text-gray-800">@yield('page-title', 'Dashboard')</h2>
+            </div>
+            <div class="flex items-center space-x-6">
+                <button class="p-2 rounded-lg hover:bg-gray-100">
+                    <span class="material-symbols-outlined text-gray-600">notifications</span>
+                </button>
+                <div class="flex items-center space-x-3">
+                    @if(auth()->user()->shop && auth()->user()->shop->logo)
+                        <img alt="Shop avatar" class="w-10 h-10 rounded-full border-2 border-green-500" src="{{ asset('storage/' . auth()->user()->shop->logo) }}">
+                    @else
+                        <div class="w-10 h-10 rounded-full border-2 border-green-500 bg-green-500 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-sm">person</span>
+                        </div>
+                    @endif
+                    <div>
+                        <p class="font-semibold text-gray-800">{{ auth()->user()->name }}</p>
+                        <p class="text-sm text-gray-500">Admin</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="flex-1 p-8 overflow-y-auto">
+            @if(session('success'))
+                <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    <span class="material-symbols-outlined inline mr-2">check_circle</span>
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            @endif
 
-      <!-- Page Content -->
-      <div class="content">
-        @if(session('success'))
-          <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
-            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          </div>
-        @endif
+            @if(session('error'))
+                <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <span class="material-symbols-outlined inline mr-2">error</span>
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
+            @endif
 
-        @if(session('error'))
-          <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>{{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          </div>
-        @endif
+            @yield('content')
+        </div>
+    </main>
+</div>
 
-        @if(session('info'))
-          <div class="alert alert-info alert-dismissible fade show m-3" role="alert">
-            <i class="fas fa-info-circle me-2"></i>{{ session('info') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          </div>
-        @endif
+@yield('scripts')
+</body>
+</html>
 
-        @yield('content')
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   
-  <script>
+<script>
     // Auto-hide alerts after 5 seconds
     setTimeout(function() {
       const alerts = document.querySelectorAll('.alert');

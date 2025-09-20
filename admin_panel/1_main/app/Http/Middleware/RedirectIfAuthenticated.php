@@ -21,7 +21,7 @@ class RedirectIfAuthenticated
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
                 return match ($guard) {
-                    'admin' => redirect()->route('admin.dashboard'),
+                    'admin' => redirect()->route('shopkeeper.dashboard'),
                     'web' => redirect()->route('user.dashboard'),
                     default => redirect('/'),
                 };

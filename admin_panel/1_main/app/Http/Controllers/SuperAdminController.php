@@ -91,12 +91,12 @@ class SuperAdminController extends Controller
         if (!auth()->user()->isSuperAdmin()) {
             // If they're a regular admin, redirect to admin dashboard
             if (auth()->user()->isAdmin()) {
-                return redirect()->route('admin.dashboard')->with('error', 'Access denied. Super Admin privileges required.');
+                return redirect()->route('shopkeeper.dashboard')->with('error', 'Access denied. Super Admin privileges required.');
             }
             // If they're not an admin at all, redirect to login
             return redirect()->route('super-admin.login')->with('error', 'Super Admin access required.');
         }
 
-        return view('admin.dashboard');
+        return view('super-admin.dashboard');
     }
 }

@@ -6,8 +6,10 @@ use App\Models\User;
 use App\Http\Middleware\ProtectUserDashboard;
 use App\Http\Controllers\User\AuthController as UserAuthController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController as ShopkeeperProductController;
+use App\Http\Controllers\Admin\CategoryController as ShopkeeperCategoryController;
+use App\Http\Controllers\SuperAdmin\ProductController as SuperAdminProductController;
+use App\Http\Controllers\SuperAdmin\CategoryController as SuperAdminCategoryController;
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\PermissionManagementController;
@@ -117,12 +119,12 @@ Route::prefix('super-admin')->group(function () {
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('super-admin.dashboard');
 
         // Bulk Product Upload
-        Route::get('products/bulk-upload', [ProductController::class, 'bulkUploadForm'])->name('super-admin.products.bulk-upload-form');
-        Route::post('products/bulk-upload', [ProductController::class, 'bulkUpload'])->name('super-admin.products.bulk-upload');
-        Route::get('products/csv-template', [ProductController::class, 'downloadCsvTemplate'])->name('super-admin.products.csv-template');
+        Route::get('products/bulk-upload', [SuperAdminProductController::class, 'bulkUploadForm'])->name('super-admin.products.bulk-upload-form');
+        Route::post('products/bulk-upload', [SuperAdminProductController::class, 'bulkUpload'])->name('super-admin.products.bulk-upload');
+        Route::get('products/csv-template', [SuperAdminProductController::class, 'downloadCsvTemplate'])->name('super-admin.products.csv-template');
 
         // Product CRUD
-        Route::resource('products', ProductController::class)->names([
+        Route::resource('products', SuperAdminProductController::class)->names([
             'index' => 'super-admin.products.index',
             'create' => 'super-admin.products.create',
             'store' => 'super-admin.products.store',
@@ -131,10 +133,10 @@ Route::prefix('super-admin')->group(function () {
             'update' => 'super-admin.products.update',
             'destroy' => 'super-admin.products.destroy',
         ]);
-        Route::delete('products/images/{image}', [ProductController::class, 'deleteImage'])->name('super-admin.products.delete-image');
+        Route::delete('products/images/{image}', [SuperAdminProductController::class, 'deleteImage'])->name('super-admin.products.delete-image');
 
         // Category CRUD
-        Route::resource('categories', CategoryController::class)->names([
+        Route::resource('categories', SuperAdminCategoryController::class)->names([
             'index' => 'super-admin.categories.index',
             'create' => 'super-admin.categories.create',
             'store' => 'super-admin.categories.store',
@@ -147,129 +149,67 @@ Route::prefix('super-admin')->group(function () {
 });
 
 //
-    //  Admin Routes
-    //
-Route::prefix('admin')->group(function () {
-    // Auth
-    Route::get('/login', [AdminAuthController::class, 'loginForm'])->name('admin.login');
+//  🏪 SHOPKEEPER PANEL (Admin/Shop Owner)
+//
+Route::prefix('shopkeeper')->group(function () {
+    // Authentication Routes (Public)
+    Route::get('/login', [AdminAuthController::class, 'loginForm'])->name('shopkeeper.login');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('shopkeeper.login.submit');
+    Route::get('/register', [AdminAuthController::class, 'registerForm'])->name('shopkeeper.register');
+    Route::post('/register', [AdminAuthController::class, 'register'])->name('shopkeeper.register.submit');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('shopkeeper.logout');
 
-    Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
-
-    Route::get('/register', [AdminAuthController::class, 'registerForm'])->name('admin.register');
-
-    Route::post('/register', [AdminAuthController::class, 'register'])->name('admin.register.submit');
-
-    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
-
-    // Dashboard (Protected)
-    Route::middleware('auth')->group(function () {
-        Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
-    });
-
-    // Bulk Product Upload - defined before resource route to avoid conflicts
-    Route::get('products/bulk-upload', [ProductController::class, 'bulkUploadForm'])->name('admin.products.bulk-upload-form');
-    Route::post('products/bulk-upload', [ProductController::class, 'bulkUpload'])->name('admin.products.bulk-upload');
-    Route::get('products/csv-template', [ProductController::class, 'downloadCsvTemplate'])->name('admin.products.csv-template');
-
-    // Product CRUD
-    Route::resource('products', ProductController::class)->names([
-        'index' => 'admin.products.index',
-        'create' => 'admin.products.create',
-        'store' => 'admin.products.store',
-        'show' => 'admin.products.show',
-        'edit' => 'admin.products.edit',
-        'update' => 'admin.products.update',
-        'destroy' => 'admin.products.destroy',
-    ]);
-    Route::delete('products/images/{image}', [ProductController::class, 'deleteImage'])->name('admin.products.delete-image');
-
-    // Category CRUD
-    Route::resource('categories', CategoryController::class)->names([
-        'index' => 'admin.categories.index',
-        'create' => 'admin.categories.create',
-        'store' => 'admin.categories.store',
-        'show' => 'admin.categories.show',
-        'edit' => 'admin.categories.edit',
-        'update' => 'admin.categories.update',
-        'destroy' => 'admin.categories.destroy',
-    ]);
-
-    // Super Admin Routes
-    Route::middleware(['auth', 'role:superadmin'])->prefix('super-admin')->name('super-admin.')->group(function () {
-        Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
+    // Protected Shopkeeper Routes
+    Route::middleware(['auth', 'role:admin'])->group(function () {
+        // Dashboard
+        Route::get('/dashboard', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'dashboard'])->name('shopkeeper.dashboard');
         
-        // Permission Management (Super Admin Only)
-        Route::resource('permissions', PermissionManagementController::class)->names([
-            'index' => 'admin.permissions.index',
-            'create' => 'admin.permissions.create',
-            'store' => 'admin.permissions.store',
-            'show' => 'admin.permissions.show',
-            'edit' => 'admin.permissions.edit',
-            'update' => 'admin.permissions.update',
-            'destroy' => 'admin.permissions.destroy',
+        // Shop Management
+        Route::get('/shop/create', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'createShop'])->name('shopkeeper.shop.create');
+        Route::post('/shop', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'storeShop'])->name('shopkeeper.shop.store');
+        Route::get('/shop/edit', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'editShop'])->name('shopkeeper.shop.edit');
+        Route::put('/shop', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'updateShop'])->name('shopkeeper.shop.update');
+        
+        // Product Management (All admin product functionality moved here)
+        Route::get('products/bulk-upload', [ShopkeeperProductController::class, 'bulkUploadForm'])->name('shopkeeper.products.bulk-upload-form');
+        Route::post('products/bulk-upload', [ShopkeeperProductController::class, 'bulkUpload'])->name('shopkeeper.products.bulk-upload');
+        Route::get('products/csv-template', [ShopkeeperProductController::class, 'downloadCsvTemplate'])->name('shopkeeper.products.csv-template');
+        
+        Route::resource('products', ShopkeeperProductController::class)->names([
+            'index' => 'shopkeeper.products.index',
+            'create' => 'shopkeeper.products.create',
+            'store' => 'shopkeeper.products.store',
+            'show' => 'shopkeeper.products.show',
+            'edit' => 'shopkeeper.products.edit',
+            'update' => 'shopkeeper.products.update',
+            'destroy' => 'shopkeeper.products.destroy',
+        ]);
+        Route::delete('products/images/{image}', [ShopkeeperProductController::class, 'deleteImage'])->name('shopkeeper.products.delete-image');
+        Route::put('products/{product}/toggle-status', [\App\Http\Controllers\Shopkeeper\ProductController::class, 'toggleStatus'])->name('shopkeeper.products.toggle-status');
+        
+        // Category Management (Moved from admin)
+        Route::resource('categories', ShopkeeperCategoryController::class)->names([
+            'index' => 'shopkeeper.categories.index',
+            'create' => 'shopkeeper.categories.create',
+            'store' => 'shopkeeper.categories.store',
+            'show' => 'shopkeeper.categories.show',
+            'edit' => 'shopkeeper.categories.edit',
+            'update' => 'shopkeeper.categories.update',
+            'destroy' => 'shopkeeper.categories.destroy',
         ]);
         
-        // User Permission Management
-        Route::get('permissions/users/{user}', [PermissionManagementController::class, 'showUser'])->name('admin.permissions.user.show');
-        Route::put('permissions/users/{user}', [PermissionManagementController::class, 'updateUser'])->name('admin.permissions.user.update');
-        
-        // AJAX Routes
-        Route::post('permissions/bulk-update', [PermissionManagementController::class, 'bulkUpdate'])->name('admin.permissions.bulk-update');
-        Route::post('permissions/bulk-assign', [PermissionManagementController::class, 'bulkAssign'])->name('admin.permissions.bulk-assign');
-        Route::post('permissions/remove-from-user', [PermissionManagementController::class, 'removeFromUser'])->name('admin.permissions.remove-from-user');
-        Route::get('permissions/api/get-permissions', [PermissionManagementController::class, 'getPermissions'])->name('admin.permissions.api.get');
-        Route::get('permissions/api/user/{user}', [PermissionManagementController::class, 'getUserPermissions'])->name('admin.permissions.api.user');
-
-        // Order Management (All Orders - Super Admin View)
-        Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class)->names([
-            'index' => 'admin.orders.index',
-            'show' => 'admin.orders.show',
-            'edit' => 'admin.orders.edit',
-            'update' => 'admin.orders.update',
-            'destroy' => 'admin.orders.destroy',
-        ])->except(['create', 'store']);
+        // Order Management
+        Route::resource('orders', \App\Http\Controllers\Shopkeeper\OrderController::class)->names([
+            'index' => 'shopkeeper.orders.index',
+            'show' => 'shopkeeper.orders.show',
+            'edit' => 'shopkeeper.orders.edit',
+            'update' => 'shopkeeper.orders.update',
+        ])->except(['create', 'store', 'destroy']);
         
         // Order AJAX Routes
-        Route::post('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('admin.orders.update-status');
-        Route::post('orders/{order}/payment-status', [\App\Http\Controllers\Admin\OrderController::class, 'updatePaymentStatus'])->name('admin.orders.update-payment-status');
-        Route::post('orders/{order}/cancel', [\App\Http\Controllers\Admin\OrderController::class, 'cancel'])->name('admin.orders.cancel');
-        Route::post('orders/{order}/refund', [\App\Http\Controllers\Admin\OrderController::class, 'refund'])->name('admin.orders.refund');
-        Route::post('orders/{id}/restore', [\App\Http\Controllers\Admin\OrderController::class, 'restore'])->name('admin.orders.restore');
-        Route::get('orders/export', [\App\Http\Controllers\Admin\OrderController::class, 'export'])->name('admin.orders.export');
-
-        // Admin Management
-        Route::resource('admins', AdminManagementController::class)->names([
-            'index' => 'admin.admins.index',
-            'create' => 'admin.admins.create',
-            'store' => 'admin.admins.store',
-            'show' => 'admin.admins.show',
-            'edit' => 'admin.admins.edit',
-            'update' => 'admin.admins.update',
-            'destroy' => 'admin.admins.destroy',
-        ]);
-    });
-
-    // Shopkeeper Routes (Admin with Shop)
-    Route::middleware(['auth', 'role:admin'])->prefix('shopkeeper')->name('shopkeeper.')->group(function () {
-        Route::get('/dashboard', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'dashboard'])->name('dashboard');
-        
-        // Shop Setup
-        Route::get('/shop/create', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'createShop'])->name('shop.create');
-        Route::post('/shop', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'storeShop'])->name('shop.store');
-        Route::get('/shop/edit', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'editShop'])->name('shop.edit');
-        Route::put('/shop', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'updateShop'])->name('shop.update');
-        
-        // Product Management (Shopkeeper's own products)
-        Route::resource('products', \App\Http\Controllers\Shopkeeper\ProductController::class);
-        Route::put('products/{product}/toggle-status', [\App\Http\Controllers\Shopkeeper\ProductController::class, 'toggleStatus'])->name('products.toggle-status');
-        
-        // Order Management (Shopkeeper's own orders)
-        Route::resource('orders', \App\Http\Controllers\Shopkeeper\OrderController::class)->except(['create', 'store', 'destroy']);
-        
-        // Order AJAX Routes
-        Route::post('orders/{order}/status', [\App\Http\Controllers\Shopkeeper\OrderController::class, 'updateStatus'])->name('orders.update-status');
-        Route::post('orders/{order}/payment-status', [\App\Http\Controllers\Shopkeeper\OrderController::class, 'updatePaymentStatus'])->name('orders.update-payment-status');
-        Route::get('orders/export', [\App\Http\Controllers\Shopkeeper\OrderController::class, 'export'])->name('orders.export');
+        Route::post('orders/{order}/status', [\App\Http\Controllers\Shopkeeper\OrderController::class, 'updateStatus'])->name('shopkeeper.orders.update-status');
+        Route::post('orders/{order}/payment-status', [\App\Http\Controllers\Shopkeeper\OrderController::class, 'updatePaymentStatus'])->name('shopkeeper.orders.update-payment-status');
+        Route::get('orders/export', [\App\Http\Controllers\Shopkeeper\OrderController::class, 'export'])->name('shopkeeper.orders.export');
     });
 });
 
@@ -291,4 +231,36 @@ Route::name('customer.')->group(function () {
     // Order pages
     Route::get('/order/{order}/success', [\App\Http\Controllers\Customer\OrderController::class, 'success'])->name('order.success');
     Route::get('/order/{order}/details', [\App\Http\Controllers\Customer\OrderController::class, 'show'])->name('order.details');
+    
+    // Customer Profile and Account Management (Protected Routes)
+    Route::middleware('auth')->group(function () {
+        // Profile Management
+        Route::get('/profile', [\App\Http\Controllers\Customer\ProfileController::class, 'show'])->name('profile');
+        Route::put('/profile', [\App\Http\Controllers\Customer\ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password', [\App\Http\Controllers\Customer\ProfileController::class, 'updatePassword'])->name('password.update');
+        
+        // Order Management
+        Route::get('/orders', [\App\Http\Controllers\Customer\OrderController::class, 'index'])->name('orders');
+        Route::get('/orders/{order}', [\App\Http\Controllers\Customer\OrderController::class, 'show'])->name('orders.show');
+        
+        // Wishlist Management
+        Route::get('/wishlist', [\App\Http\Controllers\Customer\WishlistController::class, 'index'])->name('wishlist');
+        Route::post('/wishlist/{product}', [\App\Http\Controllers\Customer\WishlistController::class, 'add'])->name('wishlist.add');
+        Route::delete('/wishlist/{product}', [\App\Http\Controllers\Customer\WishlistController::class, 'remove'])->name('wishlist.remove');
+        
+        // Address Management
+        Route::get('/addresses', [\App\Http\Controllers\Customer\AddressController::class, 'index'])->name('addresses');
+        Route::post('/addresses', [\App\Http\Controllers\Customer\AddressController::class, 'store'])->name('addresses.store');
+        Route::put('/addresses/{address}', [\App\Http\Controllers\Customer\AddressController::class, 'update'])->name('addresses.update');
+        Route::delete('/addresses/{address}', [\App\Http\Controllers\Customer\AddressController::class, 'destroy'])->name('addresses.destroy');
+        
+        // Reviews
+        Route::post('/products/{product}/reviews', [\App\Http\Controllers\Customer\ReviewController::class, 'store'])->name('reviews.store');
+        Route::put('/reviews/{review}', [\App\Http\Controllers\Customer\ReviewController::class, 'update'])->name('reviews.update');
+        Route::delete('/reviews/{review}', [\App\Http\Controllers\Customer\ReviewController::class, 'destroy'])->name('reviews.destroy');
+        
+        // Support
+        Route::get('/support', [\App\Http\Controllers\Customer\SupportController::class, 'index'])->name('support');
+        Route::post('/support', [\App\Http\Controllers\Customer\SupportController::class, 'store'])->name('support.store');
+    });
 });

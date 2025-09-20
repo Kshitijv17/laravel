@@ -135,14 +135,14 @@
 
                         <div class="text-center">
                             <div class="mb-2">
-                                <a href="{{ route('admin.login') }}" class="text-muted me-3">
-                                    <i class="fas fa-user-shield me-1"></i>Regular Admin Login
+                                <a href="{{ route('shopkeeper.login') }}" class="text-muted me-3">
+                                    <i class="fas fa-user-shield me-1"></i>Shopkeeper Login
                                 </a>
                                 <a href="{{ route('super-admin.register') }}" class="text-danger">
                                     <i class="fas fa-user-plus me-1"></i>Create Account
                                 </a>
                             </div>
-                            <a href="{{ route('welcome') }}" class="text-muted small">
+                            <a href="{{ route('customer.home') }}" class="text-muted small">
                                 <i class="fas fa-arrow-left me-1"></i>Back to Home
                             </a>
                         </div>

@@ -51,12 +51,18 @@ class ProductController extends Controller
                      ? $product->discount_price 
                      : $product->price;
 
+        // Mock reviews data (since we don't have a reviews table yet)
+        $reviews = collect(); // Empty collection for now
+        $averageRating = 4.5; // Mock average rating
+
         return view('customer.product', compact(
             'product', 
             'relatedProducts', 
             'shopProducts', 
             'discountPercentage', 
-            'finalPrice'
+            'finalPrice',
+            'reviews',
+            'averageRating'
         ));
     }
 

@@ -4,12 +4,36 @@
 <div class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="fas fa-plus-circle me-2"></i>Add New Product</h2>
-    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
+    <a href="{{ route('shopkeeper.products.index') }}" class="btn btn-secondary">
       <i class="fas fa-arrow-left me-1"></i>Back to Products
     </a>
   </div>
 
-  <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+  <!-- Display Errors -->
+  @if ($errors->any())
+    <div class="alert alert-danger">
+      <h6><i class="fas fa-exclamation-triangle me-2"></i>Please fix the following errors:</h6>
+      <ul class="mb-0">
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
+
+  @if (session('error'))
+    <div class="alert alert-danger">
+      <i class="fas fa-exclamation-triangle me-2"></i>{{ session('error') }}
+    </div>
+  @endif
+
+  @if (session('success'))
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+    </div>
+  @endif
+
+  <form action="{{ route('shopkeeper.products.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
 
     <div class="row">
@@ -22,7 +46,10 @@
           <div class="card-body">
             <div class="mb-3">
               <label for="title" class="form-label fw-bold">Product Title <span class="text-danger">*</span></label>
-              <input type="text" name="title" id="title" class="form-control" value="{{ old('title') }}" required>
+              <input type="text" name="title" id="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}" required>
+              @error('title')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
               <div class="form-text">Enter a descriptive title for the product</div>
             </div>
 
@@ -36,13 +63,19 @@
               <div class="col-md-6">
                 <div class="mb-3">
                   <label for="price" class="form-label fw-bold">Original Price (₹) <span class="text-danger">*</span></label>
-                  <input type="number" name="price" id="price" class="form-control" value="{{ old('price') }}" step="0.01" min="0" required>
+                  <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}" step="0.01" min="0" required>
+                  @error('price')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                  @enderror
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="mb-3">
                   <label for="selling_price" class="form-label fw-bold">Selling Price (₹)</label>
-                  <input type="number" name="selling_price" id="selling_price" class="form-control" value="{{ old('selling_price') }}" step="0.01" min="0">
+                  <input type="number" name="selling_price" id="selling_price" class="form-control @error('selling_price') is-invalid @enderror" value="{{ old('selling_price') }}" step="0.01" min="0">
+                  @error('selling_price')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                  @enderror
                   <div class="form-text">Leave empty if same as original price</div>
                 </div>
               </div>
@@ -50,7 +83,7 @@
 
             <div class="mb-3">
               <label for="category_id" class="form-label fw-bold">Category <span class="text-danger">*</span></label>
-              <select name="category_id" id="category_id" class="form-control" required>
+              <select name="category_id" id="category_id" class="form-control @error('category_id') is-invalid @enderror" required>
                 <option value="">Select Category</option>
                 @foreach($categories as $category)
                   <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
@@ -58,12 +91,15 @@
                   </option>
                 @endforeach
               </select>
+              @error('category_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
               <div class="form-text">Select the product category</div>
             </div>
 
             <div class="mb-3">
               <label for="shop_id" class="form-label fw-bold">Shop <span class="text-danger">*</span></label>
-              <select name="shop_id" id="shop_id" class="form-control" required>
+              <select name="shop_id" id="shop_id" class="form-control @error('shop_id') is-invalid @enderror" required>
                 <option value="">Select Shop</option>
                 @foreach($shops as $shop)
                   <option value="{{ $shop->id }}" {{ old('shop_id') == $shop->id ? 'selected' : '' }}>
@@ -71,6 +107,9 @@
                   </option>
                 @endforeach
               </select>
+              @error('shop_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
               <div class="form-text">Select the shop that will sell this product</div>
             </div>
           </div>
@@ -140,7 +179,7 @@
                 <span class="input-group-text">
                   <input type="color" id="color-picker" value="#FF0000">
                 </span>
-                <input type="text" name="discount_color" id="discount_color" class="form-control" value="{{ old('discount_color', '#FF0000') }}" pattern="^#[a-fA-F0-9]{6}$" required>
+                <input type="text" name="discount_color" id="discount_color" class="form-control" value="{{ old('discount_color', '#FF0000') }}" pattern="^#[a-fA-F0-9]{6}$">
               </div>
               <div class="form-text">Hex color code for the discount tag</div>
             </div>
@@ -155,7 +194,10 @@
           <div class="card-body">
             <div class="mb-3">
               <label for="quantity" class="form-label fw-bold">Stock Quantity <span class="text-danger">*</span></label>
-              <input type="number" name="quantity" id="quantity" class="form-control" value="{{ old('quantity', 0) }}" min="0" required>
+              <input type="number" name="quantity" id="quantity" class="form-control @error('quantity') is-invalid @enderror" value="{{ old('quantity', 0) }}" min="0" required>
+              @error('quantity')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
             </div>
 
             <div class="mb-3">

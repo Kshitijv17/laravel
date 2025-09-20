@@ -20,7 +20,7 @@ class AuthController extends Controller
             if ($user->isSuperAdmin()) {
                 return redirect()->route('super-admin.dashboard');
             } elseif ($user->isAdmin()) {
-                return redirect()->route('admin.dashboard');
+                return redirect()->route('shopkeeper.dashboard');
             }
         }
 
@@ -58,7 +58,7 @@ class AuthController extends Controller
     {
         // Ensure user is authenticated
         if (!auth()->check()) {
-            return redirect()->route('admin.login')->with('error', 'Please login to access admin dashboard.');
+            return redirect()->route('shopkeeper.login')->with('error', 'Please login to access shopkeeper dashboard.');
         }
 
         // Redirect based on role
@@ -69,14 +69,14 @@ class AuthController extends Controller
         }
 
         // If not admin or superadmin, redirect to login
-        return redirect()->route('admin.login')->with('error', 'Access denied. Admin privileges required.');
+        return redirect()->route('shopkeeper.login')->with('error', 'Access denied. Admin privileges required.');
     }
 
     // Handle logout
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('welcome');
+        return redirect()->route('customer.home');
     }
 
     // Show registration form

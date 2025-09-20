@@ -5,10 +5,10 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="fas fa-box-open me-2"></i>Products</h2>
     <div>
-      <a href="{{ route('admin.products.bulk-upload-form') }}" class="btn btn-success me-2">
+      <a href="{{ route('shopkeeper.products.bulk-upload-form') }}" class="btn btn-success me-2">
         <i class="fas fa-upload me-1"></i>Bulk Upload
       </a>
-      <a href="{{ route('admin.products.create') }}" class="btn btn-primary">
+      <a href="{{ route('shopkeeper.products.create') }}" class="btn btn-primary">
         <i class="fas fa-plus me-1"></i>Add Product
       </a>
     </div>
@@ -108,13 +108,13 @@
                 </td>
                 <td>
                   <div class="btn-group" role="group">
-                    <a href="{{ route('admin.products.show', $product) }}" class="btn btn-sm btn-info" title="View Product">
+                    <a href="{{ route('shopkeeper.products.show', $product) }}" class="btn btn-sm btn-info" title="View Product">
                       <i class="fas fa-eye"></i>
                     </a>
-                    <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-warning" title="Edit Product">
+                    <a href="{{ route('shopkeeper.products.edit', $product) }}" class="btn btn-sm btn-warning" title="Edit Product">
                       <i class="fas fa-edit"></i>
                     </a>
-                    <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="d-inline">
+                    <form action="{{ route('shopkeeper.products.destroy', $product) }}" method="POST" class="d-inline">
                       @csrf @method('DELETE')
                       <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this product?')" title="Delete Product">
                         <i class="fas fa-trash"></i>
@@ -134,7 +134,7 @@
         <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
         <h4 class="text-muted">No Products Found</h4>
         <p class="text-muted">Start by adding your first product to the catalog.</p>
-        <a href="{{ route('admin.products.create') }}" class="btn btn-primary">
+        <a href="{{ route('shopkeeper.products.create') }}" class="btn btn-primary">
           <i class="fas fa-plus me-1"></i>Add Your First Product
         </a>
       </div>
