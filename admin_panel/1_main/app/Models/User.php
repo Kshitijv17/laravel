@@ -169,4 +169,52 @@ class User extends Authenticatable
     {
         return $this->permissions->pluck('name')->toArray();
     }
+
+    /**
+     * Orders relationship
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Shop relationship (for admin users)
+     */
+    public function shop()
+    {
+        return $this->hasOne(Shop::class, 'admin_id');
+    }
+
+    /**
+     * Check if user is a shopkeeper (admin with a shop)
+     */
+    public function isShopkeeper(): bool
+    {
+        return $this->isAdmin() && $this->shop()->exists();
+    }
+
+    /**
+     * Get user's shop products (for admin users)
+     */
+    public function shopProducts()
+    {
+        if (!$this->isAdmin()) {
+            return collect();
+        }
+        
+        return $this->shop ? $this->shop->products : collect();
+    }
+
+    /**
+     * Get user's shop orders (for admin users)
+     */
+    public function shopOrders()
+    {
+        if (!$this->isAdmin()) {
+            return collect();
+        }
+        
+        return $this->shop ? $this->shop->orders : collect();
+    }
 }

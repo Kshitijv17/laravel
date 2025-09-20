@@ -44,7 +44,7 @@ class AuthController extends Controller
             if ($user->isSuperAdmin()) {
                 return redirect()->route('super-admin.dashboard');
             } else {
-                return redirect()->route('admin.dashboard');
+                return redirect()->route('shopkeeper.dashboard');
             }
         }
 
@@ -53,7 +53,7 @@ class AuthController extends Controller
         ])->withInput();
     }
 
-    // Show dashboard
+    // Show dashboard - Always redirect to appropriate dashboard
     public function dashboard()
     {
         // Ensure user is authenticated
@@ -61,17 +61,15 @@ class AuthController extends Controller
             return redirect()->route('admin.login')->with('error', 'Please login to access admin dashboard.');
         }
 
-        // Redirect super admins to their own dashboard
+        // Redirect based on role
         if (auth()->user()->isSuperAdmin()) {
             return redirect()->route('super-admin.dashboard');
+        } elseif (auth()->user()->isAdmin()) {
+            return redirect()->route('shopkeeper.dashboard');
         }
 
-        // Ensure user is admin
-        if (!auth()->user()->isAdmin()) {
-            return redirect()->route('admin.login')->with('error', 'Access denied. Admin privileges required.');
-        }
-
-        return view('admin.dashboard');
+        // If not admin or superadmin, redirect to login
+        return redirect()->route('admin.login')->with('error', 'Access denied. Admin privileges required.');
     }
 
     // Handle logout
@@ -90,7 +88,7 @@ class AuthController extends Controller
             if ($user->isSuperAdmin()) {
                 return redirect()->route('super-admin.dashboard');
             } elseif ($user->isAdmin()) {
-                return redirect()->route('admin.dashboard');
+                return redirect()->route('shopkeeper.dashboard');
             }
         }
 
@@ -125,7 +123,7 @@ class AuthController extends Controller
             $user = User::find($userId);
             Auth::login($user);
 
-            return redirect()->route('admin.dashboard')->with('success', 'Admin account created successfully!');
+            return redirect()->route('shopkeeper.dashboard')->with('success', 'Admin account created successfully!');
         } catch (\Exception $e) {
             return back()->withInput()->withErrors(['error' => 'Failed to create account: ' . $e->getMessage()]);
         }

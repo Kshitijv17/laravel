@@ -8,10 +8,10 @@
         <div class="card-header d-flex justify-content-between align-items-center">
           <h4 class="mb-0"><i class="fas fa-user me-2"></i>Admin Details</h4>
           <div>
-            <a href="{{ route('admin.admins.edit', $admin) }}" class="btn btn-warning btn-sm">
+            <a href="{{ route('super-admin.admin.admins.edit', $admin) }}" class="btn btn-warning btn-sm">
               <i class="fas fa-edit me-1"></i>Edit
             </a>
-            <a href="{{ route('admin.admins.index') }}" class="btn btn-secondary btn-sm">
+            <a href="{{ route('super-admin.admin.admins.index') }}" class="btn btn-secondary btn-sm">
               <i class="fas fa-arrow-left me-1"></i>Back to List
             </a>
           </div>

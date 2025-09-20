@@ -166,40 +166,6 @@ Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
     });
 
-    // Permission Management (Super Admin only)
-    Route::middleware('auth')->group(function () {
-        // Permission CRUD
-        Route::get('permissions', [PermissionManagementController::class, 'index'])->name('admin.permissions.index');
-        Route::get('permissions/create', [PermissionManagementController::class, 'create'])->name('admin.permissions.create');
-        Route::post('permissions', [PermissionManagementController::class, 'store'])->name('admin.permissions.store');
-        Route::get('permissions/{id}', [PermissionManagementController::class, 'show'])->name('admin.permissions.show');
-        Route::get('permissions/{id}/edit', [PermissionManagementController::class, 'edit'])->name('admin.permissions.edit');
-        Route::put('permissions/{id}', [PermissionManagementController::class, 'update'])->name('admin.permissions.update');
-        Route::delete('permissions/{id}', [PermissionManagementController::class, 'destroy'])->name('admin.permissions.destroy');
-        
-        // User Permission Management
-        Route::get('permissions/users/{user}', [PermissionManagementController::class, 'showUser'])->name('admin.permissions.user.show');
-        Route::put('permissions/users/{user}', [PermissionManagementController::class, 'updateUser'])->name('admin.permissions.user.update');
-        
-        // AJAX Routes
-        Route::post('permissions/bulk-update', [PermissionManagementController::class, 'bulkUpdate'])->name('admin.permissions.bulk-update');
-        Route::post('permissions/bulk-assign', [PermissionManagementController::class, 'bulkAssign'])->name('admin.permissions.bulk-assign');
-        Route::post('permissions/remove-from-user', [PermissionManagementController::class, 'removeFromUser'])->name('admin.permissions.remove-from-user');
-        Route::get('permissions/api/get-permissions', [PermissionManagementController::class, 'getPermissions'])->name('admin.permissions.api.get');
-        Route::get('permissions/api/user/{user}', [PermissionManagementController::class, 'getUserPermissions'])->name('admin.permissions.api.user');
-
-        // Admin Management
-        Route::resource('admins', AdminManagementController::class)->names([
-            'index' => 'admin.admins.index',
-            'create' => 'admin.admins.create',
-            'store' => 'admin.admins.store',
-            'show' => 'admin.admins.show',
-            'edit' => 'admin.admins.edit',
-            'update' => 'admin.admins.update',
-            'destroy' => 'admin.admins.destroy',
-        ]);
-    });
-
     // Bulk Product Upload - defined before resource route to avoid conflicts
     Route::get('products/bulk-upload', [ProductController::class, 'bulkUploadForm'])->name('admin.products.bulk-upload-form');
     Route::post('products/bulk-upload', [ProductController::class, 'bulkUpload'])->name('admin.products.bulk-upload');
@@ -227,4 +193,102 @@ Route::prefix('admin')->group(function () {
         'update' => 'admin.categories.update',
         'destroy' => 'admin.categories.destroy',
     ]);
+
+    // Super Admin Routes
+    Route::middleware(['auth', 'role:superadmin'])->prefix('super-admin')->name('super-admin.')->group(function () {
+        Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
+        
+        // Permission Management (Super Admin Only)
+        Route::resource('permissions', PermissionManagementController::class)->names([
+            'index' => 'admin.permissions.index',
+            'create' => 'admin.permissions.create',
+            'store' => 'admin.permissions.store',
+            'show' => 'admin.permissions.show',
+            'edit' => 'admin.permissions.edit',
+            'update' => 'admin.permissions.update',
+            'destroy' => 'admin.permissions.destroy',
+        ]);
+        
+        // User Permission Management
+        Route::get('permissions/users/{user}', [PermissionManagementController::class, 'showUser'])->name('admin.permissions.user.show');
+        Route::put('permissions/users/{user}', [PermissionManagementController::class, 'updateUser'])->name('admin.permissions.user.update');
+        
+        // AJAX Routes
+        Route::post('permissions/bulk-update', [PermissionManagementController::class, 'bulkUpdate'])->name('admin.permissions.bulk-update');
+        Route::post('permissions/bulk-assign', [PermissionManagementController::class, 'bulkAssign'])->name('admin.permissions.bulk-assign');
+        Route::post('permissions/remove-from-user', [PermissionManagementController::class, 'removeFromUser'])->name('admin.permissions.remove-from-user');
+        Route::get('permissions/api/get-permissions', [PermissionManagementController::class, 'getPermissions'])->name('admin.permissions.api.get');
+        Route::get('permissions/api/user/{user}', [PermissionManagementController::class, 'getUserPermissions'])->name('admin.permissions.api.user');
+
+        // Order Management (All Orders - Super Admin View)
+        Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class)->names([
+            'index' => 'admin.orders.index',
+            'show' => 'admin.orders.show',
+            'edit' => 'admin.orders.edit',
+            'update' => 'admin.orders.update',
+            'destroy' => 'admin.orders.destroy',
+        ])->except(['create', 'store']);
+        
+        // Order AJAX Routes
+        Route::post('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('admin.orders.update-status');
+        Route::post('orders/{order}/payment-status', [\App\Http\Controllers\Admin\OrderController::class, 'updatePaymentStatus'])->name('admin.orders.update-payment-status');
+        Route::post('orders/{order}/cancel', [\App\Http\Controllers\Admin\OrderController::class, 'cancel'])->name('admin.orders.cancel');
+        Route::post('orders/{order}/refund', [\App\Http\Controllers\Admin\OrderController::class, 'refund'])->name('admin.orders.refund');
+        Route::post('orders/{id}/restore', [\App\Http\Controllers\Admin\OrderController::class, 'restore'])->name('admin.orders.restore');
+        Route::get('orders/export', [\App\Http\Controllers\Admin\OrderController::class, 'export'])->name('admin.orders.export');
+
+        // Admin Management
+        Route::resource('admins', AdminManagementController::class)->names([
+            'index' => 'admin.admins.index',
+            'create' => 'admin.admins.create',
+            'store' => 'admin.admins.store',
+            'show' => 'admin.admins.show',
+            'edit' => 'admin.admins.edit',
+            'update' => 'admin.admins.update',
+            'destroy' => 'admin.admins.destroy',
+        ]);
+    });
+
+    // Shopkeeper Routes (Admin with Shop)
+    Route::middleware(['auth', 'role:admin'])->prefix('shopkeeper')->name('shopkeeper.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'dashboard'])->name('dashboard');
+        
+        // Shop Setup
+        Route::get('/shop/create', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'createShop'])->name('shop.create');
+        Route::post('/shop', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'storeShop'])->name('shop.store');
+        Route::get('/shop/edit', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'editShop'])->name('shop.edit');
+        Route::put('/shop', [\App\Http\Controllers\Shopkeeper\ShopkeeperController::class, 'updateShop'])->name('shop.update');
+        
+        // Product Management (Shopkeeper's own products)
+        Route::resource('products', \App\Http\Controllers\Shopkeeper\ProductController::class);
+        Route::put('products/{product}/toggle-status', [\App\Http\Controllers\Shopkeeper\ProductController::class, 'toggleStatus'])->name('products.toggle-status');
+        
+        // Order Management (Shopkeeper's own orders)
+        Route::resource('orders', \App\Http\Controllers\Shopkeeper\OrderController::class)->except(['create', 'store', 'destroy']);
+        
+        // Order AJAX Routes
+        Route::post('orders/{order}/status', [\App\Http\Controllers\Shopkeeper\OrderController::class, 'updateStatus'])->name('orders.update-status');
+        Route::post('orders/{order}/payment-status', [\App\Http\Controllers\Shopkeeper\OrderController::class, 'updatePaymentStatus'])->name('orders.update-payment-status');
+        Route::get('orders/export', [\App\Http\Controllers\Shopkeeper\OrderController::class, 'export'])->name('orders.export');
+    });
+});
+
+// Customer/Public Routes
+Route::name('customer.')->group(function () {
+    // Homepage and product browsing
+    Route::get('/', [\App\Http\Controllers\Customer\HomeController::class, 'index'])->name('home');
+    Route::get('/category/{category}', [\App\Http\Controllers\Customer\HomeController::class, 'category'])->name('category');
+    Route::get('/shop/{shop}', [\App\Http\Controllers\Customer\HomeController::class, 'shop'])->name('shop');
+    
+    // Product pages
+    Route::get('/product/{product}', [\App\Http\Controllers\Customer\ProductController::class, 'show'])->name('product.show');
+    Route::get('/search', [\App\Http\Controllers\Customer\ProductController::class, 'search'])->name('product.search');
+    
+    // Buy Now functionality (no auth required for guest purchases)
+    Route::get('/product/{product}/buy-now', [\App\Http\Controllers\Customer\OrderController::class, 'buyNow'])->name('buy-now');
+    Route::post('/product/{product}/buy-now', [\App\Http\Controllers\Customer\OrderController::class, 'processBuyNow'])->name('process-buy-now');
+    
+    // Order pages
+    Route::get('/order/{order}/success', [\App\Http\Controllers\Customer\OrderController::class, 'success'])->name('order.success');
+    Route::get('/order/{order}/details', [\App\Http\Controllers\Customer\OrderController::class, 'show'])->name('order.details');
 });

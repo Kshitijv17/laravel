@@ -6,7 +6,7 @@
     <div class="col-12">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-users-cog me-2"></i>Admin Management</h2>
-        <a href="{{ route('admin.admins.create') }}" class="btn btn-danger">
+        <a href="{{ route('super-admin.admin.admins.create') }}" class="btn btn-danger">
           <i class="fas fa-plus me-1"></i>Add New Admin
         </a>
       </div>
@@ -65,14 +65,14 @@
                     </td>
                     <td>
                       <div class="btn-group" role="group">
-                        <a href="{{ route('admin.admins.show', $admin) }}" class="btn btn-sm btn-info" title="View Admin">
+                        <a href="{{ route('super-admin.admin.admins.show', $admin) }}" class="btn btn-sm btn-info" title="View Admin">
                           <i class="fas fa-eye"></i>
                         </a>
-                        <a href="{{ route('admin.admins.edit', $admin) }}" class="btn btn-sm btn-warning" title="Edit Admin">
+                        <a href="{{ route('super-admin.admin.admins.edit', $admin) }}" class="btn btn-sm btn-warning" title="Edit Admin">
                           <i class="fas fa-edit"></i>
                         </a>
                         @if($admin->id !== auth()->user()->id && !($admin->isSuperAdmin() && $admins->where('role', 'superadmin')->count() === 1))
-                          <form action="{{ route('admin.admins.destroy', $admin) }}" method="POST" class="d-inline">
+                          <form action="{{ route('super-admin.admin.admins.destroy', $admin) }}" method="POST" class="d-inline">
                             @csrf @method('DELETE')
                             <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this admin?')" title="Delete Admin">
                               <i class="fas fa-trash"></i>
@@ -94,7 +94,7 @@
           <i class="fas fa-users fa-4x text-muted mb-3"></i>
           <h4 class="text-muted">No Admin Users Found</h4>
           <p class="text-muted">Start by adding your first admin user.</p>
-          <a href="{{ route('admin.admins.create') }}" class="btn btn-danger">
+          <a href="{{ route('super-admin.admin.admins.create') }}" class="btn btn-danger">
             <i class="fas fa-plus me-1"></i>Add First Admin
           </a>
         </div>

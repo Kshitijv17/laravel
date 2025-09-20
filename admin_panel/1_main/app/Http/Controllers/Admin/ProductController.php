@@ -15,14 +15,15 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category', 'images')->latest()->get();
+        $products = Product::with('category', 'images', 'shop')->latest()->get();
         return view('admin.products.index', compact('products'));
     }
 
     public function create()
     {
         $categories = Category::all();
-        return view('admin.products.create', compact('categories'));
+        $shops = \App\Models\Shop::where('is_active', true)->get();
+        return view('admin.products.create', compact('categories', 'shops'));
     }
 
     public function store(Request $request)
@@ -39,7 +40,9 @@ class ProductController extends Controller
             'quantity' => 'required|integer|min:0',
             'stock_status' => 'required|in:in_stock,out_of_stock',
             'is_active' => 'required|boolean',
+            'is_featured' => 'nullable|boolean',
             'category_id' => 'required|exists:categories,id',
+            'shop_id' => 'required|exists:shops,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Removed strict dimensions
             'images' => 'nullable|array|max:10',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Removed strict dimensions
@@ -71,7 +74,8 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::all();
-        return view('admin.products.edit', compact('product', 'categories'));
+        $shops = \App\Models\Shop::where('is_active', true)->get();
+        return view('admin.products.edit', compact('product', 'categories', 'shops'));
     }
 
     public function show(Product $product)
@@ -94,7 +98,9 @@ class ProductController extends Controller
             'quantity' => 'required|integer|min:0',
             'stock_status' => 'required|in:in_stock,out_of_stock',
             'is_active' => 'required|boolean',
+            'is_featured' => 'nullable|boolean',
             'category_id' => 'required|exists:categories,id',
+            'shop_id' => 'required|exists:shops,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Removed strict dimensions
             'images' => 'nullable|array|max:10',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Removed strict dimensions

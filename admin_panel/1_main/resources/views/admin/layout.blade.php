@@ -43,10 +43,11 @@
     <!-- Sidebar -->
     <div class="sidebar p-3">
       <h4 class="mb-4">Admin Panel</h4>
-      <a href="{{ route('admin.dashboard') }}"><i class="fas fa-home me-2"></i> Dashboard</a>
-      <a href="{{ route('admin.products.index') }}"><i class="fas fa-box-open me-2"></i> Products</a>
-      <a href="{{ route('admin.categories.index') }}"><i class="fas fa-tags me-2"></i> Categories</a>
-      <a href="#"><i class="fas fa-users-cog me-2"></i> Users</a>
+      <a href="{{ route('super-admin.dashboard') }}"><i class="fas fa-home me-2"></i> Dashboard</a>
+      <a href="{{ route('super-admin.admin.orders.index') }}"><i class="fas fa-shopping-cart me-2"></i> Orders</a>
+      <a href="{{ route('super-admin.products.index') }}"><i class="fas fa-box-open me-2"></i> Products</a>
+      <a href="{{ route('super-admin.categories.index') }}"><i class="fas fa-tags me-2"></i> Categories</a>
+      <a href="{{ route('super-admin.admin.admins.index') }}"><i class="fas fa-users-cog me-2"></i> Users</a>
       <a href="#"><i class="fas fa-chart-line me-2"></i> Reports</a>
       <form action="{{ route('admin.logout') }}" method="POST" class="mt-4">
         @csrf

@@ -29,7 +29,7 @@
         <div class="card-body">
           <h5 class="card-title"><i class="fas fa-box-open me-2"></i> Products</h5>
           <p class="card-text">Manage all products listed in your store.</p>
-          <a href="{{ route('admin.products.index') }}" class="btn btn-primary">View Products</a>
+          <a href="{{ route('super-admin.products.index') }}" class="btn btn-primary">View Products</a>
         </div>
       </div>
     </div>
@@ -38,7 +38,7 @@
         <div class="card-body">
           <h5 class="card-title"><i class="fas fa-tags me-2"></i> Categories</h5>
           <p class="card-text">Organize products into categories for better browsing.</p>
-          <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">View Categories</a>
+          <a href="{{ route('super-admin.categories.index') }}" class="btn btn-secondary">View Categories</a>
         </div>
       </div>
     </div>
@@ -46,11 +46,11 @@
     <!-- Super Admin Only Section -->
     @if(auth()->check() && auth()->user()->isSuperAdmin())
     <div class="col-md-6">
-      <div class="card card-hover border-danger">
+      <div class="card card-hover border-info">
         <div class="card-body">
-          <h5 class="card-title text-danger"><i class="fas fa-key me-2"></i>Permission Management</h5>
-          <p class="card-text">Manage permissions for admin users.</p>
-          <a href="{{ route('admin.permissions.index') }}" class="btn btn-danger">Manage Permissions</a>
+          <h5 class="card-title text-info"><i class="fas fa-store me-2"></i>Shop Management</h5>
+          <p class="card-text">Manage your shop and products in the shopkeeper panel.</p>
+          <a href="{{ route('shopkeeper.dashboard') }}" class="btn btn-info">Go to Shop Dashboard</a>
         </div>
       </div>
     </div>
@@ -59,7 +59,7 @@
         <div class="card-body">
           <h5 class="card-title text-warning"><i class="fas fa-users-cog me-2"></i>User Management</h5>
           <p class="card-text">Manage admin users and their roles.</p>
-          <a href="{{ route('admin.admins.index') }}" class="btn btn-warning">Manage Users</a>
+          <a href="{{ route('super-admin.admin.admins.index') }}" class="btn btn-warning">Manage Users</a>
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@
         <div class="card-body">
           <h5 class="card-title"><i class="fas fa-upload me-2"></i> Bulk Upload</h5>
           <p class="card-text">Upload multiple products at once using CSV.</p>
-          <a href="{{ route('admin.products.bulk-upload-form') }}" class="btn btn-info">Bulk Upload</a>
+          <a href="{{ route('super-admin.products.bulk-upload-form') }}" class="btn btn-info">Bulk Upload</a>
         </div>
       </div>
     </div>

@@ -64,6 +64,20 @@
                   </option>
                 @endforeach
               </select>
+              <div class="form-text">Select the product category</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="shop_id" class="form-label fw-bold">Shop <span class="text-danger">*</span></label>
+              <select name="shop_id" id="shop_id" class="form-control" required>
+                <option value="">Select Shop</option>
+                @foreach($shops as $shop)
+                  <option value="{{ $shop->id }}" {{ old('shop_id', $product->shop_id) == $shop->id ? 'selected' : '' }}>
+                    {{ $shop->name }}
+                  </option>
+                @endforeach
+              </select>
+              <div class="form-text">Select the shop that will sell this product</div>
             </div>
           </div>
         </div>
@@ -203,6 +217,17 @@
                   <i class="fas fa-times-circle text-danger me-1"></i>Inactive
                 </label>
               </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Featured Product</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" value="1" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}>
+                <label class="form-check-label" for="is_featured">
+                  <i class="fas fa-star text-warning me-1"></i>Mark as Featured Product
+                </label>
+              </div>
+              <div class="form-text">Featured products will be highlighted on the homepage</div>
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@
           <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>Add New Admin</h4>
         </div>
         <div class="card-body">
-          <form action="{{ route('admin.admins.store') }}" method="POST">
+          <form action="{{ route('super-admin.admin.admins.store') }}" method="POST">
             @csrf
 
             <div class="mb-3">
@@ -65,7 +65,7 @@
               <button type="submit" class="btn btn-danger">
                 <i class="fas fa-save me-1"></i>Create Admin
               </button>
-              <a href="{{ route('admin.admins.index') }}" class="btn btn-secondary">
+              <a href="{{ route('super-admin.admin.admins.index') }}" class="btn btn-secondary">
                 <i class="fas fa-times me-1"></i>Cancel
               </a>
             </div>

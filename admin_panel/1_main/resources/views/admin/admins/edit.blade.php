@@ -9,7 +9,7 @@
           <h4 class="mb-0"><i class="fas fa-user-edit me-2"></i>Edit Admin: {{ $admin->name }}</h4>
         </div>
         <div class="card-body">
-          <form action="{{ route('admin.admins.update', $admin) }}" method="POST">
+          <form action="{{ route('super-admin.admin.admins.update', $admin) }}" method="POST">
             @csrf @method('PUT')
 
             <div class="mb-3">
@@ -69,10 +69,10 @@
               <button type="submit" class="btn btn-danger">
                 <i class="fas fa-save me-1"></i>Update Admin
               </button>
-              <a href="{{ route('admin.admins.index') }}" class="btn btn-secondary">
+              <a href="{{ route('super-admin.admin.admins.index') }}" class="btn btn-secondary">
                 <i class="fas fa-times me-1"></i>Cancel
               </a>
-              <a href="{{ route('admin.admins.show', $admin) }}" class="btn btn-info">
+              <a href="{{ route('super-admin.admin.admins.show', $admin) }}" class="btn btn-info">
                 <i class="fas fa-eye me-1"></i>View Details
               </a>
             </div>
